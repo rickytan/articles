@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "NSHipster Quiz #2"
-
+translator: "Ricky Tan"
 ref: "http://nshipsterpubtrivia.eventbrite.com"
 framework: Trivia
 rating: 10.0
