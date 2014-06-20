@@ -42,27 +42,27 @@ static char * XXObject;  // Redefinition of "XXObject" as different kind of symb
 That said, the Objective-C runtime creates a layer of abstraction on top of the C type system, allowing the following code to compile without even a snicker:
 
 ~~~{objective-c}
-@protocol Foo
+@protocol Malkovich
 @end
 
-@interface Foo : NSObject <Foo> {
-    id Foo;
+@interface Malkovich : NSObject <Malkovich> {
+    id Malkovich;
 }
 
-@property id Foo;
-+ (id)Foo;
-- (id)Foo;
+@property id Malkovich;
++ (id)Malkovich;
+- (id)Malkovich;
 @end
 
-@interface Foo (Foo)
+@interface Malkovich (Malkovich)
 @end
 
-@implementation Foo
-@synthesize Foo;
+@implementation Malkovich
+@synthesize Malkovich;
 
-+ (id)Foo {
-    id Foo = @"Foo";
-    return Foo;
++ (id)Malkovich {
+    id Malkovich = @"Malkovich";
+    return Malkovich;
 }
 @end
 ~~~
@@ -192,8 +192,6 @@ The main feature of categories is coating useful functionality with syntactic su
 Collisions can be detected at compile time by setting the `OBJC_PRINT_REPLACED_METHODS` environment variable to `YES`. In practice, collisions are extremely rare, and when they do occur, they're usually an indicator of functionality that is needlessly duplicated across dependencies. Although the worst-case scenario is a runtime exception, it's entirely likely that two methods named the same thing will actually _do_ the same thing, and result in no change in behavior. All of those Swiss Army Knife categories that defined `NSArray -firstObject` continued to march on once the method was officially added.
 
 Just as with constitutional scholarship, there will be strict and loose interpretations of Apple's programming guidelines. Those that see it as a living document would point out that... actually, you know what? If you've read this far and are still undecided, just prefix your damn category methods. If you choose not to, just be mindful that it could bite you in the ass.
-
-> Go ahead and add "category method" to your Tweetbot mute terms. Expiration: 1 Week.
 
 #### Swizzling
 
