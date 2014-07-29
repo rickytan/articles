@@ -1,10 +1,8 @@
 ---
 layout: post
 title: "Clang Diagnostics"
-ref: "http://clang.llvm.org/diagnostics.html"
-framework: Objective-C
-rating: 9.3
-description: "Diagnostics combine logic with analytics to arrive at a conclusion. It's science and engineering at their purest. It's human reasoning at its most potent. For us developers, our medium of code informs the production of subsequent code, creating a positive feedback loop that has catapulted the development of technology exponentially over the last half century. For us Objective-C developers specifically, the most effective diagnostics come from Clang."
+category: Objective-C
+excerpt: "Diagnostics combine logic with analytics to arrive at a conclusion. It's science and engineering at their purest. It's human reasoning at its most potent. For us developers, our medium of code informs the production of subsequent code, creating a positive feedback loop that has catapulted the development of technology exponentially over the last half century. For us Objective-C developers specifically, the most effective diagnostics come from Clang."
 ---
 
 Diagnostics combine logic with analytics to arrive at a conclusion. It's science and engineering at their purest. It's human reasoning at its most potent.
@@ -35,7 +33,7 @@ switch (style) {
 }
 ~~~
 
-With `-Weverything` turned on, Clang will complain that the "default label in switch which covers all enumeration values". However, if we _know_ that, zooming out into a larger context, `style` is (for better or worse) derived from an external representation (e.g. JSON resource) that allows for unconstrained `NSInteger` values, the `default` case is a necessary safeguard. The only way to insist on this inevitability is to use `#pragma` to ignore a warning flag temporarily:
+When certain flags are enabled, Clang will complain that the "default label in switch which covers all enumeration values". However, if we _know_ that, zooming out into a larger context, `style` is (for better or worse) derived from an external representation (e.g. JSON resource) that allows for unconstrained `NSInteger` values, the `default` case is a necessary safeguard. The only way to insist on this inevitability is to use `#pragma` to ignore a warning flag temporarily:
 
 > `push` & `pop` are used to save and restore the compiler state, similar to Core Graphics or OpenGL contexts.
 
@@ -56,9 +54,7 @@ switch (style) {
 
 > Again, and this cannot be stressed enough, Clang is right at least 99% of the time. Actually fixing an analyzer warning is _strongly_ preferred to ignoring it. Use `#pragma clang diagnostic ignored` as a method of last resort.
 
-The problem is that given a warning string, it is _very_ difficult to determine what its corresponding warning flag is. Unless a random Stack Overflow question pops up for the given error string, you're pretty much out of luck.
-
-So this week, as a public service, we've compiled a (mostly) comprehensive list of Clang warning strings and their associated flags:
+This week, as a public service, we've compiled a (mostly) comprehensive list of Clang warning strings and their associated flags:
 
 > Like our article on [NSError](http://nshipster.com/nserror/), this is more of an article for future reference than a formal explanation. Keep this page bookmarked for the next time that you happen to run into this situation.
 
@@ -70,8 +66,8 @@ So this week, as a public service, we've compiled a (mostly) comprehensive list 
 
 | Warning Flag | Message |
 |--------------|---------|
-| `-W#pragma-messages" | "%0"	 |
-| `-W#warnings" | "%0"	 |
+| `-W#pragma-messages` | "%0"	 |
+| `-W#warnings` | "%0"	 |
 | `-Wambiguous-macro`	 | "ambiguous expansion of macro %0"	 |
 | `-Wauto-import`	 | "treating #%select{include|import|include_next|__include_macros}0 as an import of module '%1'"	 |
 | `-Wbackslash-newline-escape`	 | "backslash and newline separated by space"	 |

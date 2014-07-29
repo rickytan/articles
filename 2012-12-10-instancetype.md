@@ -1,11 +1,8 @@
 ---
 layout: post
 title: instancetype
-ref: "http://clang.llvm.org/docs/LanguageExtensions.html#objc_instancetype"
-framework: Foundation
-rating: 7.3
-published: true
-description: "Objective-C is a rapidly evolving language, in a way that you just don't see in established programming languages. Developments range from the mundane to paradigm-changing, but telling the difference takes practice. Because we're talking about low-level language features, it's difficult to understand what implications they may have higher up with API design."
+category: Cocoa
+excerpt: "Objective-C is a rapidly evolving language, in a way that you just don't see in established programming languages. Developments range from the mundane to paradigm-changing, but telling the difference takes practice. Because we're talking about low-level language features, it's difficult to understand what implications they may have higher up with API design."
 ---
 
 Want to know what's coming next in Objective-C? [Keep your ear to the ground](http://clang.llvm.org/docs/LanguageExtensions.html).

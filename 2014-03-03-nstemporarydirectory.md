@@ -1,9 +1,8 @@
 ---
 layout: post
 title: "NSTemporaryDirectory /<br/>NSItemReplacementDirectory /<br/>mktemp(3)"
-framework: "Foundation"
-rating: 7.7
-description: "Volumes have been written about persisting data, but when it comes to short-lived, temporary files, there is very little to go on for Objective-C. (Or if there has, perhaps it was poetically ephemeral itself)."
+category: Cocoa
+excerpt: "Volumes have been written about persisting data, but when it comes to short-lived, temporary files, there is very little to go on for Objective-C. (Or if there has, perhaps it was poetically ephemeral itself)."
 ---
 
 Volumes have been written about persisting data, but when it comes to short-lived, temporary files, there is very little to go on for Objective-C. (Or if there has, perhaps it was poetically ephemeral itself).

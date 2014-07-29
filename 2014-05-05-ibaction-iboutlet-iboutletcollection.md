@@ -1,10 +1,8 @@
 ---
 layout: post
 title: "IBAction / IBOutlet / IBOutletCollection"
-ref: "https://developer.apple.com/library/ios/documentation/general/conceptual/CocoaEncyclopedia/Outlets/Outlets.html"
-framework: UIKit
-rating: 7.9
-description: "In programming, what often begins as a necessary instruction eventually becomes a vestigial cue for humans. For developers just starting with Cocoa & Cocoa Touch, the IBAction, IBOutlet, and IBOutletCollection macros are particularly bewildering examples of this phenomenon"
+category: Cocoa
+excerpt: "In programming, what often begins as a necessary instruction eventually becomes a vestigial cue for humans. For developers just starting with Cocoa & Cocoa Touch, the IBAction, IBOutlet, and IBOutletCollection macros are particularly bewildering examples of this phenomenon"
 ---
 
 In programming, what often begins as a necessary instruction eventually becomes a vestigial cue for humans. In the case of Objective-C, [`#pragma` directives](http://nshipster.com/pragma/), [method type encodings](http://nshipster.com/type-encodings/), and all but the most essential [storage classes](http://nshipster.com/c-storage-classes/) have been rendered essentially meaningless, as the compiler becomes increasingly sophisticated. Discarded and disregarded during the compilation phase, they nonetheless remain useful to the development process as a whole, insofar as what they can tell other developers about the code itself.

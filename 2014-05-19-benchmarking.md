@@ -1,10 +1,8 @@
 ---
 layout: post
 title: "Benchmarking"
-ref: ""
-framework: Objective-C
-rating: 9.0
-description: "Abstractions are necessary for doing meaningful work, but they come at a cost. By benchmarking, a programmer can uncover the hidden performance characteristics of their code, and use this information to optimize accordingly."
+category: Objective-C
+excerpt: "Abstractions are necessary for doing meaningful work, but they come at a cost. By benchmarking, a programmer can uncover the hidden performance characteristics of their code, and use this information to optimize accordingly."
 ---
 
 Abstractions are necessary for doing meaningful work, but they come at a cost. To work at a high level is to turn a blind eye to nonessential details in order to reason with larger logical chunks. Determining what information is important within a particular context, however, is challenging, and is at the heart of performance engineering.
@@ -38,7 +36,7 @@ In the case of programming, there are generally two kinds of questions to be ask
 
 Because the underlying factors of everything from the operating system down to the metal itself are extremely variable, performance should be measured across a large number of trials. For most applications, something on the order of 10<sup>5</sup> to 10<sup>8</sup> samples should be acceptable.
 
-### First Pass: CFAbsoluteTimeGetCurrent
+### First Pass: CACurrentMediaTime
 
 For this example, let's take a look at the performance characteristics of adding an object to a mutable array.
 
@@ -128,7 +126,7 @@ uint64_t t = dispatch_benchmark(iterations, ^{
 NSLog(@"[[NSMutableArray array] addObject:] Avg. Runtime: %llu ns", t);
 ```
 
-Ahhh, much better. Nanoseconds are a suitably precise time unit, and `dispatch_benchmark` has a much nicer syntax than manually looping and calling `CFAbsoluteTimeGetCurrent()`.
+Ahhh, much better. Nanoseconds are a suitably precise time unit, and `dispatch_benchmark` has a much nicer syntax than manually looping and calling `CACurrentMediaTime()`.
 
 ### NSMutableArray array vs. arrayWithCapacity:... FIGHT!
 

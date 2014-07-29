@@ -1,10 +1,9 @@
 ---
 layout: post
 title: "Key-Value Observing"
-ref: "https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html"
-framework: Foundation
-rating: 5.4
-description: "Ask anyone who's been around the NSBlock a few times: Key-Value Observing has the _worst_ API in all of Cocoa. It's awkward, verbose, and confusing. And worst of all, its terrible API belies one of the most compelling features of the framework."
+category: Cocoa
+tag: popular
+excerpt: "Ask anyone who's been around the NSBlock a few times: Key-Value Observing has the _worst_ API in all of Cocoa. It's awkward, verbose, and confusing. And worst of all, its terrible API belies one of the most compelling features of the framework."
 ---
 
 Ask anyone who's been around the NSBlock a few times: Key-Value Observing has the _worst_ API in all of Cocoa. It's awkward, verbose, and confusing. And worst of all, its terrible API belies one of the most compelling features of the framework.
@@ -155,7 +154,7 @@ When an observer is finished listening for changes on an object, it is expected 
 
 ### Safe Unsubscribe with `@try` / `@catch`
 
-Perhaps the most pronounced annoyance with KVO is how it gets you at the end. If you make a call to `–removeObserver:forKeyPath:context:` when the object is _not_ registered as an observer (whether because it was already unregistered or not registered in the first place). The kicker is that _there's no built-in way to even check if an object is registered_!
+Perhaps the most pronounced annoyance with KVO is how it gets you at the end. If you make a call to `–removeObserver:forKeyPath:context:` when the object is _not_ registered as an observer (whether because it was already unregistered or not registered in the first place), an exception is thrown. The kicker is that _there's no built-in way to even check if an object is registered_!
 
 Which causes one to rely on a rather unfortunate cudgel `@try` with an unhandled `@catch`:
 

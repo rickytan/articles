@@ -1,9 +1,8 @@
 ---
 layout: post
 title: "Core Data Libraries & Utilities"
-framework: "Open Source"
-rating: 8.9
-description: "We were a bit hard on Core Data last week, so for this issue of NSHipster, we bring you a guided tour of the best open source libraries for working with Core Data. Read on to see how you might make the most from your Core Data experience."
+category: Open Source
+excerpt: "We were a bit hard on Core Data last week, so for this issue of NSHipster, we bring you a guided tour of the best open source libraries for working with Core Data. Read on to see how you might make the most from your Core Data experience."
 ---
 
 So let's say that, having determined your particular needs and compared all of the alternatives, you've chosen [Core Data](http://developer.apple.com/library/mac/#documentation/cocoa/Conceptual/CoreData/cdProgrammingGuide.html) for your next app.
@@ -35,8 +34,8 @@ This week on NSHipster: a guided tour of the best open source libraries for work
       <td><iframe src="http://ghbtns.com/github-btn.html?user=magicalpanda&repo=MagicalRecord&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="106" height="20"></iframe></td>
     </tr>
     <tr>
-      <td><a href="https://github.com/mneorr/Objective-Record">Objective-Record</a></td>
-      <td><a href="https://github.com/mneorr">Marin Usalj</a></td>
+      <td><a href="https://github.com/supermarin/Objective-Record">Objective-Record</a></td>
+      <td><a href="https://github.com/supermarin">Marin Usalj</a></td>
       <td><iframe src="http://ghbtns.com/github-btn.html?user=mneorr&repo=Objective-Record&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="106" height="20"></iframe></td>
     </tr>
     <tr>
@@ -88,9 +87,9 @@ This week on NSHipster: a guided tour of the best open source libraries for work
       <td><iframe src="http://ghbtns.com/github-btn.html?user=gonzalezreal&repo=Overcoat&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="106" height="20"></iframe></td>
     </tr>
     <tr>
-      <td><a href="https://github.com/github/Mantle">Mantle</a></td>
-      <td><a href="https://github.com/GitHub">GitHub</a></td>
-      <td><iframe src="http://ghbtns.com/github-btn.html?user=github&repo=Mantle&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="106" height="20"></iframe></td>
+      <td><a href="https://github.com/Mantle/Mantle">Mantle</a></td>
+      <td><a href="https://github.com/Mantle">Mantle</a></td>
+      <td><iframe src="http://ghbtns.com/github-btn.html?user=Mantle&repo=Mantle&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="106" height="20"></iframe></td>
     </tr>
   </tbody>
 

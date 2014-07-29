@@ -1,10 +1,8 @@
 ---
 layout: post
 title: NSDataDetector
-ref: "https://developer.apple.com/library/mac/#documentation/Foundation/Reference/NSDataDetector_Class/Reference/Reference.html"
-framework: Foundation
-rating: 9.4
-description: "Until humanity embraces RDF for all of their daily interactions, a large chunk of artificial intelligence is going to go into figuring out what the heck we're all talking about. Fortunately for Cocoa developers, there's NSDataDetector."
+category: Cocoa
+excerpt: "Until humanity embraces RDF for all of their daily interactions, a large chunk of artificial intelligence is going to go into figuring out what the heck we're all talking about. Fortunately for Cocoa developers, there's NSDataDetector."
 ---
 
 Machines speak in binary, while humans speak in riddles, half-truths, and omissions.
@@ -149,7 +147,7 @@ static inline NSTextCheckingType NSTextCheckingTypesFromUIDataDetectorTypes(UIDa
 }
 ~~~
 
-If you're looking for an easy way to use `NSDataDetector` in your iOS app, you may want to check out [TTTAttributedLabel](https://github.com/mattt/TTTAttributedLabel/), a drop-in replacement for `UILabel` that supports attributed strings, and (as of 1.7.0) automatic data detection of `NSTextCheckingTypes`.
+> If you're looking for an easy way to use `NSDataDetector` in your iOS app, you may want to check out [TTTAttributedLabel](https://github.com/mattt/TTTAttributedLabel/), a drop-in replacement for `UILabel` that supports attributed strings, and (as of 1.7.0) automatic data detection of `NSTextCheckingTypes`.
 
 ---
 

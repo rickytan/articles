@@ -1,11 +1,8 @@
 ---
 layout: post
 title: UIAppearance
-ref: "http://developer.apple.com/library/ios/#documentation/uikit/reference/UIAppearance_Protocol/Reference/Reference.html"
-framework: UIKit
-rating: 8.0
-published: true
-description: "UIAppearance allows the appearance of views and controls to be consistently defined across the entire application."
+category: Cocoa
+excerpt: "UIAppearance allows the appearance of views and controls to be consistently defined across the entire application."
 ---
 
 Style vs. Substance.
@@ -65,9 +62,11 @@ One major downside to `UIAppearance`'s proxy approach is that it's difficult to 
 
 In order to find out what methods work with `UIAppearance`, you have to [look at the headers](http://stackoverflow.com/questions/9424112/what-properties-can-i-set-via-an-uiappearance-proxy):
 
-    $ cd /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/
-      Developer/SDKs/iPhoneOS*.sdk/System/Library/Frameworks/UIKit.framework/Headers
-    $ grep -H UI_APPEARANCE_SELECTOR ./* | sed 's/ __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_5_0) UI_APPEARANCE_SELECTOR;//'
+~~~
+$ cd /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/
+  Developer/SDKs/iPhoneOS*.sdk/System/Library/Frameworks/UIKit.framework/Headers
+$ grep -H UI_APPEARANCE_SELECTOR ./* | sed 's/ __OSX_AVAILABLE_STARTING(__MAC_NA,__IPHONE_5_0) UI_APPEARANCE_SELECTOR;//'
+~~~
 
 `UIAppearance` looks for the `UI_APPEARANCE_SELECTOR` macro in method signatures. Any method with this annotation can be used with the `appearance` proxy.
 

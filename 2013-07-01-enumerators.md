@@ -1,9 +1,7 @@
 ---
 layout: post
-title: "NSFastEnumeration /<br/>NSEnumerator /<br/>-enumerateObjectsUsingBlock:"
-ref: "http://developer.apple.com/library/ios/#documentation/cocoa/reference/NSFastEnumeration_protocol/Reference/NSFastEnumeration.html"
-framework: Foundation
-rating: 7.8
+title: "NSFastEnumeration /<br/>NSEnumerator"
+category: Cocoa
 ---
 
 Enumeration is where computation gets interesting. It's one thing to encode logic that's executed once, but applying it across a collection—that's what makes programming so powerful.

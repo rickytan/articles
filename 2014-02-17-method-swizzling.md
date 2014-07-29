@@ -1,9 +1,8 @@
 ---
 layout: post
 title: Method Swizzling
-framework: "Objective-C"
-rating: 6.6
-description: "Method swizzling is the process of changing the implementation of an existing selector. It's a technique made possible by the fact that method invocations in Objective-C can be changed at runtime, by changing how selectors are mapped to underlying functions in a class's dispatch table."
+category: Objective-C
+excerpt: "Method swizzling is the process of changing the implementation of an existing selector. It's a technique made possible by the fact that method invocations in Objective-C can be changed at runtime, by changing how selectors are mapped to underlying functions in a class's dispatch table."
 ---
 
 > If you could blow up the world with the flick of a switch<br/>
@@ -16,7 +15,7 @@ description: "Method swizzling is the process of changing the implementation of 
 > Would you do it?<br/>
 > And so we cannot know ourselves or what we'd really do...<br/>
 > With all your power ... What would you do?<br/>
-> <cite>—<strong>The Flaming Lips</strong>, <em><a href="http://en.wikipedia.org/wiki/The_Yeah_Yeah_Yeah_Song_(With_All_Your_Power)">"The Yeah Yeah Yeah Song (With All Your Power)"</a></em></cite>
+> <cite><strong>The Flaming Lips</strong>, <em><a href="http://en.wikipedia.org/wiki/The_Yeah_Yeah_Yeah_Song_(With_All_Your_Power)">"The Yeah Yeah Yeah Song (With All Your Power)"</a></em></cite>
 
 In last week's article about [associated objects](http://nshipster.com/associated-objects/), we began to explore the dark arts of the Objective-C runtime. This week, we venture further, to discuss what is perhaps the most contentious of runtime hackery techniques: method swizzling.
 
@@ -123,7 +122,7 @@ It may appear that the following code will result in an infinite loop:
 }
 ~~~
 
-Surprisingly, it won't. In the process of swizzling, `xxx_viewWillAppear:` has been reassigned to the original implementation of `UIViewController -viewWillAppear:`. It's good programmer instinct for calling a method on `self` in its own implementation to raise a red flag, but in this case, it makes sense if we remember what's _really_ going on. However, if we were to call `viewWillAppear:` in this method, it _would_ cause an infinite loop, since the implementation of this method will be swizzled to the `viewwillAppear:` selector at runtime.
+Surprisingly, it won't. In the process of swizzling, `xxx_viewWillAppear:` has been reassigned to the original implementation of `UIViewController -viewWillAppear:`. It's good programmer instinct for calling a method on `self` in its own implementation to raise a red flag, but in this case, it makes sense if we remember what's _really_ going on. However, if we were to call `viewWillAppear:` in this method, it _would_ cause an infinite loop, since the implementation of this method will be swizzled to the `viewWillAppear:` selector at runtime.
 
 > Remember to prefix your swizzled method name, the same way you might any other contentious category method.
 

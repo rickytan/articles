@@ -1,11 +1,8 @@
 ---
 layout: post
 title: "NSOrderedSet"
-ref: "http://developer.apple.com/library/mac/#documentation/Foundation/Reference/NSOrderedSet_Class/Reference/Reference.html"
-framework: Foundation
-rating: 6.2
-published: true
-description: "Why isn't NSOrderedSet a subclass of NSSet? The answer may surprise you."
+category: Cocoa
+excerpt: "Why isn't NSOrderedSet a subclass of NSSet? The answer may surprise you."
 ---
 
 Here's a question: why isn't `NSOrderedSet` a subclass of `NSSet`?
@@ -46,9 +43,7 @@ NSMutableOrderedSet* mutable = [immutable mutableCopy];
 [mutable isKindOfClass:[NSMutableSet class]]; // NO (!)
 ~~~
 
-<object data="http://nshipster.s3.amazonaws.com/nsorderedset-case-1.svg" type="image/svg+xml">
-  <img src="http://nshipster.s3.amazonaws.com/nsorderedset-case-1.png" />
-</object>
+<img src="http://nshipster.s3.amazonaws.com/nsorderedset-case-1.svg" />
 
 That's no good... since `NSMutableOrderedSet` couldn't be used as a method parameter of type `NSMutableSet`. So what happens if we make `NSMutableOrderedSet` a subclass of `NSMutableSet` as well?
 
@@ -64,9 +59,7 @@ NSMutableOrderedSet* mutable = [immutable mutableCopy];
 [mutable isKindOfClass:[NSOrderedSet class]]; // NO (!)
 ~~~
 
-<object data="http://nshipster.s3.amazonaws.com/nsorderedset-case-2.svg" type="image/svg+xml">
-  <img src="http://nshipster.s3.amazonaws.com/nsorderedset-case-2.png" />
-</object>
+<img src="http://nshipster.s3.amazonaws.com/nsorderedset-case-2.svg" />
 
 This is perhaps even worse, as now `NSMutableOrderedSet` couldn't be used as a method parameter expecting an `NSOrderedSet`.
 

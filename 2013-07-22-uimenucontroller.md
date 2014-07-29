@@ -1,10 +1,8 @@
 ---
 layout: post
 title: UIMenuController
-ref: ""
-framework: UIKit
-rating: 7.6
-description: "Mobile usability today is truly quite remarkable—especially considering how far it's come in just the last decade. What was once a clumsy technology relegated to the tech elite has now become the primary mode of computation for a significant portion of the general population."
+category: Cocoa
+excerpt: "Mobile usability today is truly quite remarkable—especially considering how far it's come in just the last decade. What was once a clumsy technology relegated to the tech elite has now become the primary mode of computation for a significant portion of the general population."
 ---
 
 Mobile usability today is truly quite remarkable—especially considering how far it's come in just the last decade. What was once a clumsy technology relegated to the tech elite has now become the primary mode of computation for a significant portion of the general population.
@@ -63,11 +61,10 @@ This may be due to how cumbersome it is to implement. Let's look at a simple imp
 #pragma mark - UIGestureRecognizer
 
 - (void)handleLongPressGesture:(UIGestureRecognizer *)recognizer  {
+	[recognizer.view becomeFirstResponder];
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
     [menuController setTargetRect:recognizer.view.frame inView:recognizer.view.superview];
     [menuController setMenuVisible:YES animated:YES];
-
-    [recognizer.view becomeFirstResponder];
 }
 ~~~
 

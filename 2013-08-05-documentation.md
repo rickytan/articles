@@ -1,8 +1,7 @@
 ---
 layout: post
 title: Documentation
-ref: "http://web.archive.org/web/20130425104810/http://gentlebytes.com/appledoc-docs-comments/"
-rating: 9.1
+category: Objective-C
 ---
 
 There's an adage among Cocoa developers that Objective-C's verbosity lends its code to being effectively self-documenting. Between `longMethodNamesWithNamedParameters:` and the explicit typing of those parameters, Objective-C methods don't leave much to the imagination.

@@ -1,9 +1,7 @@
 ---
 layout: post
 title: NSUUID /<br/>CFUUIDRef /<br/>UIDevice -uniqueIdentifier /<br/>-identifierForVendor
-ref: "http://developer.apple.com/library/mac/#documentation/Foundation/Reference/NSUUID_Class/Reference/Reference.html"
-framework: Foundation
-rating: 7.0
+category: Cocoa
 ---
 
 Let's say you're making privacy software that also prevents piracy. I mean, it's an obvious idea—[someone's going to do it](http://www.fakeblock.com). You're just trying to be _that_ person.
