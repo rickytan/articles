@@ -1,79 +1,72 @@
 ---
-layout: post
-title: 对象下标索引
+title: Object Subscripting
 author: Mattt Thompson
-translator: Zihan Xu
 category: Objective-C
+excerpt: "Xcode 4.4 quietly introduced a syntactic revolution to Objective-C. Like all revolutions, however, its origins and agitators require some effort to trace."
 ---
 
-Xcode 4.4悄然为Objective-C引入了语法革命。然而，像所有的革命一样，我们要费些努力才能找出它的起因和煽动者：Xcode 4.4附带有苹果LLVM编译器4.0，其中纳入了在Clang的前端版本3.1生效的改变。
+Xcode 4.4 quietly introduced a syntactic revolution to Objective-C. Like all revolutions, however, its origins and agitators require some effort to trace: Xcode 4.4 shipped with Apple LLVM Compiler 4.0, which incorporated changes effective in the Clang front-end as of version 3.1.
 
-> 对于外行来说，[Clang](http://clang.llvm.org/index.html)是开源C语言家族对于[LLVM](http://www.llvm.org)编译器的前端。Clang负责可以追溯到几年前的所有重要的语言特点，比如“构建与分析”，ARC，块，以及当通过GCC编译时近3倍的性能提升。
+> For the uninitiated, [Clang](http://clang.llvm.org/index.html) is the open source C language family front end to the [LLVM](http://www.llvm.org) compiler. Clang is responsible for all of the killer language features in Objective-C going back a few years, such as "Build & Analyze", ARC, blocks, and a nearly 3× performance boost when compiling over GCC.
 
-Clang 3.1为Objective-c增加了三个功能，它们的美学和装饰效果可以和Objective-C 2.0引入的变化相媲美：__`NSNumber`字面__，__集合字面__，和__对象的下标索引__。
+Clang 3.1 added three features to Objective-C whose aesthetic & cosmetic impact is comparable to the changes brought about in Objective-C 2.0: [`NSNumber` Literals][num], [Collection Literals][col], and [Object Subscripting][sub].
 
-在一个单一的Xcode发布中，Objective-C从这样：
+[num]: http://clang.llvm.org/docs/ObjectiveCLiterals.html#nsnumber-literals
+[col]: http://clang.llvm.org/docs/ObjectiveCLiterals.html#container-literals
+[sub]: http://clang.llvm.org/docs/ObjectiveCLiterals.html#object-subscripting
+
+In a single Xcode release, Objective-C went from this:
 
 ~~~{objective-c}
 NSDictionary *dictionary = [NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:42] forKey:@"foo"];
 id value = [dictionary objectForKey:@"foo"];
 ~~~
 
-…变成了这样：
+...to this:
 
 ~~~{objective-c}
 NSDictionary *dictionary = @{@"foo": @42};
 id value = dictionary[@"foo"];
 ~~~
 
-简洁是清晰的精髓。
+Concision is the essence of clarity.
 
-较短的代码意味着打字更少，但这也意味着你要了解的更多。即使一点点语法就足以改变一个预言，并且解锁一个新的设计模式。
+Shorter code means typing less, but it also means understanding more. Even a sprinkle of syntactic sugar can be enough to transform a language, and unlock new design patterns.
 
-集合字面成为配置property list更好的选择。<br/>
-单元素数组参数变的更加容易接受<br/>
-需要封装数值的API变的更加好用。<br/>
+Collection literals become preferable to property lists for configuration.<br/>
+Single-element array parameters become more acceptable.<br/>
+APIs requiring boxed numeric values become more palatable.<br/>
 
-然而，在这些语言性能被增加了一年以后，对象下标索引相对来说仍然没有被充分利用。不过，在读完文章以后，你也许可以帮助改变这种情况。
+However, what remains relatively under-utilized even now—a year after the these language features were added—is object subscripting. Perhaps after reading the rest of this article, though, you'll help to change this.
 
 ---
 
-C数组的元素在内存中连续分布，并且由第一个元素的地址来引用。为得到某一特定索引的数值，你可以通过用数组元素的大小乘以所需的索引来移位。这个指针算法可以由`[]`操作符来提供。
+Elements in a C array are laid out contiguously in memory, and is referenced by the address of its first element. To get the value at a particular index, one would offset this address by the size of an array element, multiplied by the desired index. This pointer arithmetic is provided by the `[]` operator.
 
-随着时间的推移，脚本语言在这个熟悉的惯例下有了更多的发挥空间，扩大作用以获得或设置数组中的数值，以及hash值和对象。
+Over time, scripting languages began to take greater liberties with this familiar convention, expanding its role to get & set values in arrays, as well as hashes and objects.
 
-随着Clang 3.1的出现，一些都圆满了：最初作为C运算符出现，并由脚本语言应用的内容，现在已经回到了Objective-C。而像上述的昔日的脚本语言一样，Objective-C中的`[]`下标运算符已经被以同样方式重载以处理整数索引的和对象键控的存储单元。
+With Clang 3.1, everything has come full-circle: what began as a C operator and co-opted by scripting languages, has now been rolled back into Objective-C. And like the aforementioned scripting languages of yore, the `[]` subscripting operator in Objective-C has been similarly overloaded to handle both integer-indexed and object-keyed accessors.
 
 ~~~{objective-c}
 dictionary[@"foo"] = @42;
 array[0] = @"bar"
 ~~~
 
->如果Objective-C是C的超集，对象下标索引如何重载`[]`C运算符？现代的Objective-C运行禁止对象的指针运算，使得这个语法转换成为可能。
+> If Objective-C is a superset of C, how can Object Subscripting overload the `[]` C operator? The modern Objective-C runtime prohibits pointer arithmetic on objects, making this semantic pivot possible.
 
-这一切真正变得有趣的地方是当你用下标支持来延伸自己的类的时候：
+Where this really becomes interesting is when you extend your own classes with subscripting support:
 
-### 自定义索引下标
+### Custom Indexed Subscripting
 
-为你的类增加自定义索引下标，你只需要声明和实现下列方法：
+To add custom-indexed subscript reading support to your class, simply declare and implement `objectAtIndexedSubscript:`, where the parameter is of any integral type (such as `char`, `int`, or `NSUInteger`) and the return type is an Objective-C object pointer type. For indexed subscript writing, implement `setObject:atIndexedSubscript:`, where the first parameter is of Objective-C object pointer type, the second of integral type, and the return type is `void`.
 
-~~~{objective-c}
-- (id)objectAtIndexedSubscript:(NSUInteger)idx;
-- (void)setObject:(id)obj atIndexedSubscript:(NSUInteger)idx;
-~~~
+### Custom Keyed Subscripting
 
-### 自定义键位下标
+Similarly, custom-keyed subscripting can be added to your class by declaring and implementing `objectForKeyedSubscript:` and `setObject:forKeyedSubscript:`, where the subscript parameters are of Objective-C object pointer type.
 
-同样的，你也可以通过声明和实现以下方法增加自定义键位下标到你的类：
+## Custom Subscripting as DSL
 
-~~~{objective-c}
-- (id)objectForKeyedSubscript:(id <NSCopying>)key;
-- (void)setObject:(id)obj forKeyedSubscript:(id <NSCopying>)key;
-~~~
-
-## 用DSL来进行自定义下标索引
-
-描述这一切的重点在于鼓励你用非常规的方式来思考这一语言特性。目前，类中的大多数自定义下标索引被用来方便的访问私有集合类。但没有什么能够阻止你这样做：
+The whole point in describing all of this is to encourage unconventional thinking about this whole language feature. At the moment, a majority of custom subscripting in classes is used as a convenience accessor to a private collection class. But there's nothing to stop you from, for instance, doing this:
 
 ~~~{objective-c}
 routes[@"GET /users/:id"] = ^(NSNumber *userID){
@@ -93,10 +86,10 @@ id piece = chessBoard[@"E1"];
 NSArray *results = managedObjectContext[@"Product WHERE stock > 20"];
 ~~~
 
-考虑到下标的灵活性和简洁，它完全可以用来生成[DSL](http://en.wikipedia.org/wiki/Domain-specific_language)。当在你自己的类中定义自定义下标索引时，它们是如何被实现的并没有限制。你可以使用这个语法来提供定义应用路线，搜索查询，复合属性存取器或者仅仅是旧的KVO的缩写。
+Because of how flexible and concise subscripting is, it is extremely well-purposed for creating [DSL](http://en.wikipedia.org/wiki/Domain-specific_language)s. When defining custom subscripting methods on your own class, there are no restrictions on how they are implemented. You can use this syntax to provide a shorthand for defining application routes, search queries, compound property accessors, or plain-old KVO.
 
 ---
 
-当然，这是很危险的想法。下标索引不是你的新自行车，也不是一个巨大的锤子。_它甚至不是一个巨大的螺丝刀！_如果一定要用一件事物来描述对象下标索引，那就是麻烦。龙来了。
+This is, of course, dangerous thinking. Subscripting isn't your new bicycle. It isn't a giant hammer. Hell, _it isn't even a giant screwdriver!_ If there is one thing Object Subscripting DSLs are, it's trouble. Here be dragons.
 
-当然，它的确为改变语法惯例以有用的使用它们开发了新的有趣的机会。
+That said, it does open up some interesting opportunities to bend syntactic conventions to useful ends.

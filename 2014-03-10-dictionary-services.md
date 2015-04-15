@@ -1,25 +1,26 @@
 ---
-layout: post
-title: "UIReferenceLibraryViewController /<br/>DCSDictionaryRef"
-category: Cocoa
-excerpt: "虽然字典的地位很大程度上已经被基于网络的“一键释义”功能所替代，但是字典和词汇表在拼写检查、语法检查、自动纠错、自动摘要、语义分析等领域，仍然在幕后扮演着重要角色。"
+title: "UIReferenceLibraryViewController /<br/>DCSDictionaryRef/<br/>/usr/share/dict/words"
 author: Mattt Thompson
-translator: Croath Liu
+category: Cocoa
+tags: cfhipsterref
+excerpt: "Though widely usurped of their 'go-to reference' status by the Internet, dictionaries and word lists serve an important role behind the scenes of functionality ranging from spell check, grammar check, and auto-correct to auto-summarization and semantic analysis."
 ---
 
-本周的主题是字典。我们讨论的不是日常开发中经常遇到的`NSDictionary` 或 `CFDictionaryRef`，而是已经离你远去了的、学生时代常用的字典。
+<img src="http://nshipster.s3.amazonaws.com/cfhipsterref-illustration-librarian.png" width="173" height="300" alt="Librarian, illustrated by Conor Heelan" style="float: right; margin-left: 2em; margin-bottom: 2em"/>
 
-> 不过如果认真讨论一下，为什么字典会被称作“字典”呢？为什么我们不能像Ruby语言等直接叫它哈希（`Hash`）？字典到底是什么？不断通过Hash函数加密内容来解释语义？哈哈，字典其实没那么糟糕吧。我认为用“组合起来的数组”来描述他再适合不过了。
+This week's article is about dictionaries. Not the `NSDictionary` / `CFDictionaryRef` we encounter everyday, but those distant lexicographic vestiges of school days past.
 
-虽然字典的地位很大程度上已经被基于网络的“一键释义”功能所替代，但是字典和词汇表在拼写检查、语法检查、自动纠错、自动摘要、语义分析等领域，仍然在幕后扮演着重要角色。所以为了方便下面的讨论，我们先回顾一下字典在Unix、OS X和iOS系统上的展现形式和被赋予的意义。
+> But seriously, why are dictionaries called that, anyway? Why can't we just settle on `Hash`, like those nice Ruby folks? What's that? Semantic overlap with hashing functions and cryptographic digests? Well, dictionary isn't _that_ bad. Anything other than "associative arrays", I reckon.
+
+Though widely usurped of their "go-to reference" status by the Internet, dictionaries and word lists serve an important role behind the scenes of functionality ranging from spell check, grammar check, and auto-correct to auto-summarization and semantic analysis. So, for your reference, here's a look at the ways and means by which computers give meaning to the world through words, in Unix, OS X, and iOS.
 
 * * *
 
 ## Unix
 
-几乎所有Unix的发行版都包含一些用换行分割的词表文件。在OS X上，你可以在`/usr/share/dict`找到他们：
+Nearly all Unix distributions include a small collection newline-delimited list of words. On OS X, these can be found at `/usr/share/dict`:
 
-~~~
+~~~bash
 $ ls /usr/share/dict
     README
     connectives
@@ -29,16 +30,16 @@ $ ls /usr/share/dict
     words@ -> web2
 ~~~
 
-连接到`words`的`web2`词表，虽然内容不是很详尽，但还是相当占了相当大的空间的：
+Symlinked to `words` is the `web2` word list, which, though not exhaustive, is still a sizable corpus:
 
-~~~
+~~~bash
 $ wc /usr/share/dict/words
     235886  235886 2493109
 ~~~
 
-如果你把它的头部打出来你就会发现其实这里面的内容相当有趣。我异常兴奋地发现了一堆以"a"开头的词：
+Skimming with `head` shows what fun lies herein. Such excitement is rarely so palpable as it is among words beginning with "a":
 
-~~~
+~~~bash
 $ head /usr/share/dict/words
     A
     a
@@ -52,18 +53,18 @@ $ head /usr/share/dict/words
     Aaron
 ~~~
 
-这些系统提供的巨大词表文件让`grep`纵横交错的文字难题、生成易于记忆的密码、种子数据库都变得简单。但从用户的视角来看，`/usr/share/dict`只是一个缺乏整体意义的单词表，所以对日常的使用没什么太大意义。
+These giant, system-provided text files make it easy to `grep` crossword puzzle clues, generate mnemonic pass phrases, and seed databases, but from a user perspective, `/usr/share/dict`'s monolingualism and lack of associated meaning make it less than useful for everyday use.
 
-OS X在这个基础上构建了系统词典。OS X在对扩展壮大Unix的功能性方面从未让人失望，于是它不遗余力地发布了很多基于bundles和plist文件的字典。
+OS X builds upon this with its own system dictionaries. Never one to disappoint, the operating system's penchant for extending Unix functionality through strategically placed bundles and plist files is in full force with how dictionaries are distributed.
 
 * * *
 
 ## OS X
 
-OS X模仿`/usr/share/dict`的结构，创造了`/Library/Dictionaries`目录。
-我们现在就看一下OS X在共享性的系统字典方面比Unix有所超越的地方————它同样认同非英语字典的存在：
+The OS X analog to `/usr/share/dict` can be found in `/Library/Dictionaries`.
+A quick peek into the shared system dictionaries demonstrates one immediate improvement over Unix, by acknowledging the existence of languages other than English:
 
-~~~
+~~~bash
 $ ls /Library/Dictionaries/
 
     Apple Dictionary.dictionary/
@@ -84,11 +85,11 @@ $ ls /Library/Dictionaries/
     The Standard Dictionary of Contemporary Chinese.dictionary/
 ~~~
 
-OS X为我们带来了包括英文字典在内的汉语、法语、德语、意大利语、日语、韩语专业字典，甚至包含一个专门讲解Apple术语的字典！
+OS X ships with dictionaries in Chinese, English, French, Dutch, Italian, Japanese, Korean, as well as an English thesaurus and a special dictionary for Apple-specific terminology.
 
-让我们研究的更深一点，看看这些`.dictionary`的bundle文件里面到底有什么：
+Diving deeper into the rabbit hole, we peruse the `.dictionary` bundles to see them for what they really are:
 
-~~~
+~~~bash
 $ ls "/Library/Dictionaries/New Oxford American Dictionary.dictionary/Contents"
 
     Body.data
@@ -104,19 +105,19 @@ $ ls "/Library/Dictionaries/New Oxford American Dictionary.dictionary/Contents"
     version.plist
 ~~~
 
-通过对字典文件结构的观察，确实可以发现一些有趣的细节。观察新牛津字典（New Oxford American Dictionary），可以发现如下内容：
+A filesystem autopsy reveals some interesting implementation details. In the case of the New Oxford American Dictionary in particular, contents include:
 
-- 二进制编码的 `KeyText.data`、`KeyText.index`和`Content.data`文件
-- 用于绘制的CSS文件
-- 从A-Frame到Zither共1207张图片
-- 用于切换到[US English Diacritical Pronunciation](http://en.wikipedia.org/wiki/Pronunciation_respelling_for_English)和[IPA](http://en.wikipedia.org/wiki/International_Phonetic_Alphabet) (International Phonetic Alphabet)的链接
-- Manifest和签名文件
+- Binary-encoded `KeyText.data`, `KeyText.index`, & `Content.data`
+- CSS for styling entries
+- 1207 images, from A-Frame to Zither.
+- Preference to switch between [US English Diacritical Pronunciation](http://en.wikipedia.org/wiki/Pronunciation_respelling_for_English) and [IPA](http://en.wikipedia.org/wiki/International_Phonetic_Alphabet) (International Phonetic Alphabet)
+- Manifest & signature for dictionary contents
 
-通常情况下拥有对二进制文件读权限才可以获得相关的数据，但幸运的是Core Services为我们提供了相关的API。
+Normally, proprietary binary encoding would be the end of the road in terms of what one could reasonably do with data, but luckily, Core Services provides APIs to read this information.
 
-#### 获取单词的释义
+#### Getting Definition of Word
 
-在OS X获取一个单词的释义，需要用到Core Services framework的`DCSCopyTextDefinition`函数：
+To get the definition of a word on OS X, one can use the `DCSCopyTextDefinition` function, found in the Core Services framework:
 
 ~~~{objective-c}
 #import <CoreServices/CoreServices.h>
@@ -126,15 +127,15 @@ NSString *definition = (__bridge_transfer NSString *)DCSCopyTextDefinition(NULL,
 NSLog(@"%@", definition);
 ~~~
 
-先别急用，我们来看看这些牛逼的字典到底是怎么被获取数据的。
+Wait, where did all of those great dictionaries go?
 
-看起来这些字典好像都进到了第一个`NULL`参数里。按照这个函数的定义来收，你可能想在这里放一个`DCSCopyTextDefinition`类型的数据，但是没有public的函数让你使用这个类型，所以让它成为`NULL`是唯一的解决办法了，就如文档里面所说：
+Well, they all disappeared into that first `NULL` argument. One might expect to provide a `DCSCopyTextDefinition` type here, as prescribed by the function definition. However, there are no public functions to construct or copy such a type, making `NULL` the only available option. The documentation is as clear as it is stern:
 
-> 此参数为预留参数，可能在以后会被用到，目前暂时传递`NULL`即可。字典服务会在所有可用状态（active）的字典中搜索相关信息。
+> This parameter is reserved for future use, so pass `NULL`. Dictionary Services searches in all active dictionaries.
 
-"在**所有可用状态的字典**中搜索相关信息"？听起来像一个漏洞啊！
+"Dictionary Services searches in **all active dictionaries**", you say? Sounds like a loophole!
 
-#### 将字典设为可用（Active）状态
+#### Setting Active Dictionaries
 
 Now, there's nothing programmers love to hate to love more than the practice of exploiting loopholes to side-step Apple platform restrictions. Behold: an entirely error-prone approach to getting, say, thesaurus results instead of the first definition available in the standard dictionary:
 
@@ -153,13 +154,13 @@ dictionaryPreferences[@"DCSActiveDictionaries"] = activeDictionaries;
 [userDefaults setPersistentDomain:dictionaryPreferences forName:@"com.apple.DictionaryServices"];
 ~~~
 
-看到这里你可能会愤怒地说："但这是OS X啊，一般应用是不能通过沙箱从Cupertino获取manifest权限的，就没有更方便的方法么？比如说私有API？"
+"But this is OS X, a platform whose manifest destiny cannot be contained by meager sandboxing attempts from Cupertino!", you cry. "Isn't there a more civilized approach? Like, say, private APIs?"
 
-答案是：当然有。
+Why yes, yes there are.
 
-### 私有API
+### Private APIs
 
-这些API没有公开暴露出来，但是为了满足我们对字典的渴望，这些API仍然能够通过调用Core Services的一些函数来实现：
+Not publicly exposed, but still available through Core Services are a number of functions that cut closer to the dictionary services functionality that we crave:
 
 ~~~{objective-c}
 extern CFArrayRef DCSCopyAvailableDictionaries();
@@ -181,9 +182,9 @@ extern CFStringRef DCSRecordGetTitle(CFTypeRef record);
 extern DCSDictionaryRef DCSRecordGetSubDictionary(CFTypeRef record);
 ~~~
 
-这些API都是私有的，所以当然也不会有文档来解释他们的用途和使用方法，所以先来看一下到底怎么用这些API吧：
+Private as they are, these functions aren't about to start documenting themselves, so let's take a look at how they're used:
 
-#### 获取可用字典
+#### Getting Available Dictionaries
 
 ~~~{objective-c}
 NSMapTable *availableDictionariesKeyedByName =
@@ -196,9 +197,9 @@ for (id dictionary in (__bridge_transfer NSArray *)DCSCopyAvailableDictionaries(
 }
 ~~~
 
-#### 获取单词释义
+#### Getting Definition for Word
 
-在上述处理中获取了很多难以琢磨的`DCSDictionaryRef`类型的实例，现在用这些实例我们来看看能对第一个参数`DCSCopyTextDefinition`做些什么事：
+With instances of the elusive `DCSDictionaryRef` type available at our disposal, we can now see what all of the fuss is about with that first argument in `DCSCopyTextDefinition`:
 
 ~~~{objective-c}
 NSString *word = @"apple";
@@ -229,21 +230,23 @@ for (NSString *name in availableDictionariesKeyedByName) {
 }
 ~~~
 
-这种方法最有趣的地方是你要从HTML格式的内容中来获取有用的信息，这些HTML还包含了CSS文件，他们都是用来在系统的字典应用(Dictionary.app)来显示内容用的。
+Most surprising from this experimentation is the ability to access the raw HTML for entries, which  combined with a dictionary's bundled CSS, produces the result seen in Dictionary.app.
 
-> 如果你是个好奇宝宝，或者是对语言学有偏爱的怪咖，可以看看[单词"apple"的HTML信息](https://gist.github.com/mattt/9453538)。
+![Entry for "apple" in Dictionary.app](http://nshipster.s3.amazonaws.com/dictionary.png)
 
-写这篇文章的时候，我顺便也就写了一个[Objective-C wrapper](https://github.com/mattt/DictionaryKit)，这个库通过私有API从我们喜爱的水果公司来取禁果（所以不要把这个库放到你需要提交到App Store的应用中使用）。
+> For any fellow linguistics nerds or markup curious folks out there, here's [the HTML of the entry for the word "apple"](https://gist.github.com/mattt/9453538).
+
+In the process of writing this article, I _accidentally_ created [an Objective-C wrapper](https://github.com/mattt/DictionaryKit) around this forbidden fruit (so forbidden by our favorite fruit company, so don't try submitting this to the App Store).
 
 * * *
 
 ## iOS
 
-iOS开发毫无疑问是一件照本宣科的事，所以尝试逆向工程会比技术尝试更有用一点。幸运的是并不需要这样做了，因为有一批关于UIKit的`UIReferenceLibraryViewController`在iOS5之后API已经开放。
+iOS development is a decidedly more by-the-books affair, so attempting to reverse-engineer the platform would be little more than an academic exercise. Fortunately, a good chunk of functionality is available (as of iOS 5) through the obscure UIKit class `UIReferenceLibraryViewController`.
 
-`UIReferenceLibraryViewController`和`MFMessageComposeViewController`很相似，提供了最小化配置的系统层view controller，可以直接被present显示。
+`UIReferenceLibraryViewController` is similar to an `MFMessageComposeViewController`, in that provides a minimally-configurable view controller around system functionality, intended to be presented modally.
 
-用需要查找term来进行初始化：
+Simply initialize with the desired term:
 
 ~~~{objective-c}
 UIReferenceLibraryViewController *referenceLibraryViewController =
@@ -253,16 +256,22 @@ UIReferenceLibraryViewController *referenceLibraryViewController =
                            completion:nil];
 ~~~
 
-这种行为和用户点击`UITextView`中高亮词汇弹出的"定义"的`UIMenuItem`的效果差不多。
+![Presenting a UIReferenceLibraryViewController](http://nshipster.s3.amazonaws.com/uireferencelibraryviewcontroller-1.png)
 
-`UIReferenceLibraryViewController`也提供了一个类方法`dictionaryHasDefinitionForTerm:`，开发者可以在dictionary view controller出现之前调用这个方法，就可以在不必需的时候不显示那个view controller了。
+This is the same behavior that one might encounter by tapping the "Define" `UIMenuItem` on a highlighted word in a `UITextView`.
+
+> Tapping on "Manage" brings up a view to download additional dictionaries.
+
+![Presenting a UIReferenceLibraryViewController](http://nshipster.s3.amazonaws.com/uireferencelibraryviewcontroller-2.png)
+
+`UIReferenceLibraryViewController` also provides the class method `dictionaryHasDefinitionForTerm:`. A developer would do well to call this before presenting a dictionary view controller that will inevitably have nothing to display.
 
 ~~~{objective-c}
 [UIReferenceLibraryViewController dictionaryHasDefinitionForTerm:@"apple"];
 ~~~
 
-> 在这两种情况下，`UIReferenceLibraryViewController`会以非常好的形式去格式化搜索结果，所以并不需要开发者手动去掉空格或者调整大小写来优化搜索。
+> In both cases, it appears that `UIReferenceLibraryViewController` will do its best to normalize the search term, so stripping whitespace or changing to lowercase should not be necessary.
 
 * * *
 
-无论是Unix的词汇表还是基于其发展而来的OS X（或iOS）的`.dictionary` bundles，它与数学常量以及Apple的"Sosumi"提醒一样，对于编程来说都是至关重要的。你可以思考一下如何将上述API引入你的app，或者用它们来创建你以前从未尝试过的应用。这里有很多Apple系统内部关于语言学的链接供你参考：a [wealth](http://nshipster.com/nslocalizedstring/) [of](http://nshipster.com/nslinguistictagger/) [linguistic](http://nshipster.com/search-kit/) [technologies](http://nshipster.com/uilocalizedindexedcollation/)。
+From Unix word lists to their evolved `.dictionary` bundles on OS X (and presumably iOS), words are as essential to application programming as mathematical constants and the "Sosumi" alert noise. Consider how the aforementioned APIs can be integrated into your own app, or used to create a kind of app you hadn't previously considered. There are a [wealth](http://nshipster.com/nslocalizedstring/) [of](http://nshipster.com/nslinguistictagger/) [linguistic](http://nshipster.com/search-kit/) [technologies](http://nshipster.com/uilocalizedindexedcollation/) baked into Apple's platforms, so take advantage of them.

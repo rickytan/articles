@@ -1,29 +1,36 @@
 ---
-layout: post
-title: "NSOrderedSet"
-category: Cocoa
-excerpt: "为什吗`NSOrderedSet`不是继承自`NSSet`的捏？答案可能会让你大吃一惊。"
+title: NSOrderedSet
 author: Mattt Thompson
-translator: Candyan
+category: Cocoa
+tags: nshipster
+excerpt: "Why isn't NSOrderedSet a subclass of NSSet? The answer may surprise you."
 ---
 
-有个问题：为什吗`NSOrderedSet`不是继承自`NSSet`的捏？
+Here's a question: why isn't `NSOrderedSet` a subclass of `NSSet`?
 
-毕竟 `NSOrderedSet`是一个 `NSSet` 的_子类_这个逻辑看起来是很完美的。它跟 `NSSet` 具有相同的方法，还添加了一些 `NSArray`风格的方法，像 `objectAtIndex:`。据大家所说，它似乎完全满足了[里氏替换原则](http://zh.wikipedia.org/zh-cn/%E9%87%8C%E6%B0%8F%E6%9B%BF%E6%8D%A2%E5%8E%9F%E5%88%99)的要求，其大致含义为：
+It seems perfectly logical, after all, for `NSOrderedSet`--a class that enforces the same uniqueness constraint of `NSSet`--to be a _subclass_ of `NSSet`. It has the same methods as `NSSet`, with the addition of some `NSArray`-style methods like `objectAtIndex:`. By all accounts, it would seem to perfectly satisfy the requirements of the [Liskov substitution principle](http://en.wikipedia.org/wiki/Liskov_substitution_principle), that:
 
-> 在一段程序中， 如果 `S` 是 `T`的子类型，那么`T`类型的对象就有可能在没有任何警告的情况下被替换为`S`类型的对象。
+> If `S` is a subtype of `T`, then objects of type `T` in a program may be replaced with objects of type `S` without altering any of the desirable properties of that program.
 
-所以，为什吗`NSOrderedSet`是`NSObject`的一个子类，而不是`NSSet`甚至是`NSArray`的子类哪？
+So why is `NSOrderedSet` a subclass of `NSObject` and not `NSSet` or even `NSArray`?
 
-_可变/不可变的类簇_
+_Mutable / Immutable Class Clusters_
 
-[类簇](http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaFundamentals/CocoaObjects/CocoaObjects.html%23//apple_ref/doc/uid/TP40002974-CH4-SW34)是Foundation framework核心所使用的一种设计模式；也是日常使用Objective-C简洁性的本质。
+[Class Clusters](http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaFundamentals/CocoaObjects/CocoaObjects.html%23//apple_ref/doc/uid/TP40002974-CH4-SW34) are a design pattern at the heart of the Foundation framework; the essence of Objective-C's simplicity in everyday use.
 
-当类簇提供简单的可扩展性的同时，他也把有些事情变得很棘手，尤其是对于一对可变/不可变类像 `NSSet` / `NSMutableSet`来说。
+But class clusters offer simplicity at the expense of extensibility, which becomes especially tricky when it comes to mutable / immutable class pairs like `NSSet` / `NSMutableSet`.
 
-正如 [Tom Dalling](http://tomdalling.com) 在这个 [Stack Overflow](http://stackoverflow.com/questions/11278995/why-doesnt-nsorderedset-inherit-from-nsset) 回答里面巧妙的演示，`-mutableCopy` 这个方法的创建是跟Objective-C对单继承的约束矛盾的。
+As expertly demonstrated by [Tom Dalling](http://tomdalling.com) in [this Stack Overflow question](http://stackoverflow.com/questions/11278995/why-doesnt-nsorderedset-inherit-from-nsset), the method `-mutableCopy` creates an inconsistency that is inherent to Objective-C's constraint on single inheritance.
 
-开始，让我们来看下 `-mutableCopy` 在类簇中是如果工作的：
+To start, let's look at how `-mutableCopy` is supposed to work in a class cluster:
+
+~~~{swift}
+let immutable: NSSet = NSSet()
+var mutable: NSMutableSet = immutable.mutableCopy() as NSMutableSet
+
+mutable.isKindOfClass(NSSet.self) // true
+mutable.isKindOfClass(NSMutableSet.self) // true
+~~~
 
 ~~~{objective-c}
 NSSet* immutable = [NSSet set];
@@ -33,7 +40,17 @@ NSMutableSet* mutable = [immutable mutableCopy];
 [mutable isKindOfClass:[NSMutableSet class]]; // YES
 ~~~
 
-现在让我们假设下`NSOrderedSet`事实上是`NSSet`的子类：
+Now let's suppose that `NSOrderedSet` was indeed a subclass of `NSSet`:
+
+~~~{swift}
+// class NSOrderedSet: NSSet {...}
+
+let immutable: NSOrderedSet = NSOrderedSet()
+var mutable: NSMutableOrderedSet = immutable.mutableCopy() as NSMutableOrderedSet
+
+mutable.isKindOfClass(NSSet.self) // true
+mutable.isKindOfClass(NSMutableSet.self) // false (!)
+~~~
 
 ~~~{objective-c}
 // @interface NSOrderedSet : NSSet
@@ -45,11 +62,21 @@ NSMutableOrderedSet* mutable = [immutable mutableCopy];
 [mutable isKindOfClass:[NSMutableSet class]]; // NO (!)
 ~~~
 
-<object data="http://nshipster.s3.amazonaws.com/nsorderedset-case-1.svg" type="image/svg+xml">
-  <img src="http://nshipster.s3.amazonaws.com/nsorderedset-case-1.png" />
-</object>
+<img src="http://nshipster.s3.amazonaws.com/nsorderedset-case-1.svg" />
 
-这样不太好。。。因为这样`NSMutableOrderedSet`就不能被用来做`NSMutableSet`类型的方法参数了。那么如果我们让`NSMutableOrderedSet`作为`NSMutableSet`的子类会发生什么事情哪？
+That's no good... since `NSMutableOrderedSet` couldn't be used as a method parameter of type `NSMutableSet`. So what happens if we make `NSMutableOrderedSet` a subclass of `NSMutableSet` as well?
+
+~~~{swift}
+// class NSOrderedSet: NSSet {...}
+// class NSMutableOrderedSet: NSMutableSet {...}
+
+let immutable: NSOrderedSet = NSOrderedSet()
+var mutable: NSMutableOrderedSet = immutable.mutableCopy() as NSMutableOrderedSet
+
+mutable.isKindOfClass(NSSet.self) // true
+mutable.isKindOfClass(NSMutableSet.self) // true
+mutable.isKindOfClass(NSOrderedSet.self) // false (!)
+~~~
 
 ~~~{objective-c}
 // @interface NSOrderedSet : NSSet
@@ -63,38 +90,36 @@ NSMutableOrderedSet* mutable = [immutable mutableCopy];
 [mutable isKindOfClass:[NSOrderedSet class]]; // NO (!)
 ~~~
 
-<object data="http://nshipster.s3.amazonaws.com/nsorderedset-case-2.svg" type="image/svg+xml">
-  <img src="http://nshipster.s3.amazonaws.com/nsorderedset-case-2.png" />
-</object>
+<img src="http://nshipster.s3.amazonaws.com/nsorderedset-case-2.svg" />
 
-这样也许更糟，因为，现在`NSMutableOrderedSet`就不能被用来做`NSOrderedSet`类型的方法参数了。
+This is perhaps even worse, as now `NSMutableOrderedSet` couldn't be used as a method parameter expecting an `NSOrderedSet`.
 
-无论怎样去处理它，我们都不能在现有的一对可变/不可变的类上去实现另外一对可变/不可变的类。这在Objective-C上是行不通的。
+No matter how we approach it, we can't stack a mutable / immutable class pair on top of another existing mutable / immutable class pair. It just won't work in Objective-C.
 
-我们可以使用协议来让我们摆脱这个困境（每隔一段时间，多继承的幽灵就会冒出来），而不是自己去承担[多继承](http://en.wikipedia.org/wiki/Multiple_inheritance)的风险。
-事实上，通过添加以下的协议，Foundation的集合类__可以__变的更加[面向侧面](http://zh.wikipedia.org/zh-cn/%E9%9D%A2%E5%90%91%E4%BE%A7%E9%9D%A2%E7%9A%84%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1)：
+Rather than subject ourselves to the perils of [multiple inheritance](http://en.wikipedia.org/wiki/Multiple_inheritance), we could use Protocols to get us out of this pickle (as it does every other time the spectre of multiple inheritance is raised). Indeed, Foundation's collection classes _could_ become more aspect-oriented by adding protocols:
 
 * `NSArray : NSObject <NSOrderedCollection>`
 * `NSSet : NSObject <NSUniqueCollection>`
 * `NSOrderedSet : NSObject <NSOrderedCollection, NSUniqueCollection>`
 
-然而，为了从这种方式中受益，所有现有的API都不得不重新调整来接收一个 `id<NSOrderedCollectioin>` 参数而不是 `NSArray`。但是这个过度将会是痛苦的，并且可能会打开一整条边界。。。这将意味着它可能永远不会被完全的采纳。。。这将意味着在定义你自己的API时，没有动力去采用这种方法。。。这样写也太烦了，因为现在有两种相互不兼容的方式来做事情而不是一个。。这。。。
+However, to reap any benefit from this arrangement, all of the existing APIs would have to be restructured to have parameters accept `id <NSOrderedCollection>` instead of `NSArray`. But the transition would be painful, and would likely open up a whole can of edge cases... which would mean that it would never be fully adopted... which would mean that there's less incentive to adopt this approach when defining your own APIs... which are less fun to write because there's now two incompatible ways to do something instead of one... which...
 
-。。。等等，为什么我们起初要使用 `NSOrderedSet` 哪？
-
----
-在iOS 5 和OS X Lion 中介绍了 `NSOrderedSet`。然后，唯一的API变化就是在[Core Data](http://developer.apple.com/library/mac/#releasenotes/DataManagement/RN-CoreData/_index.html)部分增加了对`NSOrderedSet`的支持。
-
-这是对使用Core Data的人来说极好的消息，因为它解决了一个长期存在的烦恼（没有办法对一个关系集合做任意的排序）。从前，你不得不添加一个`位置`属性，当每次集合被修改时都要重新计算这个属性。没有一个内置的方法去验证你的位置集合是一个唯一的或者没有间隙的序列。
-
-`NSOrderedSet`用这种方式_对我们的[请求](http://bugreport.apple.com/)做出了回应_。
-
-不幸的是，对于API的设计者来说，在Foundation中它的存在创建了一个在诱人的麻烦和误导之间的东西。
-
-尽管它在Core Data中有着非常合适的特殊用例，但对于大多数可能使用它的API来说，`NSOrderedSet`也许不是一个很好的选择。在那种仅仅需要一个简单的集合对象作为参数传递的情况下，一个简单的 `NSArray` 对象就可以了—即使这里有个隐含的意思，里面不应该有重复的元素。当顺序对于一个集合参数很重要时，在这种情况下就使用 `NSArray`好了（在实现上，应该有代码来处理重复的元素）。如果唯一性很重要，或者对于一个特定的方法来说集合的语义是有意义的，`NSSet` 仍然是一个很好的选择。
+...wait, why would we use `NSOrderedSet` in the first place, anyway?
 
 ---
 
-因此，作为一般规则：**`NSOrderedSet` 对于中间和内部表示是有用的，但是你可能不应该把它作为方法参数，除非这是一个特别适用的数据模型。**
+`NSOrderedSet` was introduced in iOS 5 & OS X Lion. The only APIs changed to add support for `NSOrderedSet`, though, were part of [Core Data](http://developer.apple.com/library/mac/#releasenotes/DataManagement/RN-CoreData/_index.html).
 
-不说其他的， `NSOrderedSet`阐释了Foundation在使用类簇上的一些迷人影响。在这样做的时候，他可以让我们更好的理解和权衡简单性和可扩展性，有助于帮助我们做自己的应用设计时做出选择。
+This was fantastic news for anyone using Core Data at the time, as it solved one of the long-standing annoyances of not having a way to arbitrarily order relationship collections. Previously, you'd have to add a `position` attribute, which would be re-calculated every time a collection was modified. There wasn't a built-in way to validate that your collection positions were unique or that the sequence didn't have any gaps.
+
+In this way, `NSOrderedSet` is an _answer to our [prayers](http://bugreport.apple.com/)_.
+
+Unfortunately, its very existence in Foundation has created something between an attractive nuisance and a red herring for API designers.
+
+Although it is perfectly suited to that one particular use case in Core Data, `NSOrderedSet` is probably not a great choice for the majority of APIs that could potentially use it. In cases where a simple collection of objects is passed as a parameter, a simple `NSArray` does the trick--even if there is an implicit understanding that you shouldn't have duplicate entries. This is even more the case when order matters for a collection parameter--just use `NSArray` (there should be code to deal with duplicates in the implementation anyway). If uniqueness does matter, or the semantics of sets makes sense for a particular method, `NSSet` has and remains a great choice.
+
+---
+
+So, as a general rule: **`NSOrderedSet` is useful for intermediary and internal representations, but you probably shouldn't introduce it as a method parameters unless it's particularly well-suited to the semantics of the data model.**
+
+If nothing else, `NSOrderedSet` illuminates some of the fascinating implications of Foundation's use of the class cluster design pattern. In doing so, it allows us better understand the trade-off between simplicity and extensibility as we make these choices in our own application designs.

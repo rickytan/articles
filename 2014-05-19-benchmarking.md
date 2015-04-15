@@ -1,68 +1,65 @@
 ---
-layout: post
-title: "Benchmarking"
-category: Objective-C
-tag: popular
+title: Benchmarking
 author: Mattt Thompson
-translator: Croath Liu
-excerpt: "对于完成有意义的工作来说抽象很重要，但却会带来副作用。利用benchmarking，工程师可以揭开他们代码中运行效率的面纱，然后利用获得的信息来优化。"
+category: Objective-C
+excerpt: "Abstractions are necessary for doing meaningful work, but they come at a cost. By benchmarking, a programmer can uncover the hidden performance characteristics of their code, and use this information to optimize accordingly."
 ---
 
-对于完成有意义的工作来说抽象很重要，但却会带来副作用。为了工作起来更顺手我们需要洞察一些细枝末节来确定一些批量处理的具体逻辑。找到一个特定上下文的有用信息是非常重要的，是具有挑战性的，是高效编程的核心。
+Abstractions are necessary for doing meaningful work, but they come at a cost. To work at a high level is to turn a blind eye to nonessential details in order to reason with larger logical chunks. Determining what information is important within a particular context, however, is challenging, and is at the heart of performance engineering.
 
-利用benchmarking，工程师可以揭开他们代码中运行效率的面纱，然后利用获得的信息来优化。这对于每一位想让app运行更快的工程师（或者说每一个自重的工程师）来说都是必备工具。
+By benchmarking, a programmer can uncover the hidden performance characteristics of their code, and use this information to optimize accordingly. It is an essential tool for any developer interested in making their apps faster (which is to say every self-respecting developer).
 
 * * *
 
-“benchmark”这个词可以追溯到19世纪。它的本意是，一个 benchmark 就是一个一种把石头切割成平板的切刀或用来测量的支架。后来这个词的“测量东西的标准”的比喻义被应用到各种领域了。
+The etymology of the word "benchmark" can be traced back to 19<sup>th</sup> century land surveying. In its original sense, a benchmark was a cut made into stone to secure a "bench", or kind of bracket, used to mount measuring equipment. Its figurative meaning of "a standard by which something is measured" was later repurposed to all walks of epistemology.
 
-在编程中， _benchmark_ 和 _benchmarking_ 略微有语义上的区别：
+In programming, there is a minor semantic distinction between a _benchmark_ and the act of _benchmarking_:
 
-_benchmark_ 是程序明确地要测量并比较硬件以及软件上的运行效率。相对来说 _benchmarking_ 表示的则是测量效率的一段代码。
+A _benchmark_ is a program made specifically to measure and compare broad performance characteristics of hardware and software configurations. By contrast, _benchmarking_, is a general term for when code is used to measure the performance of a system.
 
-## Objective-C 中使用 Benchmarking 测量效率
+## Benchmarking Performance in Objective-C
 
-Benchmark应该和其他认知论有一样的规律可遵循，像统计量那样的科学方法一样有通用的理解。
+Benchmarks should be treated like any other epistemological discipline, with a firm grasp of the Scientific Method as well as statistics.
 
-科学方法涵盖了一系列的逻辑步骤来推演问题：
+The Scientific Method outlines a series of steps to logically deduce answers for questions:
 
-1. 提出问题
-2. 构造假说
-3. 预期结果
-4. 验证假说
-5. 分析结果
+1. Ask a Question
+2. Construct a Hypothesis
+3. Predict the Outcome
+4. Test the Hypothesis
+5. Analyze the Results
 
-当应用到编程时，一般来说会提出两类问题：
+In the case of programming, there are generally two kinds of questions to be asked:
 
-- **这段代码的 _绝对_ 效率是多少？**达到了计算力和内存的上限了吗？应用不同样本大小时的[瓶颈操作](http://en.wikipedia.org/wiki/Big_O_notation)是什么？
-- **这段代码的 _相对_ 效率是多少？**方法 A 和 方法 B 哪个更快？
+- **What are the _absolute_ performance characteristics of this code?** Is the procedure bound by _computation_ or _memory_? What is the [limiting behavior](http://en.wikipedia.org/wiki/Big_O_notation) across different sample sizes?
+- **What are the _relative_ performance characteristics of this code, as compared to its alternatives?** Which is faster, methodA or methodB?
 
-因为从操作系统本身的一切基本因素都是可变性非常强的，性能应该通过大量的试验来测量。对于大多数应用来说，样本数量在 10<sup>5</sup> 到 10<sup>8</sup> 直接是合理的。
+Because the underlying factors of everything from the operating system down to the metal itself are extremely variable, performance should be measured across a large number of trials. For most applications, something on the order of 10<sup>5</sup> to 10<sup>8</sup> samples should be acceptable.
 
-### 第一发：CFAbsoluteTimeGetCurrent
+### First Pass: CACurrentMediaTime
 
-这里例子中，我们看一看向可变数组中添加元素的效率。
+For this example, let's take a look at the performance characteristics of adding an object to a mutable array.
 
-为了建立 benchmark，我们指定一个 `count` 表示有多少个元素需要添加，`iterations` 表示这个测试要运行多少次。
+To establish a benchmark, we specify a `count` of objects to add, and the number of `iterations` to run this process.
 
 ```objective-c
 static size_t const count = 1000;
 static size_t const iterations = 10000;
 ```
 
-因为我们不需要测试申请内存的时间，所以我们在 benchmark 外部只声明一次要添加进数组的元素。
+Since we're not testing the stack allocation of objects, we declare the object to be added to the array once, outside of the benchmark.
 
 ```objective-c
 id object = @"🐷";
 ```
 
-做这个 benchmarking 很简单：代码运行前记录一次时间，运行后记录一次，然后比较时间差。你可以很方便地使用 包装了 `mach_absolute_time` 的 `CACurrentMediaTime()` 方法来以秒为单位测量时间。
+Benchmarking is as simple as taking the time before running, and comparing it against the time after. `CACurrentMediaTime()` is a convenient way to measure time in seconds derived from `mach_absolute_time`.
 
-> 和 `NSDate` 或 `CFAbsoluteTimeGetCurrent()` 偏移量不同的是，`mach_absolute_time()` 和  `CACurrentMediaTime()` 是基于内建时钟的，能够更精确更原子化地测量，并且不会因为外部时间变化而变化（例如时区变化、夏时制、秒突变等）
+> Unlike `NSDate` or `CFAbsoluteTimeGetCurrent()` offsets, `mach_absolute_time()` and `CACurrentMediaTime()` are based on the internal host clock, a precise, monatomic measure, and not subject to changes in the external time reference, such as those caused by time zones, daylight savings, or leap seconds
 
-`for` 循环用来让 `count` 和 `iterations` 递增。每个循环体都被 `@autoreleasepool` 包裹，用来降低内存占用。
+`for` loops are used to increment `count` and `iterations`. Each iteration is enclosed by an `@autoreleasepool`, to keep the memory footprint low.
 
-那么具体的步骤如下：
+Putting it all together, here's a simple way to benchmark code in Objective-C:
 
 ```objective-c
 CFTimeInterval startTime = CACurrentMediaTime();
@@ -80,25 +77,23 @@ CFTimeInterval endTime = CACurrentMediaTime();
 NSLog(@"Total Runtime: %g s", endTime - startTime);
 ```
 
-> 这个例子中 `startTime` 和 `endTime` 之间的 block 代码是不必要的，只是为了提高可读性，让代码看起来更清晰明了：很容易能分隔开变量会发生大规模突变的代码
+> The extra code block between `startTime` and `endTime` in the example below is unnecessary, but helps improve legibility and acts as a sanity check for variable scope
 
-看到这里，你的 NSHipster 第六感肯定嗅到了什么 “肯定有更好更高端的方法吧！”
+At this point, your NSHipster sense is probably tingling—as if to say, "Surely, there must be a better, more obscure way to do this!"
 
-相信的你直觉是件好事。
+It's good to trust your instincts.
 
-下面，请允许我向你介绍 `dispatch_benchmark`。
+Allow me to introduce you to `dispatch_benchmark`.
 
-### 第二发：dispatch_benchmark
+### Second Pass: dispatch_benchmark
 
-`dispatch_benchmark` 是 [`libdispatch` (Grand Central Dispatch)](http://libdispatch.macosforge.org) 的一部分。但严肃地说，这个方法并没有被公开声明，所以你必须要自己声明：
+`dispatch_benchmark` is part of [`libdispatch`](http://libdispatch.macosforge.org), a.k.a Grand Central Dispatch. Curiously, though, this function is not publicly declared, so you'll have to do that yourself:
 
 ```objective-c
 extern uint64_t dispatch_benchmark(size_t count, void (^block)(void));
 ```
 
-因为没有公开的函数定义， `dispatch_benchmark` 在 Xcode 中也没有公开的文档。但幸运的是有 man 页面：
-
-> 译者按：下面这段 man 不翻译了，你应该自己看懂所有的 man，完整的 man 内容看[这里](http://opensource.apple.com/source/libdispatch/libdispatch-339.90.1/man/dispatch_benchmark.3)
+In addition to not having a public function definition, `dispatch_benchmark` also lacks public documentation in Xcode. Fortunately, it does have a man page:
 
 #### man `dispatch_benchmark(3)`
 
@@ -115,9 +110,9 @@ performance as concurrency is increased.
 >     - Intentional: locks, mutexes, and condition variables.
 >     - Accidental: unrelated and frequently modified data on the same cache-line.
 
-如果你略过了这些文档，那么就请一定再读一遍——这些文档非常有用。为了更好地说明这个函数的用法，文档还写了非常有指导意义的指南。
+If you happened to skim all of that, be encouraged to read through that again—those are remarkably well-written docs. In addition to satisfying the prime directive of documentation of describing how to use the function, it also lays out rather comprehensive and insightful guidelines on how to best make use of the function.
 
-之前那个例子如果我们用 `dispatch_benchmark` 来写会长成这个样子：
+Here's what the previous example looks like if we were to use `dispatch_benchmark` instead:
 
 ```objective-c
 uint64_t t = dispatch_benchmark(iterations, ^{
@@ -131,15 +126,15 @@ uint64_t t = dispatch_benchmark(iterations, ^{
 NSLog(@"[[NSMutableArray array] addObject:] Avg. Runtime: %llu ns", t);
 ```
 
-看到了吧，好多了吧。相比之前的秒计时，毫微秒更加精确，`dispatch_benchmark` 也比手动写循环的 `CFAbsoluteTimeGetCurrent()` 语法结构上看起来更好。
+Ahhh, much better. Nanoseconds are a suitably precise time unit, and `dispatch_benchmark` has a much nicer syntax than manually looping and calling `CACurrentMediaTime()`.
 
-### NSMutableArray array 对决 arrayWithCapacity:！
+### NSMutableArray array vs. arrayWithCapacity:... FIGHT!
 
-现在我们已经知道了用 Objective-C 直接运行一个 benchmark 的方法，那么来做一个比较速度的测试吧。
+Now that we've settled on the preferred way to run an absolute benchmark in Objective-C, let's do a comparative test.
 
-这个例子中我们依旧来考虑这个问题：“传入 capacity 参数和直接初始化有什么区别？”，或者更直接一点：“用 `-arrayWithCapacity:` 还是不用（，这是个问题）”。
+For this example, let's consider the age-old question of "What difference does passing a capacity parameter into collection initialization make?", or more succinctly, "to `-arrayWithCapacity:` or not to `-arrayWithCapacity:` (that is the question)".
 
-一起来看看：
+Let's find out:
 
 ```objective-c
 uint64_t t_0 = dispatch_benchmark(iterations, ^{
@@ -163,35 +158,35 @@ uint64_t t_1 = dispatch_benchmark(iterations, ^{
 NSLog(@"[[NSMutableArray arrayWithCapacity] addObject:] Avg. Runtime: %llu ns", t_1);
 ```
 
-#### 结果
+#### Results
 
-测试运行在 搭载 iOS 7.1 的 iPhone 模拟器，结果如下：
+Testing on an iPhone Simulator running iOS 7.1, the results are as follows:
 
 ```
 [[NSMutableArray array] addObject:]: Avg. Runtime 26119 ns
 [[NSMutableArray arrayWithCapacity] addObject:] Avg. Runtime: 24158 ns
 ```
 
-经过大规模样本的测试，用 capacity 与否造成了 7% 的效率差异。
+Across a large number of samples, there is a roughly 7% performance difference between mutable arrays with and without a capacity.
 
-虽然结果没什么有争议的地方（我们的 benchmark 完美地工作了），真正重要的是解释这个结果产生的原因。错误的想法是：通过 benchmark 我们得出结论，用 capacity 参数来初始化是最佳选择。正确想法应该是：这个 benchmark 的结果提示我们应该继续提出问题：
+Although the results are indisputable (our benchmark works beautifully), the real trick is in figuring out how to interpret these results. It would be incorrect to use this benchmark alone to conclude that passing a capacity is always a good idea. Rather, this first benchmark tells us what questions to ask next:
 
-- **这些效率消耗意味着什么呢？** 为了避免出现[不当优化](http://c2.com/cgi/wiki?PrematureOptimization)，想想这点效率差别在大规模系统中是否可以忽略不计呢？
-- **如果改变数组元素的个数，会有什么不同的结论吗？** 因为用了 capacity 参数，可以推测的是我们避免了数组元素的增加，但是去计算大规模数据的 `n` 值消耗有多大呢？
-- **其他集合类型，比如说 `NSMutableSet` 或 `NSMutableDictionary` 的 capacity 参数初始化效率又是怎么样的呢？** 民众需要真相！
+- **What does this cost mean in absolute terms?** In the spirit of avoiding [premature optimization](http://c2.com/cgi/wiki?PrematureOptimization), is the difference in performance negligible in the grand scheme of things?
+- **What difference does changing the count of objects make?** Since initial capacity is used, presumably, to prevent resizing the array as it grows, how expensive is this operation for larger values of `n`?
+- **What impact does an initial capacity have on the performance characteristics of other collection classes, like `NSMutableSet` or `NSMutableDictionary`?** The public deserves an answer!
 
-## Benchmarking 常识指南
+## Common-Sense Benchmarking Guidelines
 
-- **知道你要解答的是什么问题。** 虽然我们始终致力于用思考去代替神奇的思维，但我们必须保护自己免受科学方法的淹没，也不应该支持不完整的推理。得出结论之前，花一些时间去理解在大背景下你的结果到底意味着什么。
-- **不要在你 app 的提交代码中加入 benchmarking。** 注意，`dispatch_benchmark` 可能会导致 app 被 App Store 拒绝，benchmark 代码不应该被加到终极提交的产品中。Benchmarking 应该被分离到单独的项目分支或独立的测试用例中。
-- **使用 Instruments 来获得更有用的结果。** 知道了一系列计算过程的运行绝对时间确实有价值，但可能不足以为减少内存使用提供完善的参考。使用 Instruments 来分析有疑问代码的栈调用和内存用量，你会对这段代码到底发生了什么有更好地理解。
-- **在真实设备上 benchmark。** 像其他任何效率测量工具一样，测量终究要在真正的机器上跑一跑。大多数情况下模拟器和真实设备的效率测量结果是一致的，但以防万一还是值得这么做的。
-- **不要过早优化。** _这句话怎么强调也不过分。_ 工程师的普遍倾向是在发现真正的原因之前过分关注他们认为的“慢代码”。即使是老手也很容易把应用的瓶颈预测错误。不要浪费时间在追赶影子上。让 Instruments 告诉你你的应用到底哪里花费了最多的时间。
+- **Know what question you're trying to answer.** Although we should always endeavor to replace magical thinking with understanding, we must protect against misappropriating scientific methodologies to support incomplete reasoning. Take time to understand what your results mean in terms of the bigger picture, before jumping to any conclusions.
+- **Do not ship benchmarking code in apps.** Never mind the fact that `dispatch_benchmark` may or may not warrant an app rejection, benchmarked code has no place in a shipping product. Benchmarking should be done in separate one-off projects or an isolated test case.
+- **Use Instruments to gain additional insights.** Knowing the absolute runtime of a series of computations is valuable, but may not offer much insight into how to make that number smaller. Use Instruments to spec the call stack and memory footprint of the code in question, in order to get a better sense of what's actually going on.
+- **Benchmark on the device.** Just like any performance measurement, it should ultimately be done on the actual device. In most cases, general performance characteristics will be consistent between the simulator and device, but it's always worth verifying.
+- **Don't prematurely optimize.** _This cannot be stressed enough._ One of the most pervasive tendencies for developers is to fixate on what they perceive to be "slow code", before there's any real evidence to support that. Even for veteran developers, it's very easy to incorrectly predict where bottlenecks will be in an application. Don't waste your time chasing shadows. Let Instruments show you where your app is spending most of its time.
 
 * * *
 
-Richard Feynman 曾经把物理学中的颗粒化实验比作“[找出]手表是怎么做出来的，以及机器是如何[通过]把一堆手表组合在一起并且剔掉无用的齿轮就运行起来了”。Benchmarking 代码的感觉就像这个。
+Richard Feynman once likened experiments in particle physics to "[finding] out what a watch is made out of and how the mechanism works [by] smashing two watches together and seeing what kinds of gear wheels fly out". Benchmarking code can feel like this at times.
 
-拥有了这些计算世界隐藏起来的抽象层的具体实现细节，有时我们可以能尽所能来理解在大数量级代码层次上到底什么在其核心作用，以及我们能够得到什么。
+With so many implementation details of our computational universe hidden to us through layers of abstraction, sometimes the best we can do to try to understand what's at play is to magnify code by a few orders of magnitude and see what we get.
 
-通过科学和基准统计的严谨程序，开发人员能够在其代码的性能特爹方面得出理由充分的结论。将这些这些原则和惯例套用在自己的项目中来得出适合你自己的结论，并据此优化。
+Through a disciplined application of science and statistics in benchmarking, a developer is able to create well-reasoned conclusions about the performance characteristics of their code. Apply these principles and practices in your own project to come to your own conclusions and optimize accordingly.

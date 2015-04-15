@@ -1,49 +1,58 @@
 ---
-layout: post
 title: NSPredicate
-category: Cocoa
 author: Mattt Thompson
-translator: Zihan Xu
+category: Cocoa
+tags: nshipster, popular
+excerpt: "NSPredicate is a Foundation class that specifies how data should be fetched or filtered. Its query language, which is like a cross between a SQL WHERE clause and a regular expression, provides an expressive, natural language interface to define logical conditions on which a collection is searched."
 ---
 
-`NSPredicate`是一个Foundation类，它指定数据被获取或者过滤的方式。它的查询语言就像SQL的`WHERE`和正则表达式的交叉一样，提供了具有表现力的，自然语言界面来定义一个集合被搜寻的逻辑条件。
+`NSPredicate` is a Foundation class that specifies how data should be fetched or filtered. Its query language, which is like a cross between a SQL `WHERE` clause and a regular expression, provides an expressive, natural language interface to define logical conditions on which a collection is searched.
 
-相比较抽象的谈论它，展示`NSPredicate`的使用方法更加容易，所以我们来重新审视[`NSSortDescriptor`](http://nshipster.com/nssortdescriptor/)中使用的示例数据集吧：
+It's easier to show `NSPredicate` in use, rather than talk about it in the abstract, so we're going to revisit the example data set used in the [`NSSortDescriptor` article](http://nshipster.com/nssortdescriptor/):
 
-<table>
-  <thead>
-    <tr>
-      <th><tt>索引</tt></th>
-      <th>0</th>
-      <th>1</th>
-      <th>2</th>
-      <th>3</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><tt>名</tt></td>
-      <td>Alice</td>
-      <td>Bob</td>
-      <td>Charlie</td>
-      <td>Quentin</td>
-    </tr>
-    <tr>
-      <td><tt>姓</tt></td>
-      <td>Smith</td>
-      <td>Jones</td>
-      <td>Smith</td>
-      <td>Alberts</td>
-    </tr>
-    <tr>
-      <td><tt>年龄</tt></td>
-      <td>24</td>
-      <td>27</td>
-      <td>33</td>
-      <td>31</td>
-    </tr>
-  </tbody>
-</table>
+| `firstName` | `lastName` | `age` |
+|-------------|------------|-------|
+| Alice       | Smith      | 24    |
+| Bob         | Jones      | 27    |
+| Charlie     | Smith      | 33    |
+| Quentin     | Alberts    | 31    |
+
+~~~{swift}
+class Person: NSObject {
+    let firstName: String
+    let lastName: String
+    let age: Int
+
+    init(firstName: String, lastName: String, age: Int) {
+        self.firstName = firstName
+        self.lastName = lastName
+        self.age = age
+    }
+
+    override var description: String {
+        return "\(firstName) \(lastName)"
+    }
+}
+
+let alice = Person(firstName: "Alice", lastName: "Smith", age: 24)
+let bob = Person(firstName: "Bob", lastName: "Jones", age: 27)
+let charlie = Person(firstName: "Charlie", lastName: "Smith", age: 33)
+let quentin = Person(firstName: "Quentin", lastName: "Alberts", age: 31)
+let people = [alice, bob, charlie, quentin]
+
+let bobPredicate = NSPredicate(format: "firstName = 'Bob'")
+let smithPredicate = NSPredicate(format: "lastName = %@", "Smith")
+let thirtiesPredicate = NSPredicate(format: "age >= 30")
+
+(people as NSArray).filteredArrayUsingPredicate(bobPredicate)
+// ["Bob Jones"]
+
+(people as NSArray).filteredArrayUsingPredicate(smithPredicate)
+// ["Alice Smith", "Charlie Smith"]
+
+(people as NSArray).filteredArrayUsingPredicate(thirtiesPredicate)
+// ["Charlie Smith", "Quentin Alberts"]
+~~~
 
 ~~~{objective-c}
 @interface Person : NSObject
@@ -89,26 +98,33 @@ NSLog(@"Smiths: %@", [people filteredArrayUsingPredicate:smithPredicate]);
 NSLog(@"30's: %@", [people filteredArrayUsingPredicate:thirtiesPredicate]);
 ~~~
 
-## 集合中使用`NSPredicate`
+## Using `NSPredicate` with Collections
 
-Foundation提供使用谓词（predicate）来过滤`NSArray`／`NSMutableArray`&`NSSet`／`NSMutableSet`的方法。
+Foundation provides methods to filter `NSArray` / `NSMutableArray` & `NSSet` / `NSMutableSet` with predicates.
 
-不可变的集合，`NSArray`&`NSSet`，有可以通过评估接收到的predicate来返回一个不可变集合的方法`filteredArrayUsingPredicate:`和`filteredSetUsingPredicate:`。
+Immutable collections, `NSArray` & `NSSet`, have the methods `filteredArrayUsingPredicate:` and `filteredSetUsingPredicate:` which return an immutable collection by evaluating a predicate on the receiver.
 
-可变集合，`NSMutableArray`&`NSMutableSet`，可以使用方法`filterUsingPredicate:`，它可以通过运行接收到的谓词来移除评估结果为`FALSE`的对象。
+Mutable collections, `NSMutableArray` & `NSMutableSet` have the method `filterUsingPredicate:`, which removes any objects that evaluate to `FALSE` when running the predicate on the receiver.
 
-`NSDictionary`可以用谓词来过滤它的键和值（两者都为`NSArray`对象）。`NSOrderedSet`可以由过滤的`NSArray`或`NSSet`生成一个新的有序的集，或者`NSMutableSet`可以简单的`removeObjectsInArray:`，来传递通过_否定_predicate过滤的对象。
+`NSDictionary` can use predicates by filtering its keys or values (both `NSArray` objects). `NSOrderedSet` can either create new ordered sets from a filtered `NSArray` or `NSSet`, or alternatively, `NSMutableSet` can simply `removeObjectsInArray:`, passing objects filtered with the _negated_ predicate.
 
-## Core Data中使用`NSPredicate`
+## Using `NSPredicate` with Core Data
 
-`NSFetchRequest`有一个`predicate`属性，它可以指定管理对象应该被获取的逻辑条件。谓词的使用规则在这里同样适用，唯一的区别在于，在管理对象环境中，谓词由持久化存储助理（persistent store coordinator）评估，而不像集合那样在内存中被过滤。
+`NSFetchRequest` has a `predicate` property, which specifies the logical conditions under which managed objects should be retrieved. The same rules apply, except that predicates are evaluated by the persistent store coordinator within a managed object context, rather than collections being filtered in-memory.
 
-## 谓词语法
+## Predicate Syntax
 
-### 替换
+### Substitutions
 
-> - `%@`是对值为字符串，数字或者日期的对象的替换值。
-> - `%K`是key path的替换值。
+> - `%@` is a var arg substitution for an object value—often a string, number, or date.
+> - `%K` is a var arg substitution for a key path.
+
+~~~{swift}
+let ageIs33Predicate = NSPredicate(format: "%K = %@", "age", "33")
+
+(people as NSArray).filteredArrayUsingPredicate(ageIs33Predicate)
+// ["Charlie Smith"]
+~~~
 
 ~~~{objective-c}
 NSPredicate *ageIs33Predicate = [NSPredicate predicateWithFormat:@"%K = %@", @"age", @33];
@@ -117,7 +133,14 @@ NSPredicate *ageIs33Predicate = [NSPredicate predicateWithFormat:@"%K = %@", @"a
 NSLog(@"Age 33: %@", [people filteredArrayUsingPredicate:ageIs33Predicate]);
 ~~~
 
-> - `$VARIABLE_NAME`是可以被`NSPredicate -predicateWithSubstitutionVariables:`替换的值。
+> - `$VARIABLE_NAME` is a value that can be substituted with `NSPredicate -predicateWithSubstitutionVariables:`.
+
+~~~{swift}
+let namesBeginningWithLetterPredicate = NSPredicate(format: "(firstName BEGINSWITH[cd] $letter) OR (lastName BEGINSWITH[cd] $letter)")
+
+(people as NSArray).filteredArrayUsingPredicate(namesBeginningWithLetterPredicate.predicateWithSubstitutionVariables(["letter": "A"]))
+// ["Alice Smith", "Quentin Alberts"]
+~~~
 
 ~~~{objective-c}
 NSPredicate *namesBeginningWithLetterPredicate = [NSPredicate predicateWithFormat:@"(firstName BEGINSWITH[cd] $letter) OR (lastName BEGINSWITH[cd] $letter)"];
@@ -126,58 +149,64 @@ NSPredicate *namesBeginningWithLetterPredicate = [NSPredicate predicateWithForma
 NSLog(@"'A' Names: %@", [people filteredArrayUsingPredicate:[namesBeginningWithLetterPredicate predicateWithSubstitutionVariables:@{@"letter": @"A"}]]);
 ~~~
 
-### 基本比较
+### Basic Comparisons
 
-> - `=`, `==`：左边的表达式和右边的表达式相等。
-> - `>=`, `=>`：左边的表达式大于或者等于右边的表达式。
-> - `<=`, `=<`：左边的表达式小于等于右边的表达式。
-> - `>`：左边的表达式大于右边的表达式。
-> - `<`：左边的表达式小于右边的表达式。
-> - `!=`, `<>`：左边的表达式不等于右边的表达式。
-> - `BETWEEN`：左边的表达式等于右边的表达式的值或者介于它们之间。右边是一个有两个指定上限和下限的数值的数列（指定顺序的数列）。比如，`1 BETWEEN { 0 , 33 }`，或者`$INPUT BETWEEN { $LOWER, $UPPER }`。
+> - `=`, `==`: The left-hand expression is equal to the right-hand expression.
+> - `>=`, `=>`: The left-hand expression is greater than or equal to the right-hand expression.
+> - `<=`, `=<`: The left-hand expression is less than or equal to the right-hand expression.
+> - `>`: The left-hand expression is greater than the right-hand expression.
+> - `<`: The left-hand expression is less than the right-hand expression.
+> - `!=`, `<>`: The left-hand expression is not equal to the right-hand expression.
+> - `BETWEEN`: The left-hand expression is between, or equal to either of, the values specified in the right-hand side. The right-hand side is a two value array (an array is required to specify order) giving upper and lower bounds. For example, `1 BETWEEN { 0 , 33 }`, or `$INPUT BETWEEN { $LOWER, $UPPER }`.
 
-### 基本复合谓词
+### Basic Compound Predicates
 
-> - `AND`, `&&`：逻辑`与`.
-> - `OR`, `||`：逻辑`或`.
-> - `NOT`, `!`：逻辑`非`.
+> - `AND`, `&&`: Logical `AND`.
+> - `OR`, `||`: Logical `OR`.
+> - `NOT`, `!`: Logical `NOT`.
 
-### 字符串比较
+### String Comparisons
 
-> 字符串比较在默认的情况下是区分大小写和音调的。你可以在方括号中用关键字符c和d来修改操作符以相应的指定不区分大小写和变音符号，比如firstname BEGINSWITH[cd] $FIRST_NAME。
+> String comparisons are by default case and diacritic sensitive. You can modify an operator using the key characters c and d within square braces to specify case and diacritic insensitivity respectively, for example firstName BEGINSWITH[cd] $FIRST_NAME.
 
-> - `BEGINSWITH`：左边的表达式以右边的表达式作为开始。
-> - `CONTAINS`：左边的表达式包含右边的表达式。
-> - `ENDSWITH`：左边的表达式以右边的表达式作为结束。
-> - `LIKE`：左边的表达式等于右边的表达式：`?`和`*`可作为通配符，其中`?`匹配1个字符，`*`匹配0个或者多个字符。
-> - `MATCHES`：左边的表达式根据ICU v3（更多内容请查看[ICU User Guide for Regular Expressions](http://userguide.icu-project.org/strings/regexp)）的regex风格比较，等于右边的表达式。
+> - `BEGINSWITH`: The left-hand expression begins with the right-hand expression.
+> - `CONTAINS`: The left-hand expression contains the right-hand expression.
+> - `ENDSWITH`: The left-hand expression ends with the right-hand expression.
+> - `LIKE`: The left hand expression equals the right-hand expression: `?` and `*` are allowed as wildcard characters, where `?` matches 1 character and `*` matches 0 or more characters.
+> - `MATCHES`:  The left hand expression equals the right hand expression using a regex-style comparison according to ICU v3 (for more details see the [ICU User Guide for Regular Expressions](http://userguide.icu-project.org/strings/regexp)).
 
-### 合计操作
+### Aggregate Operations
 
-#### 关系操作
+#### Relational Operations
 
-> - `ANY`，`SOME`：指定下列表达式中的任意元素。比如，`ANY children.age < 18`。
-> - `ALL`：指定下列表达式中的所有元素。比如，`ALL children.age < 18`。
-> - `NONE`：指定下列表达式中没有的元素。比如，`NONE children.age < 18`。它在逻辑上等于`NOT (ANY ...)`。
-> - `IN`：等于SQL的`IN`操作，左边的表达必须出现在右边指定的集合中。比如，`name IN { 'Ben', 'Melissa', 'Nick' }`。
+> - `ANY`, `SOME`: Specifies any of the elements in the following expression. For example, `ANY children.age < 18`.
+> - `ALL`: Specifies all of the elements in the following expression. For example, `ALL children.age < 18`.
+> - `NONE`: Specifies none of the elements in the following expression. For example, `NONE children.age < 18`. This is logically equivalent to `NOT (ANY ...)`.
+> - `IN`: Equivalent to an SQL `IN` operation, the left-hand side must appear in the collection specified by the right-hand side. For example, `name IN { 'Ben', 'Melissa', 'Nick' }`.
 
-#### 数组操作
+#### Array Operations
 
-> - `array[index]`：指定`数组`中特定索引处的元素。
-> - `array[FIRST]`：指定`数组`中的第一个元素。
-> - `array[LAST]`：指定`数组`中的最后一个元素。
-> - `array[SIZE]`：指定`数组`的大小。
+> - `array[index]`: Specifies the element at the specified index in `array`.
+> - `array[FIRST]`: Specifies the first element in `array`.
+> - `array[LAST]`: Specifies the last element in `array`.
+> - `array[SIZE]`: Specifies the size of `array`.
 
-### 布尔值谓词
+### Boolean Value Predicates
 
-> - `TRUEPREDICATE`：结果始终为`真`的谓词。
-> - `FALSEPREDICATE`：结果始终为`假`的谓词。
+> - `TRUEPREDICATE`: A predicate that always evaluates to `TRUE`.
+> - `FALSEPREDICATE`: A predicate that always evaluates to `FALSE`.
 
 ## `NSCompoundPredicate`
 
-我们见过`与`&`或`被用在谓词格式字符串中以创建复合谓词。然而，我们也可以用`NSCompoundPredicate`来完成同样的工作。
+We saw that `AND` & `OR` can be used in predicate format strings to create compound predicates. However, the same can be accomplished using an `NSCompoundPredicate`.
 
-例如，下列谓词是相等的：
+For example, the following predicates are equivalent:
+
+~~~{swift}
+NSCompoundPredicate(type: .AndPredicateType, subpredicates: [NSPredicate(format: "age > 25"), NSPredicate(format: "firstName = %@", "Quentin")])
+
+NSPredicate(format: "(age > 25) AND (firstName = %@)", "Quentin")
+~~~
 
 ~~~{objective-c}
 [NSCompoundPredicate andPredicateWithSubpredicates:@[[NSPredicate predicateWithFormat:@"age > 25"], [NSPredicate predicateWithFormat:@"firstName = %@", @"Quentin"]]];
@@ -185,32 +214,51 @@ NSLog(@"'A' Names: %@", [people filteredArrayUsingPredicate:[namesBeginningWithL
 [NSPredicate predicateWithFormat:@"(age > 25) AND (firstName = %@)", @"Quentin"];
 ~~~
 
-虽然语法字符串文字更加容易输入，但是在有的时候，你需要结合现有的谓词。在那些情况下，你可以使用`NSCompoundPredicate -andPredicateWithSubpredicates:`&`-orPredicateWithSubpredicates:`。
+While the syntax string literal is certainly easier to type, there are occasions where you may need to combine existing predicates. In these cases, `NSCompoundPredicate -andPredicateWithSubpredicates:` & `-orPredicateWithSubpredicates:` is the way to go.
 
 ## `NSComparisonPredicate`
 
-同样的，如果你在读过[上周的文章](http://nshipster.com/nsexpression/)之后发现你使用了太多的`NSExpression`的话，`NSComparisonPredicate`可以帮助你解决这个问题。
+Similarly, if after reading [last week's article](http://nshipster.com/nsexpression/) you now find yourself with more `NSExpression` objects than you know what to do with, `NSComparisonPredicate` can help you out.
 
-就像`NSCompoundPredicate`一样，`NSComparisonPredicate`从子部件构建了一个`NSPredicate`－－在这种情况下，左侧和右侧都是`NSExpression`。
-分析它的类的构造函数可以让我们一窥`NSPredicate`的格式字符串是如何解析的：
+Like `NSCompoundPredicate`, `NSComparisonPredicate` constructs an `NSPredicate` from subcomponents—in this case, `NSExpression`s on the left and right hand sides.
+Analyzing its class constructor provides a glimpse into the way `NSPredicate` format strings are parsed:
 
 ~~~{objective-c}
 + (NSPredicate *)predicateWithLeftExpression:(NSExpression *)lhs
-							 rightExpression:(NSExpression *)rhs
-									modifier:(NSComparisonPredicateModifier)modifier
-										type:(NSPredicateOperatorType)type
-									 options:(NSUInteger)options
+                             rightExpression:(NSExpression *)rhs
+                                    modifier:(NSComparisonPredicateModifier)modifier
+                                        type:(NSPredicateOperatorType)type
+                                     options:(NSUInteger)options
 ~~~
 
-#### 参数
+#### Parameters
 
-> - `lhs`：左边的表达式。
-> - `rhs`：右边的表达式。
-> - `modifier`：应用的修改符。（`ANY`或者`ALL`）
-> - `type`：谓词运算符类型。
-> - `options`：要应用的选项。没有选项的话则为`0`。
+> - `lhs`: The left hand expression.
+> - `rhs`: The right hand expression.
+> - `modifier`: The modifier to apply. (`ANY` or `ALL`)
+> - `type`: The predicate operator type.
+> - `options`: The options to apply. For no options, pass `0`.
 
-### `NSComparisonPredicate`类型
+### `NSComparisonPredicate` Types
+
+~~~{swift}
+enum NSPredicateOperatorType : UInt {
+    case LessThanPredicateOperatorType
+    case LessThanOrEqualToPredicateOperatorType
+    case GreaterThanPredicateOperatorType
+    case GreaterThanOrEqualToPredicateOperatorType
+    case EqualToPredicateOperatorType
+    case NotEqualToPredicateOperatorType
+    case MatchesPredicateOperatorType
+    case LikePredicateOperatorType
+    case BeginsWithPredicateOperatorType
+    case EndsWithPredicateOperatorType
+    case InPredicateOperatorType
+    case CustomSelectorPredicateOperatorType
+    case ContainsPredicateOperatorType
+    case BetweenPredicateOperatorType
+}
+~~~
 
 ~~~{objective-c}
 enum {
@@ -229,19 +277,29 @@ enum {
    NSContainsPredicateOperatorType,
    NSBetweenPredicateOperatorType
 };
+
 typedef NSUInteger NSPredicateOperatorType;
 ~~~
 
-### `NSComparisonPredicate`选项
+### `NSComparisonPredicate` Options
 
-> - `NSCaseInsensitivePredicateOption`：不区分大小写的谓词。你通过在谓词格式字符串中加入后面带有[c]的字符串操作（比如，"NeXT" like[c] "next"）来表达这一选项。
-> - `NSDiacriticInsensitivePredicateOption`：忽视发音符号的谓词。你通过在谓词格式字符串中加入后面带有[d]的字符串操作（比如，"naïve" like[d] "naive"）来表达这一选项。
-> - `NSNormalizedPredicateOption`：表示待比较的字符串已经被预处理了。这一选项取代了NSCaseInsensitivePredicateOption和NSDiacriticInsensitivePredicateOption，旨在用作性能优化的选项。你可以通过在谓词格式字符串中加入后面带有[n]的字符串（比如，"WXYZlan" matches[n] ".lan"）来表达这一选项。
-> - `NSLocaleSensitivePredicateOption`：表明要使用`<`，`<=`，`=`，`=>`，`>` 作为比较的字符串应该使用区域识别的方式处理。你可以通过在`<`，`<=`，`=`，`=>`，`>`其中之一的操作符后加入[l]（比如，"straße" >[l] "strasse"）以便在谓词格式字符串表达这一选项。
+> - `NSCaseInsensitivePredicateOption`: A case-insensitive predicate. You represent this option in a predicate format string using a [c] following a string operation (for example, "NeXT" like[c] "next").
+> - `NSDiacriticInsensitivePredicateOption`: A diacritic-insensitive predicate. You represent this option in a predicate format string using a [d] following a string operation (for example, "naïve" like[d] "naive").
+> - `NSNormalizedPredicateOption`: Indicates that the strings to be compared have been preprocessed. This option supersedes NSCaseInsensitivePredicateOption and NSDiacriticInsensitivePredicateOption, and is intended as a performance optimization option. You represent this option in a predicate format string using a [n] following a string operation (for example, "WXYZlan" matches[n] ".lan").
+> - `NSLocaleSensitivePredicateOption`: Indicates that strings to be compared using `<`, `<=`, `=`, `=>`, `>` should be handled in a locale-aware fashion. You represent this option in a predicate format string using a `[l]` following one of the `<`, `<=`, `=`, `=>`, `>` operators (for example, "straße" >[l] "strasse").
 
-## Block谓词
+## Block Predicates
 
-最后，如果你实在不愿意学习`NSPredicate`的格式语法，你也可以学学`NSPredicate +predicateWithBlock:`。
+Finally, if you just can't be bothered to learn the `NSPredicate` format syntax, you can go through the motions with `NSPredicate +predicateWithBlock:`.
+
+~~~{swift}
+let shortNamePredicate = NSPredicate { (evaluatedObject, _) in
+    return (evaluatedObject as Person).firstName.utf16Count <= 5
+}
+
+(people as NSArray).filteredArrayUsingPredicate(shortNamePredicate)
+// ["Alice Smith", "Bob Jones"]
+~~~
 
 ~~~{objective-c}
 NSPredicate *shortNamePredicate = [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
@@ -252,14 +310,14 @@ NSPredicate *shortNamePredicate = [NSPredicate predicateWithBlock:^BOOL(id evalu
 NSLog(@"Short Names: %@", [people filteredArrayUsingPredicate:shortNamePredicate]);
 ~~~
 
-...好吧，虽然使用`predicateWithBlock:`是懒人的做法，但它也并不是一无是处。
+...Alright, that whole dig on `predicateWithBlock:` as being the lazy way out wasn't _entirely_ charitable.
 
-事实上，因为block可以封装任意的计算，所以有一个查询类是无法以`NSPredicate`格式字符串形式来表达的（比如对运行时被动态计算的值的评估）。而且当同一件事情可以用`NSExpression`结合自定义选择器来完成时，block为完成工作提供了一个方便的接口。
+Actually, since blocks can encapsulate any kind of calculation, there is a whole class of queries that can't be expressed with the `NSPredicate` format string (such as evaluating against values dynamically calculated at run-time). And while its possible to accomplish the same using an `NSExpression` with a custom selector, blocks provide a convenient interface to get the job done.
 
-重要提示：**由`predicateWithBlock:`生成的`NSPredicate`不能用于由`SQLite`存储库支持的Core Data数据的提取要求。**
+One important note: **`NSPredicate`s created with `predicateWithBlock:` cannot be used for Core Data fetch requests backed by a `SQLite` store.**
 
 ---
 
-我知道我已经说过很多次了，可是`NSPredicate`真的是Cocoa的优势之一。其他语言的第三方库如果能有它一半的能力就已经很幸运了－－更别提标准库了。对于我们这些应用和框架开发者来说，有它作为标准组件使得我们在处理数据时有了很大的优势。
+`NSPredicate` is, and I know this is said a lot, truly one of the jewels of Cocoa. Other languages would be lucky to have something with half of its capabilities in a third-party library—let alone the standard library. Having it as a standard-issue component affords us as application and framework developers an incredible amount of leverage in working with data.
 
-和`NSExpression`一样，`NSPredicate`一直在提醒我们Foundation有多么好：它不仅仅十分有用，它精致的构架和设计也是我们写代码时灵感的来源。
+Together with `NSExpression`, `NSPredicate` reminds us what a treat Foundation is: a framework that is not only incredibly useful, but meticulously architected and engineered, to be taken as inspiration for how we should write our own code.

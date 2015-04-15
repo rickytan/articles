@@ -3,21 +3,20 @@ title: Xcode Key Bindings & Gestures
 author: Mattt Thompson
 category: Xcode
 tag: popular
-translator: Croath Liu
-excerpt: "Xcode 快捷键和手势不仅节省了宝贵的工作时间，而且能让你在工作过程中感到更自信、能力变得更强，这样的工作方式也更合理。"
+excerpt: "Xcode key bindings and gestures not only shave off seconds of precious work, but make you look more confident, competent, and cromulent in the process."
 ---
 
-在某种程度上来说将编程当作一门手艺来和纯粹的手工艺比如说木工来比较，挺烦人的。特别是说到大家应该像木匠和石匠一样了解和掌握所使用的工具的时候…得了吧，哥们别这么说了。那种对技巧有强烈要求的人才会这么说，比如忍者可能会说“让你的剑保持锋利尖锐并隐藏在黑暗中”，摇滚明星会说“一天必须要给吉他调两次音，给自己的头发定两次型”。
+The extent to which programming-as-craft is compared to manual disciplines like woodworking is tiresome. It's absolutely the case that one should know and maintain their tools as well as a carpenter or metalsmith, but... I mean, c'mon. One would think that an industry demanding the skills of ninjas and rockstars would mix it up a little: "keep your shurikens polished, sharp, and hidden" or "tune your guitar and condition your hair twice daily".
 
-而作为一个 NSHipster 的建议既简单又有一点轻微的寓言式的意味：“Xcode 就是 NSHipster 的小胡子（见我们的 logo），你要勤于修剪它，给它打点蜡来保持锋利的边角，不要生虫（此处原文是一个双关，free of bugs，也表示没有 bug）。”
+Here at NSHipster, the advice is simple and only slightly allegorical: "Xcode is your mustache, so keep it trimmed, waxed to a sharp point, and free of bugs."
 
-无论怎样我们先看看几周前发布的 [Xcode Snippets](http://nshipster.com/xcode-snippets/) 通过减少重复代码键入对你的生产力提高有多少。本周，我们继续这个话题来看快捷键和手势。
+Anyway, a few weeks ago, we looked at how [Xcode Snippets](http://nshipster.com/xcode-snippets/) can make you more productive by reducing the amount of boilerplate code you have to type out. This week, we're going to pick up on that thread and cover the essential key bindings and gestures.
 
-Xcode 快捷键和手势不仅节省了宝贵的工作时间，而且能让你在工作过程中感到更自信、能力变得更强，这样的工作方式也更合理。学习下列技巧你将成为 Xcode 资深用户。
+Xcode key bindings and gestures not only shave off seconds of precious work, but make you look more confident, competent, and cromulent in the process. Learn the following tricks of the trade and join the elite set of Xcode power users.
 
 ---
 
-> 此处提供一些通用的按键符以供参考（也可以参考这个 [我们不要脸地借用来的国际语音学字母表](http://en.wikipedia.org/wiki/Click_consonant)）：
+> For your reference, here is a legend of the common modifier key symbols (as well as a symbol for click [shamelessly borrowed from the International Phonetic Alphabet](http://en.wikipedia.org/wiki/Click_consonant)):
 
 <table id="xcode-key-bindings-modifiers">
   <thead>
@@ -40,57 +39,57 @@ Xcode 快捷键和手势不仅节省了宝贵的工作时间，而且能让你�
   </tbody>
 </table>
 
-## 快速打开 (`⇧⌘O`)
+## Open Quickly (`⇧⌘O`)
 
 ![Open Quickly](http://nshipster.s3.amazonaws.com/xcode-shortcuts-quick-open.png)
 
-学习快速打开可以更少依赖 Project Navigator。这个功能太讨人喜欢了，Xcode 通过带有部分匹配和位置匹配功能的快速打开帮助你输入的字符找到你想要的东西。
+Learn to rely less on the Project Navigator by learning to love Open Quickly. There's a lot to love, too—with support for partial case- and position-insensitive matches, Xcode does a great job of finding what you want with just a minimal amount of input on your part.
 
 ---
 
-## 快速查看文档 (`⌥ʘ` / 三指轻拍) <br/> 打开文档 (`⌥ʘʘ`)
+## Quick Documentation (`⌥ʘ` on Symbol / Three-Finger Tap) <br/> Open Documentation (`⌥ʘʘ` on Symbol)
 
 ![Quick Documentation](http://nshipster.s3.amazonaws.com/xcode-shortcuts-quick-documentation.gif)
 
-快速查看文档可能是开发者需要学习的第一个 Xcode 快捷键。只需要在任意类、变量、常量上按住 alt 点击（或三指轻拍），Xcode 就会该处显示出一个简洁的文档。Alt 加双击会打开文档窗口并进入相关界面。
+Quick Documentation is probably the first Xcode shortcut developers should learn. Just alt-click (or three-finger tap) any class, variable, or constant value, and Xcode will give you a quick rundown of what you're looking at. Alt-double-click to bring up the documentation window, opened to the relevant entry.
 
-## 跳到定义 (`⌘ʘ`)
+## Jump to Definition (`⌘ʘ` on Symbol)
 
-对于 Xcode 使用者来说另一个同样有名的快捷键就是跳到定义，这个动作会打开编辑窗口到相关的 `@interface` 定义或 `.h` 文件中常量定义的地方。这个功能对于在类似于 Foundation 这样陌生的系统框架中看代码时很实用，能帮你看到它们的背后 _到底_ 发生了什么。
+Also well-know to an expert Xcoder's workflow is Jump to Definition, which opens the editor window to the relevant `@interface` definition or constant declaration in a `.h` file. This is especially useful for getting a raw look at system frameworks like Foundation, to get an idea of what's _really_ going on behind-the-scenes.
 
-## 副本间切换 (`^⌘↑` / `^⌘↓` / 三指竖划)
+## Jump to Next Counterpart (`^⌘↑` / `^⌘↓` / Three-Finger Vertical Swipe)
 
 ![Jump to Next Counterpart](http://nshipster.s3.amazonaws.com/xcode-shortcuts-counterpart.gif)
 
-下面这个，但不是最后一个，就是副本间切换，这可能是每天用得最多的快捷键了。在 `.h` 文件和与其对应的 `.m` 实现文件中使用三指上下划的动作（如果你喜欢的话也可以使用 `^⌘↑` / `^⌘↓` ）来进行快速切换。
+Last, but certainly not least, there's Jump to Next Counterpart, which is very likely the shortcut used the most on any given day. Quickly switch between a `.h` header and it's corresponding `.m` implementation with a simple three-finger swipe up or down (or `^⌘↑` / `^⌘↓` if you feel so inclined).
 
 ---
 
-## 注释选中部分 / 当前行 (`⌘/`)
+## Comment Selection / Current Line (`⌘/`)
 
 ![Comment Selection](http://nshipster.s3.amazonaws.com/xcode-shortcuts-comment.gif)
 
-是的你 _可以_ 通过对代码增删断点的方式来进行调试，但是这里有一个更简单强大的方法可以对代码进行注释或取消注释。这个快捷键可以对当前行或选中部分添加添加 `//` 注释。
+Sure, you _could_ be debugging the "right way" by setting breakpoints and being clever with your code paths, but there's quite so refreshingly simple and powerful as phasing code in and out of computational existence with a comment. Add or remove `//` comments to the current line or selection.
 
-## 显示 Standard Editor (`⌘↵`) <br/> 显示 Assistant Editor (`⌥⌘↵`) <br/> 显示 Version Editor (`⌥⇧⌘↵`)
+## Show Standard Editor (`⌘↵`) <br/> Show Assistant Editor (`⌥⌘↵`) <br/> Show Version Editor (`⌥⇧⌘↵`)
 
 ![Editors](http://nshipster.s3.amazonaws.com/xcode-shortcuts-editors.gif)
 
-Assistant Editor 那么好用但却没有几个工程师可以准确记住开关它的快捷键。现在在你的脑子里记住 `⌘↵` 和 `⌥⌘↵`，以后你就能让 Xcode 帮助你更多了。
+For how useful the Assistant Editor can be, surprisingly few developers can actually remember the key combo to turn it on and off. But now with `⌘↵` and `⌥⌘↵` fresh in your mind, you'll be helping Xcode help yourself more often.
 
 ![Assistant Editor Position](http://nshipster.s3.amazonaws.com/xcode-shortcuts-assistant-editor-position.png)
 
-另一方面，如果不太满意编辑器的排列方式，在 View > Assistant Editor 中可以选择垂直活着水平排列。
+As an aside, if you're not big on how editors are stacking, a different horizontal or vertical arrangement can be chosen in View > Assistant Editor.
 
 ---
 
 ![Panels](http://nshipster.s3.amazonaws.com/xcode-shortcuts-panels.gif)
 
-编辑器的左右两侧就像一个三明治，导航栏和工具栏将代码夹在它们爱的怀抱里。在需要内心平静时，学习如何显示有用的部分以及如何让它们 GTFO，能够实现生产力的最大化。
+Sandwiching the editors on the left and right flanks, the Navigator and Utilities panels encircle your code in their loving embrace. Learning how to get them to show what's useful and GTFO when needed are critical for inner peace and maximum productivity.
 
-## 显示/隐藏导航条 (`⌘0`)
+## Show/Hide Navigator Panel (`⌘0`)
 
-## 选择导航栏 (`⌘1, ..., ⌘8`)
+## Select Navigator (`⌘1, ..., ⌘8`)
 
 1. Project Navigator
 2. Symbol Navigator
@@ -101,11 +100,11 @@ Assistant Editor 那么好用但却没有几个工程师可以准确记住开关
 7. Breakpoint Navigator
 8. Log Navigator
 
-## 显示/隐藏工具条 (`⌥⌘0`)
+## Show/Hide Utilities Panel (`⌥⌘0`)
 
-## 选择工具栏 (`⌥⌘1, ⌥⌘2, ...`)
+## Select Utilities Panel (`⌥⌘1, ⌥⌘2, ...`)
 
-### 源文件
+### Source File
 
 1. File Inspector
 2. Quick Help
@@ -119,38 +118,38 @@ Assistant Editor 那么好用但却没有几个工程师可以准确记住开关
 5. Size Inspector
 6. Connections Inspector
 
-## 显示/隐藏调试区域 (`⇧⌘Y`) <br/> 激活 Console (`⇧⌘C`)
+## Show / Hide Debug Area (`⇧⌘Y`) <br/> Activate Console (`⇧⌘C`)
 
 ![Show / Hide Debug Area](http://nshipster.s3.amazonaws.com/xcode-shortcuts-debug-area.gif)
 
-有人怀念 Xcode 3 中能够独立分离的调试窗口吗？反正我是很怀念。
+Anyone miss the option in Xcode 3 to have a detached debugger window? Yeah, me too.
 
-知道如何一键打开和关闭调试区域以及激活 console 可能没什么大用，但多多少少会帮助你减少痛苦或损失。
+Knowing how to toggle the debug area and activate the console in a single keystroke may be a shallow consolation, but it does help take the edge off of the pain or loss.
 
 ---
 
-## 查找 (`⌘F`) /<br/>查找替换 (`⌥⌘F`) /<br/>在工程中查找 (`⇧⌘F`) /<br/>在工程中查找和替换 (`⌥⇧⌘F`)
+## Find (`⌘F`) /<br/>Find & Replace (`⌥⌘F`) /<br/>Find in Project (`⇧⌘F`) /<br/>Find & Replace in Project (`⌥⇧⌘F`)
 
 ![Find](http://nshipster.s3.amazonaws.com/xcode-shortcuts-find.gif)
 
-因为 Xcode 对代码进行重构的能力实在是太弱了...或者说大多数时候都帮不上忙。另一方面，Xcode 支持对纯文本的引用、定义以及正则搜索。
+For when Xcode's refactoring capabilities come up short... which is to say: often. On the plus side, Xcode allows reference, definition, and regular expression search in addition to literal text.
 
-## 拼写和语法检查 (`⌘:`)
+## Spelling & Grammar (`⌘:`)
 
 ![Spelling & Grammar](http://nshipster.s3.amazonaws.com/xcode-shortcuts-spelling-and-grammar.png)
 
-Clang 如此强大也不能在注释中更正你那噩梦一般的语法和标点使用。特别是当有人将代码开源时，你需要用 OS X 内建的拼写和语法检查帮自己一把。
+All-powerful as Clang is, it still can't help your nightmarish grammar and punctuation in your comments. Especially for anyone releasing code into the open-source wilds, do yourself a favor and give it a once-over with a built-in OS X spelling and grammar check.
 
 ---
 
 ![Xcode Shortcut Preferences](http://nshipster.s3.amazonaws.com/xcode-shortcuts-preferences.png)
 
-当然了还有更有趣的事情！像任何拿得出手的编辑器一样，Xcode 允许你对每一个菜单项和 app 中的所有行为自定义快捷键。
+But, of course, the fun doesn't stop there! Like any respectable editor, Xcode allows you to customize the key bindings for every menu item and action across the app.
 
-这里提供一些可能有用的非正式快捷键，可能会帮得到你：
+Here are a few non-standard key bindings that you might find useful:
 
-- `^w`: 关闭文档 (replaces Delete to Mark)
-- `^⌘/`: 显示 / 隐藏工具栏
-- `^⌘F`: _None_ (去掉 Full Screen 模式 (至少在 Mavericks 之前能用))
+- `^w`: Close Document (replaces Delete to Mark)
+- `^⌘/`: Show / Hide Toolbar
+- `^⌘F`: _None_ (removes Full Screen (at least until Mavericks))
 
-你想分享给大家更多有用的快捷键吗？在 Twitter 上 [@NSHipster](https://twitter.com/NSHipster) 来告诉我们！
+Got any useful or clever bindings to share? Tweet them to [@NSHipster](https://twitter.com/NSHipster)!

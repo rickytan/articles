@@ -1,32 +1,37 @@
 ---
-layout: post
 title: UICollectionView
-category: Cocoa
-excerpt: "从现在起，UICollectionView凭一己之力改变我们将要设计和开发iOS应用的方式。这并不是说，collection views是未知或模糊的。作为一个NSHipster，不仅仅是知道名不见经传的石头，更多是在它们家喻户晓、售罄一空之前就知道有前途。"
 author: Mattt Thompson
-translator: JJ Mao
+category: Cocoa
+excerpt: "UICollectionView single-handedly changes the way we will design and develop iOS apps from here on out. This is not to say that collection views are in any way unknown or obscure. But being an NSHipster isn't just about knowing obscure gems in the rough. Sometimes, it's about knowing about up-and-comers before they become popular and sell out."
 ---
 
-`UICollectionView` 是一种新的 `UITableView` ，并且它极其重要。
+`UICollectionView` is the new `UITableView`. It's that important.
 
-这并不是说，collection views是未知或模糊的--任何一个去过有关它WWDC会议的或是在 iOS 6 beta 版上玩过的人都知道怎么回事。
+This is not to say that collection views are in any way unknown or obscure--anyone who went to any of the WWDC sessions about it, or got to play with in the iOS 6 beta already know what's up.
 
-记住，作为一个NSHipster，不仅仅是知道名不见经传的石头，更多是在它们家喻户晓、售罄一空之前就知道有前途。所以呢，在其他人发现之前，这儿有个关于大热门的概要：
+Remember, being an NSHipster isn't just about knowing obscure gems in the rough. Sometimes, it's about knowing about up-and-comers before they become popular and sell out. So before everybody else finds out for themselves, here's the skinny on the next big thing:
 
 ---
 
-`UICollectionView` 采用 `UITableView` 的熟知模式，并概括了他们作出任何可能的布局 (一般情况下，这是微不足道的)。
+`UICollectionView` takes the familiar patterns of `UITableView` and generalizes them to make any layout possible (and, in many cases, trivial).
 
-和 `UITableView` 一样，`UICollectionView` 是管理有序items集合的 `UIScrollView` 子类。由 _data source_ 管理的items在特定索引路径上提供有代表性的cell view。
+Like `UITableView`, `UICollectionView` is a `UIScrollView` subclass that manages a collection of ordered items. Items are managed by a _data source_, which provides a representative cell view at a particular index path.
 
+Unlike `UITableView`, however, `UICollectionView` is not constrained to a vertical, single-column layout. Instead, a collection view has a _layout_ object, which determines the position of each subview, similar to a data source in some respects. More on that later.
 
-然而，和 `UITableView` 不同的是，`UICollectionView` 不局限于垂直的单列布局。相反，collection view有一个 _layout_  对象，它决定子视图的位置，这类似于某些方面的data source。稍后将作详细介绍。
+### Cell Views
 
-### Cell 视图
+In another departure from the old-school table view way of doing things, the process of recycling views has been significantly improved.
 
-在另一个不同于早期table view的做法中，视图的回收过程有明显改善。
+In `-tableView:cellForRowAtIndexPath:`, a developer had to invoke the familiar incantation:
 
-在 `-tableView:cellForRowAtIndexPath:` 中，开发者必须调用熟悉的咒语：
+~~~{swift}
+let identifier = "Cell"
+var cell: UITableViewCell? = tableView.dequeueReusableCellWithIdentifier(identifier) as? UITableViewCell
+if cell == nil {
+    cell = UITableViewCell(...)
+}
+~~~
 ~~~{objective-c}
 UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:...];
 if (!cell) {
@@ -34,32 +39,33 @@ if (!cell) {
 }
 ~~~
 
-谢天谢地，`UICollectionView` 不用这样了。如果没有可重用的cells，通过创建一个新的cell，`-dequeueReusableCellWithReuseIdentifier:forIndexPath:`确保返回一个有效对象。只需为特定的重用标识符注册一个 `UICollectionReusableView` 子类，一切都会自动工作。值得庆幸的是，iOS 6中 `UITableView` 也支持这种用法。
+`UICollectionView` thankfully does away with this. `-dequeueReusableCellWithReuseIdentifier:forIndexPath:` is guaranteed to return a valid object, by creating a new cell if there are no cells to reuse. Simply register a `UICollectionReusableView` subclass for a particular reuse identifier, and everything will work automatically.
 
-### Supplementary 视图
+> Thankfully, this behavior has been backported to `UITableView` as well with iOS 6.
 
-由于collection views没有被归入任何特定结构，"header" 和 "footer"视图的约定不是很适用。所以在它这个地方，collection views拥有可以与每个cell关联的
-_supplementary views_。
+### Supplementary Views
 
-每个cell可以有多个与之关联的supplementary views--每个命名为"kind"。正因如此，headers和footers仅仅是supplementary views所施展的一成功力。
+Because collection views aren't relegated to any particular structure, the convention of "header" and "footer" views isn't really applicable. So in its place, collection views have _supplementary views_, which can be associated with each cell.
 
-关键在于supplementary views，即使最复杂的layout也可以被实现而不影响cells的语义完整性。`UITableView` hacks对于[`spacer.gif`](http://en.wikipedia.org/wiki/Spacer_GIF)就像 `UICollectionView` cells对于[semantic HTML](http://en.wikipedia.org/wiki/Semantic_HTML)。
+Each cell can have multiple supplementary views associated with it--one for each named "kind". As such, headers and footers are just the beginning of what can be done with supplementary views.
 
-### Decoration 视图
+The whole point is that with supplementary views, even the most complex layout can be accomplished without compromising the semantic integrity of cells. `UITableView` hacks are to [`spacer.gif`](http://en.wikipedia.org/wiki/Spacer_GIF) as `UICollectionView` cells are to [semantic HTML](http://en.wikipedia.org/wiki/Semantic_HTML).
 
-除了cell views和supplementary views，collections还有 _decoration views_。一个decoration view，顾名思义，是一种没有功能性用途的东西... 除了在网络上传播的[摒弃对anti-skeuomorphic狂热分子的仇恨](http://skeu.it)。不过说真的，如果你愿意给你的虚拟藏书应用镶嵌完美质感的木纹架子，这很可能是容易做到的，_对吗_？
+### Decoration Views
 
-有一点要记住的是，decoration views完全是由layout管理的，与cell或supplementary views不一样,它不在collection view data source的管辖范围内。
+In addition to cell views and supplementary views, collections also have _decoration views_. A decoration view, as the name implies, is something that without a functional purpose... other than to perhaps [spurn the hatred of anti-skeuomorphic zealots](http://skeu.it) across the interwebs. But really, if you're resigned to imbue your virtual book collection app with immaculately-textured wood-grained shelves, it might as well be easy to do, _right_?
 
-## Layouts和Layout属性
+One thing to remember about decoration views is that they are entirely managed by the layout, unlike cell or supplementary views, which are under the jurisdiction of the collection view data source.
 
-Layouts是使 `UICollectionView` 如此神奇的核心。把它们看作是CSS对于之前提到的collection cells的semantic HTML。
+## Layouts and Layout Attributes
 
-`UICollectionViewLayout` 是一个抽象的基类，用于定位cell views和它们的supplementary和decoration views。但不是将它直接归入子类，大多数应用喜欢使用或者将 `UICollectionViewFlowLayout` 归入子类。Flow layouts用一些线性概念覆盖了layouts的广义类，不管它是单行或单列或一格。
+Layouts are at the heart of what makes `UICollectionView` so magical. Think of them as the CSS to your semantic HTML of collection cells from before.
 
-在你足够安心地了解了flow layouts的所有限制之前，你可以稳妥地从flow layouts开始学习。
+`UICollectionViewLayout` is an abstract base class for positioning cell views and their supplementary and decoration views. But rather than subclass this directly, most applications will opt to use or subclass `UICollectionViewFlowLayout`. Flow layouts cover the broad class of layouts with some notion of linearity, whether that's a single row or column or a grid.
 
-每个cell view、supplemental view和decoration view 都有layout属性。想要知道layouts如何灵活，只需看看 `UICollectionViewLayoutAttributes` 对象的特性就知道了：
+Until you're comfortable enough to understand the limitations of flow layouts, it's generally a safe bet to just start with that.
+
+Each cell view, supplemental view, and decoration view have layout attributes. To get an idea of how flexible layouts are, look no further than the properties of an `UICollectionViewLayoutAttributes` object:
 
 - `frame`
 - `center`
@@ -69,32 +75,28 @@ Layouts是使 `UICollectionView` 如此神奇的核心。把它们看作是CSS�
 - `zIndex`
 - `hidden`
 
-属性由你可能想要的那种委托方法指定：
+Attributes are specified by the kind of delegate methods you might expect:
 
 - `-layoutAttributesForItemAtIndexPath:`
 - `-layoutAttributesForSupplementaryViewOfKind:atIndexPath:`
 - `-layoutAttributesForDecorationViewOfKind:atIndexPath:`
 
-这是最酷的方法：
+What's _extremely_ cool is this method here:
 
 - `-layoutAttributesForElementsInRect:`
 
-例如，你可以使用它来当items靠近屏幕边缘时淡出。或者，由于所有的layout属性特性是自动支持动画的，你可以用一套正确的3D transforms在短短几行代码里创建一个简陋的[cover flow](http://en.wikipedia.org/wiki/Cover_Flow) layout。
+Using this, you could, for example, fade out items as they approach the edge of the screen. Or, since all of the layout attribute properties are automatically animated, you could create a poor-man's [cover flow](http://en.wikipedia.org/wiki/Cover_Flow) layout in just a couple lines of code with the right set of 3D transforms.
 
-实际上，collection views甚至可以大规模的交换layouts，在不改变底层数据的情况下允许视图在不同模式下无缝交换。
+In fact, collection views can even swap out layouts wholesale, allowing views to transition seamlessly between different modes--all without changing the underlying data.
 
 ---
 
-自从有了iPad，iOS业界便弥漫着一种徘徊于原先iPhone的UI设计模式和对这种更新的、外形尺寸更大的需求之间的微妙而紧张的气氛。随着iPhone 5和"iPad mini"的传闻，要不是 `UICollectionView` (以及Auto-Layout)，这种紧张气氛可能导致整个iOS平台的衔接断裂。
+Since the introduction of the iPad, there has been a subtle, yet lingering tension between the original UI paradigms of the iPhone, and the demands of this newer, larger form factor. With the iPhone 5 here, and a rumored "iPad mini" on the way, this tension could have threatened to fracture the entire platform, had it not been for `UICollectionView` (as well as Auto-Layout).
 
-Apple有无数种不同方式提供类似的功能（或者干脆不提供），但是一旦提供，他们在设计这类功能方面的确能够各个都是全垒打。
+There are a million ways Apple could (or could not) have provided this kind of functionality, but they really knocked it out of the park with how they designed everything.
 
-data source和layout接口之间简洁明了的逻辑分离；cell、supplementary和decoration视图之间明确的分工；一堆可继承拓展以及可通过UIKit自动实现动画的layout属性...大量的细心与智慧才组成了这些API。
+The clean, logical separation between data source and layout; the clear division between cell, supplementary, and decoration views; the extensive set of layout attributes that are automatically animated... a lot of care and wisdom has been put together with these APIs.
 
-因此，iOS应用的整个前景将会永远改变。有了collection views，我们的审美已经随着iPad应用的视觉和交互的整个重新定义而转变。
+As a result, the entire landscape of iOS apps will be forever changed. With collection views, the aesthetic shift that was kicked off with the iPad will explode into an entire re-definition of how we expect apps to look and behave.
 
-大家可能对collection views尚未熟悉，但是现在你可以说在它们还没流行起来之前就知道它们了。
-
->  为了方便在你的应用里使用这个collection view的新特性，同时也不会让你感觉必须提升iOS 6的使用率才能做到这件事，这儿有一个好消息：
-
-> [Peter Steinberger](https://github.com/steipete) 发布了[PSTCollectionView](https://github.com/steipete/PSTCollectionView), _一个100% API-兼容的 `UICollectionView`替代物，它支持iOS 4.3+_ 。来看看!
+Everyone may not be hip to collection views quite yet, but now you'll be able to say that you knew about them before they were cool.

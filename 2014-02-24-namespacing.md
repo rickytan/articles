@@ -1,84 +1,84 @@
 ---
-layout: post
-title: "namespacing"
-category: Objective-C
-excerpt: "命名一直是Objective-C的硬伤，和那些优雅的语言相比，Objective-C缺乏标识符容器这点引来了很多不切实际的批评家。"
+title: Namespacing
 author: Mattt Thompson
-translator: Sheldon Huang
+category: Objective-C
+excerpt: "Namespacing is the preeminent bugbear of Objective-C. A cosmetic quirk with global implications, the language's lack of identifier containers remains a source of prodigious quantities of caremad for armchair language critics."
 ---
->为什么Objecive-C中的很多类名都是`NS`开头的呢？
 
-我保证在你第一次给别人介绍Objective-C的时候肯定会听到这句话。
+> Why the hell is everything `NS`-whatever?
 
-就像父母要向孩子解释什么是死亡或者圣诞老人是不存在的问题一样，父母总是寄希望时间会让孩子自己找到答案。
+You'll hear that within the first minute of introducing someone to Objective-C. Guaranteed.
 
->你既然这么问了，实际上`NS`代表了`NeXTSTEP`（好吧，其实是代表`NeXTSTEP/Sun`，我们只是做个简单的介绍），它被用于...
+Like a parent faced with the task of explaining the concept of death or the non-existence of Santa, you do your best to be forthcoming with facts, so that they might arrive at a conclusion themselves.
 
-你越解释，你会发现对方越失望*，接下来，他们不在只是随便问问了，他们开始问一些你更难解释的问题--在Objective-C中[@](http://nshipster.com/at-compiler-directives/)是什么？
+> Why, Jimmy, `NS` stands for `NeXTSTEP` (well, actually, `NeXTSTEP/Sun`, but we'll cover that with "the birds & the bees" talk), and it's used to...
 
-命名一直是Objective-C的硬伤，和那些优雅的语言相比，Objective-C缺乏标识符容器这点引来了很多不切实际的批评家。
+...but by the time the words have left your mouth, you can already sense the disappointment in their face. Their innocence has been lost, and with an audible *sigh* of resignation, they start to ask uncomfortable questions about [@](http://nshipster.com/at-compiler-directives/)
 
-他们总是说：Objective-C不像其他流行语言一样提供模块化机制来避免类名和方法名的冲突。
+* * *
 
-相反地，Objective-C 依靠前缀来确保APP中的方法名不会影响其他有相同名字的代码。
+Namespacing is the preeminent bugbear of Objective-C. A cosmetic quirk with global implications, the language's lack of identifier containers remains a source of prodigious quantities of caremad for armchair language critics.
 
-插入一个关于类型系统的题外话之后我们会继续进入关于命名的讨论。
+This is all to say: unlike many other languages that are popular today, Objective-C does not provide a module-like mechanism for avoiding class and method name collisions.
 
-##C和Objective-C中的类型
+Instead, Objective-C relies on prefixes to ensure that functionality in one part of the app doesn't interfere with similarly named code somewhere else.
 
-我曾在这个博客上多次提过Objective-C是直接建立在C语言之上的，一个重要的原因是Objective-C和C语言共用一个类型系统，他们都要求标识符是全局唯一的。
+We'll jump into those right after a quick digression into type systems:
 
-你可以自己定义一个和`@interface`同名的静态变量，编译之后你会得到一个错误：
+## Types in C & Objective-C
+
+As noted many times in this publication, Objective-C is built directly on top of the C language. One consequence of this is that Objective-C and C share a type system, requiring that identifiers are globally unique.
+
+You can see this for yourself—try defining a new static variable with the same name as an existing `@interface`, and the compiler will generate an error:
 
 ~~~{objective-c}
 @interface XXObject : NSObject
 @end
 
-static char * XXObject;//将“XXObject”重新定义为不同的符号
+static char * XXObject;  // Redefinition of "XXObject" as different kind of symbol
 ~~~
 
-也就是说，Objective-C的runtime在C语言的类型系统上又创建了一个抽象层，它甚至可以允许下面这段代码被编译:
+That said, the Objective-C runtime creates a layer of abstraction on top of the C type system, allowing the following code to compile without even a snicker:
 
 ~~~{objective-c}
-@protocol Foo
+@protocol Malkovich
 @end
 
-@interface Foo : NSObject <Foo> {
-    id Foo;
+@interface Malkovich : NSObject <Malkovich> {
+    id Malkovich;
 }
 
-@property id Foo;
-+ (id)Foo;
-- (id)Foo;
+@property id Malkovich;
++ (id)Malkovich;
+- (id)Malkovich;
 @end
 
-@interface Foo (Foo)
+@interface Malkovich (Malkovich)
 @end
 
-@implementation Foo
-@synthesize Foo;
+@implementation Malkovich
+@synthesize Malkovich;
 
-+ (id)Foo {
-    id Foo = @"Foo";
-    return Foo;
++ (id)Malkovich {
+    id Malkovich = @"Malkovich";
+    return Malkovich;
 }
 @end
 ~~~
 
-2. 通过Objective-C的环境，程序能区别所有相同名字的类，协议，类别，实例变量，实例方法和类方法。
+Within the context of the Objective-C runtime, a program is able to differentiate between a class, a protocol, a category, an instance variable, an instance method, and a class method all having the same name.
 
->一个变量能重新调整一个已经存在的方法也是得益与C语言的类型系统（这个有点像一个变量能够隐藏它的隐藏功能）
+> That a variable can reappropriate the name of an existing method is a consequence of the C type system (which similarly allows for a variable to shadow the name of its containing function)
 
-##前缀
+## Prefixes
 
-在Objective-C应用中的所有类名都必须是全局唯一的。由于很多不同的框架中会有一些相似的功能，所以在名字上也可能会有重复（users， views， requests / responses 等等），所以[苹果官方文档](https://developer.apple.com/library/ios/documentation/cocoa/conceptual/ProgrammingWithObjectiveC/Conventions/Conventions.html)规定类名需要有2-3个字母作为前缀。
+All classes in an Objective-C application must be globally unique. Since many different frameworks are likely have some conceptual overlap—and therefore an overlap in names (users, views, requests / responses, etc.)—convention dictates that class names use 2 or 3 letter prefix.
 
-###类前缀
+### Class Prefixes
 
-[苹果官方建议](https://developer.apple.com/library/ios/documentation/cocoa/conceptual/ProgrammingWithObjectiveC/Conventions/Conventions.html)两个字母作为前缀的类名是为官方的库和框架准备的，而对于作为第三方开发者的我们，官方建议使用3个或者更多的字母作为前缀去命名我们的类。
+Apple [recommends](https://developer.apple.com/library/ios/documentation/cocoa/conceptual/ProgrammingWithObjectiveC/Conventions/Conventions.html) that 2-letter prefixes be reserved for first-party libraries and frameworks, while third-party developers (that's us) opt for 3 letters or more.
 
-一个资深的Mac或iOS开发者可能会记得下面大部分的缩写标识符：
-
+A veteran Mac or iOS developer will have likely memorized most if not all of the following abbreviated identifiers:
 
 <table>
     <thead>
@@ -128,11 +128,11 @@ static char * XXObject;//将“XXObject”重新定义为不同的符号
     </tbody>
 </table>
 
-####第三方类前缀
+#### 3rd-Party Class Prefixes
 
-直到最近，由于[CocoaPods](http://cocoapods.org/)的出现和大量新的iOS开发者的涌现，开源代码的遍布，第三方代码在很大程度上对苹果和其余的Objective-C开发社区来说已经不是问题了。最近苹果官方的命名指南也发生了变化，它将三个字母作为前缀的建议只是做为一个习惯做法。
+Until recently, with the advent of [CocoaPods](http://cocoapods.org) and a surge of new iOS developers, the distribution of open source, 3rd-party code had been largely a non-issue for Apple and the rest of the Objective-C community. Apple's naming guidelines came about recently enough that the advice to adopt 3-letter prefixes is only _just_ becoming accepted practice.
 
-正因为这样，那些已经存在的第三方库依然使用2个字母作为前缀，你可以参考一些那些[在GitHub上得到很多start的Objective-C的仓库](https://github.com/search?l=Objective-C&q=stars%3A%3E1&s=stars&type=Repositories)。
+Because of this, many established libraries still use 2-letter prefixes. Consider some of these [most-starred Objective-C repositories on GitHub](https://github.com/search?l=Objective-C&q=stars%3A%3E1&s=stars&type=Repositories).
 
 <table>
     <thead>
@@ -156,14 +156,15 @@ static char * XXObject;//将“XXObject”重新定义为不同的符号
     </tbody>
 </table>
 
-我们已经看到在在这个[第三方库](https://github.com/AshFurrow/AFTabledCollectionView)的前缀已经和我的[AFNetworking](https://github.com/AFNetworking/AFNetworking)一样了，所以最好还是要在你的代码中遵守要三个字母以上的作为类前缀的规定(https://github.com/AshFurrow/AFTabledCollectionView)。
+Seeing as how [we're already seeing prefix overlap among 3rd-party libraries](https://github.com/AshFurrow/AFTabledCollectionView), make sure that you follow a 3+-letter convention in your own code.
 
->对于那些针对特殊功能而写的第三方库的作者，可以考虑在下一次主要升级时使用[@compatibility_alias](http://nshipster.com/at-compiler-directives/)来为那些使用者们提供一个天衣无缝的转移路径。
+> For especially future-focused library authors, consider using [`@compatibility_alias`](http://nshipster.com/at-compiler-directives/) to provide a seamless migration path for existing users in your next major upgrade.
 
-##方法前缀
+### Method Prefixes
 
-不仅是类容易造成命名冲突，selectors也很容易造成命名冲突，甚至方法比类会有更多的问题。
-考虑一下这个category：
+It's not just classes that are prone to naming collisions: selectors suffer from this too—in ways that are even more problematic than classes.
+
+Consider the category:
 
 ~~~{objective-c}
 @interface NSString (PigLatin)
@@ -171,9 +172,9 @@ static char * XXObject;//将“XXObject”重新定义为不同的符号
 @end
 ~~~
 
-如果 `-pigLatinString`方法被另一个category实现了（或者以后版本的iOS或者OS X 在NSString类中也添加了同样名字的方法），那么调用这个方法就会得到未定义的行为错误，因为我们不能保证在runtime中哪个方法会先被定义。
+If `-pigLatinString` were implemented by another category (or added to the `NSString` class in a future version of iOS or OS X), any calls to that method would result in undefined behavior, since no guarantee is made as to the order in which methods are defined by the runtime.
 
-我们可以通过在方法名前加前缀来避免这个问题，就像加这个类名一样（在类别名前加前缀也是个好办法）：
+This can be guarded against by prefixing the method name, just like the class name (prefixing the category name isn't a bad idea, either):
 
 ~~~{objective-c}
 @interface NSString (XXXPigLatin)
@@ -181,19 +182,19 @@ static char * XXObject;//将“XXObject”重新定义为不同的符号
 @end
 ~~~
 
-苹果官方建议[所有category方法都要使用前缀](https://developer.apple.com/library/ios/documentation/cocoa/conceptual/ProgrammingWithObjectiveC/CustomizingExistingClasses/CustomizingExistingClasses.html#//apple_ref/doc/uid/TP40011210-CH6-SW4)，这个建议比类名需要加前缀的规定更加广为人知和接受。
+Apple's recommendation that [all category methods use prefixes](https://developer.apple.com/library/ios/documentation/cocoa/conceptual/ProgrammingWithObjectiveC/CustomizingExistingClasses/CustomizingExistingClasses.html#//apple_ref/doc/uid/TP40011210-CH6-SW4) is even less widely known or accepted than its policy on class prefixing.
 
-很多开发者都在热情地讨论着这个规定的某一方面。然而，无论是通过成本角度还是效益角度来衡量命名冲突风险的可能性都是是不全面的:
+There are many outspoken developers who will passionately argue one side or another. However, weighing the risk of collision against its likelihood, the cost/benefit analysis is not entirely clear-cut:
 
-category的主要功能是通过语法糖将一些有用的功能包裹进原来的类中。任何一个category方法都可以被选择性实现，你也可以把他当做是self的一个隐型功能方法。
+The main feature of categories is coating useful functionality with syntactic sugar. Any category method could alternatively be implemented as a function taking an explicit argument in place of the implicit `self` of a method.
 
-当我在编译器的环境参数中将`OBJC_PRINT_REPLACED_METHODS`这个参数设置为YES，那我们就能在编译的时候检测方法名是否有冲突。实际上，方法名的冲突是很少发生的，而且在发生的时候，他们通常会得到一个`needlessly duplicated across dependencies`的提示。即使发生最坏的情况，程序在运行是出现异常，那么很可能是两个方法名一样，那么他们_做_的事情也是一样的，所以结果也不会有什么变化。就像Swiss Army Knife写了一个category，他定义了`NSArray`中的` -firstObject`这个方法，那么只要苹果官方没有在`NSArray`中加这个方法的话，那么这个类别方法一直有效的。
+Collisions can be detected at compile time by setting the `OBJC_PRINT_REPLACED_METHODS` environment variable to `YES`. In practice, collisions are extremely rare, and when they do occur, they're usually an indicator of functionality that is needlessly duplicated across dependencies. Although the worst-case scenario is a runtime exception, it's entirely likely that two methods named the same thing will actually _do_ the same thing, and result in no change in behavior. All of those Swiss Army Knife categories that defined `NSArray -firstObject` continued to march on once the method was officially added.
 
-在苹果官方的编程指南中有很多严肃又松散的解释。这里没有固定的文档，他们可能一直变化。看到这里，如果你还是悬而未决，那么你只需要把的category方法名加上前缀，如果你还是选择不去做任何改变，那么你就等着自食其果吧。
+Just as with constitutional scholarship, there will be strict and loose interpretations of Apple's programming guidelines. Those that see it as a living document would point out that... actually, you know what? If you've read this far and are still undecided, just prefix your damn category methods. If you choose not to, just be mindful that it could bite you in the ass.
 
-###Swizzling
+#### Swizzling
 
-在Swizzling时，方法名加前缀或者后缀也是非常有必要的，这个我在上周关于[swizzling](http://nshipster.com/method-swizzling/)的文章中提到过。
+The one case where method prefixing (or suffixing) is absolutely necessary is when doing method replacement, as discussed in last week's article on [swizzling](http://nshipster.com/method-swizzling/).
 
 ~~~{objective-c}
 @implementation UIViewController (Swizzling)
@@ -205,15 +206,15 @@ category的主要功能是通过语法糖将一些有用的功能包裹进原来
 }
 ~~~
 
-##我们_真的_需要命名空间么？
+## Do We _Really_ Need Namespaces?
 
-在最近关于Objective-C替换、改造和重塑的讨论中，我可以明显地发现命名空间是未来的一个趋势。但是它到底给我们带来了什么呢？
+With all of the recent talk about replacing / reinventing / reimagining Objective-C, it's almost taken as a given that namespacing would be an obvious feature. But what does that actually get us?
 
-**美学**？除了IETE成员和军事人员，我想没有人会喜欢<acronym title="CAPITAL LETTER ACRONYMS">CLA</acronym>s的视觉审美，但是用`::`，`/`或者另外的`.`这些符号真的能让我们觉得更好么？你_真的_想要以后把`NSArray`叫做"Foundation Array"？（那我这个NSHipster.com这个博客不是也得改名字了?!）
+**Aesthetics?** Aside from IETF members and military personnel, nobody likes the visual aesthetic of <acronym title="CAPITAL LETTER ACRONYMS">CLA</acronym>s. But would `::`, `/`, or an extra `.` really make matters better? Do we _really_ want to start calling `NSArray` "Foundation Array"? (And what would I do with NSHipster.com ?!)
 
-**语义学**？让我们比较一下其他的语言，看看他们是怎么用命名空间的，那么你就会意识到命名空间不能解决所有不明确的问题。可能在某些额外环境的情况下，那些命名空间会出现更多问题。
+**Semantics?** Start to look closely at any other language, and how they actually use namespaces, and you'll realize that namespaces don't magically solve all matters of ambiguity. If anything, the additional context makes things worse.
 
-你还是不赞同，那么你想象一下Objective-C的命名空间的实现可能会像这个样子，你会觉得怎么样:
+Not to create a straw man, but an imagined implementation of Objective-C namespaces probably look a lot like this:
 
 ~~~{objective-c}
 @namespace XX
@@ -231,6 +232,6 @@ category的主要功能是通过语法糖将一些有用的功能包裹进原来
 @end
 ~~~
 
-虽然Objective-C有繁琐的代码但也有容易理解的明显优点。我们作为开发者去讨论`NSString`的时候，我们不会把它理解成别的意思，编译器也是一样。当我们在阅读代码时，我们不需要过多地去考虑这些代码是什么作用的。并且最重要的是，NSString这个类名在google这些搜索引擎中[很容易就可以找到， 你不会得到其他结果](http://lmgtfy.com/?q=NSString)。
+What we have currently—warts and all—has the notable advantage of non-ambiguity. There is no mistaking `NSString` for anything other than what it is, either by the compiler or when we talk about it as developers. There are no special contextual considerations to consider when reading through code to understand what actors are at play. And best of all: class names are [_exceedingly_ easy to search for](http://lmgtfy.com/?q=NSString).
 
-不管怎样，如果你对这个讨论感兴趣的话，我强烈建议你看一下[Kyle Sluder](http://optshiftk.com/)的[this namespace feature proposal](http://optshiftk.com/2012/04/draft-proposal-for-namespaces-in-objective-c/)。非常值得一看。
+Either way, if you're interested in this subject, I'd encourage you to take a look at [this namespace feature proposal](http://optshiftk.com/2012/04/draft-proposal-for-namespaces-in-objective-c/) by [Kyle Sluder](http://optshiftk.com). It's a fascinating read.

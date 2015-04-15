@@ -1,27 +1,25 @@
 ---
-layout: post
 title: "Core Data Libraries & Utilities"
-category: Open Source
-excerpt: "上周，我们感觉Core Data有些难，所以为了NSHipster的这个问题，我们将奉上关于使用Core Data的最好开源库的引导。仔细阅读，看看你如何充分利用这次Core Data体验。"
 author: Mattt Thompson
-translator: JJ Mao
+category: Open Source
+excerpt: "We were a bit hard on Core Data last week, so for this issue of NSHipster, we bring you a guided tour of the best open source libraries for working with Core Data. Read on to see how you might make the most from your Core Data experience."
 ---
 
-因此我们姑且认为你已经确定自己的特定需求并且对比过所有的备选方案，选择在你的下一个应用中使用[Core Data](http://developer.apple.com/library/mac/#documentation/cocoa/Conceptual/CoreData/cdProgrammingGuide.html)。
+So let's say that, having determined your particular needs and compared all of the alternatives, you've chosen [Core Data](http://developer.apple.com/library/mac/#documentation/cocoa/Conceptual/CoreData/cdProgrammingGuide.html) for your next app.
 
-没错！Core Data是应用模型、持久化和大量对象图查找的最佳选择。
+Nothing wrong with that! Core Data is a great choice for apps that model, persist, and query large object graphs.
 
-当然，Core Data很复杂、繁琐，有时还是个[讨厌鬼](http://nshipster.com/nscoding#figure-2)— 但是，天杀的，史上最好和最受欢迎的一些应用都用Core Data。既然Core Data对他们来说已经足够好了，那对你来说也应该够好了。
+Sure it's complicated, cumbersome, and yes, at times, a real [pain in the ass](http://nshipster.com/nscoding#figure-2)—but gosh darn it, some of the best and most popular apps ever built use Core Data. And if it's good enough for them, it's probably good enough for you, too.
 
-...但这并不意味着Core Data无法改善了。
+...but that's not to say that Core Data can't be improved.
 
-虽然很多库试着替换Core Data，但是有更多库在尝试改善它。这些库涵盖了从必要的语法糖到广泛的全栈框架。
+And while there have been many libraries attempting to replace Core Data, there are many more that attempt to make it better. These libraries range from the much-needed dose of syntactic sugar to comprehensive, full-stack frameworks.
 
-本周的NSHipster：将奉上关于使用Core Data的最好开源库的引导。仔细阅读，看看你如何充分利用这次Core Data体验。
+This week on NSHipster: a guided tour of the best open source libraries for working with Core Data. Read on to see how you might make the most from your Core Data experience.
 
 ---
 
-> 为方便起见，提供下表。该表包含了使用Core Data的最重要的开源库和实用工具。该清单并不全面，如果你觉得有什么需要补充或是不合适，请在推特上联系[@NSHipster](https://twitter.com/NSHipster)—或是[提交一个pull request](https://github.com/NSHipster/articles)，那就更好了。
+> For your convenience, the following table is provided. Contained within are the most significant open source libraries and utilities for working with Core Data. This list is by no means comprehensive, so if you think something is missing or out of place, please tweet [@NSHipster](https://twitter.com/NSHipster)—or better yet, [submit a pull request](https://github.com/NSHipster/articles).
 
 <table>
   <thead>
@@ -36,9 +34,9 @@ translator: JJ Mao
       <td><iframe src="http://ghbtns.com/github-btn.html?user=magicalpanda&repo=MagicalRecord&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="106" height="20"></iframe></td>
     </tr>
     <tr>
-      <td><a href="https://github.com/mneorr/Objective-Record">Objective-Record</a></td>
-      <td><a href="https://github.com/mneorr">Marin Usalj</a></td>
-      <td><iframe src="http://ghbtns.com/github-btn.html?user=mneorr&repo=Objective-Record&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="106" height="20"></iframe></td>
+      <td><a href="https://github.com/supermarin/ObjectiveRecord">Objective-Record</a></td>
+      <td><a href="https://github.com/supermarin">Marin Usalj</a></td>
+      <td><iframe src="http://ghbtns.com/github-btn.html?user=supermarin&repo=ObjectiveRecord&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="106" height="20"></iframe></td>
     </tr>
     <tr>
       <td><a href="https://github.com/soffes/SSDataKit">SSDataKit</a></td>
@@ -89,9 +87,9 @@ translator: JJ Mao
       <td><iframe src="http://ghbtns.com/github-btn.html?user=gonzalezreal&repo=Overcoat&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="106" height="20"></iframe></td>
     </tr>
     <tr>
-      <td><a href="https://github.com/github/Mantle">Mantle</a></td>
-      <td><a href="https://github.com/GitHub">GitHub</a></td>
-      <td><iframe src="http://ghbtns.com/github-btn.html?user=github&repo=Mantle&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="106" height="20"></iframe></td>
+      <td><a href="https://github.com/Mantle/Mantle">Mantle</a></td>
+      <td><a href="https://github.com/Mantle">Mantle</a></td>
+      <td><iframe src="http://ghbtns.com/github-btn.html?user=Mantle&repo=Mantle&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="106" height="20"></iframe></td>
     </tr>
   </tbody>
 
@@ -130,38 +128,38 @@ translator: JJ Mao
 
 ## Wrappers
 
-Wrapper库为Core Data繁琐复杂的接口提供一些必要的语法糖和便利方法。
+Wrapper libraries provide some much needed syntactic sugar and convenience methods to Core Data's verbose and complicated APIs.
 
-例如，为了在一个managed object context中插入新的managed object，这是`NSEntityDescription`中（而不是如人们可能预期的`NSManagedObject`或`NSManagedObjectContext`）的一个类方法。`NSEntityDescription +insertNewObjectForEntityForName:inManagedObjectContext:`。神马？
+For example, to insert a new managed object into a managed object context, it's a class method on, not `NSManagedObject` or `NSManagedObjectContext` as one might reasonably expect, but `NSEntityDescription`. `NSEntityDescription +insertNewObjectForEntityForName:inManagedObjectContext:`. What?
 
-有许多开源库为Core Data接口最艰难的部分一起识别和纠正。在`AppDelegate`外部管理主要和私有的context，便于操作和查询managed objects的方法。
+There are a number of open source libraries that collectively identify and correct for the roughest patches of the Core Data APIs. Managing a main and private context outside of `AppDelegate`, convenience method for manipulating and querying managed objects, and so on.
 
 #### [SSDataKit](https://github.com/soffes/SSDataKit)
 
-> 有许多引用代码需要编写一个Core Data应用。这很令人不爽。自从iOS有了Core Data，几乎所有我编写的应用都用到了下面的类。
+> There is a lot of boilerplate code required to write a Core Data application. This is annoying. In pretty much everything I've written since Core Data came to iOS, I have used the following class.
 
-### 来自[Active Record](http://api.rubyonrails.org/classes/ActiveRecord/Base.html)的启发
+### Inspired by [Active Record](http://api.rubyonrails.org/classes/ActiveRecord/Base.html)
 
-学习了一种做事方式后将这些想法和习惯用于其他技术这件事对于程序员们来说应该是不足为奇的。一大波熟悉范式[Active Record](http://api.rubyonrails.org/classes/ActiveRecord/Base.html)的Ruby开发者涌入iOS行列。
+It should be no surprise that programmers, having learned how to do things a certain way, will bring those ideas and conventions to other technologies. For the large influx of Ruby developers coming over to iOS, that familiar paradigm was [Active Record](http://api.rubyonrails.org/classes/ActiveRecord/Base.html).
 
-与主流看法相反，Core Data _不是_ 一个[Object-Relational Mappers](http://en.wikipedia.org/wiki/Object-relational_mapping)，而是一个对象图和持久性框架，它的能力远超于单独的[Active Record 模式](http://en.wikipedia.org/wiki/Active_record_pattern)。使用Core Data作为ORM（对象关系映射）必然限制Core Data功能并混淆其概念的纯粹。但对于许多渴望熟悉ORM的开发者，这个交易的代价是双倍的！
+Contrary to popular belief, Core Data is _not_ an [Object-Relational Mappers](http://en.wikipedia.org/wiki/Object-relational_mapping), but rather an object graph and persistence framework, capable of much more than the [Active Record pattern](http://en.wikipedia.org/wiki/Active_record_pattern) alone is capable of. Using Core Data as an ORM necessarily limits the capabilities of Core Data and muddies its conceptual purity. But for many developers longing for the familiarity of an ORM, this trade-off is a deal at twice the price!
 
 #### [Magical Record](https://github.com/magicalpanda/MagicalRecord)
 
-> MagicalRecord的灵感来自于Ruby on Rails的Active Record轻松抓取。该代码是为了清理Core Data的相关代码，允许简单明了的一行抓取，当需要请求优化时还允许修改`NSFetchRequest`。
+> MagicalRecord was inspired by the ease of Ruby on Rails' Active Record fetching. The goals of this code are to clean up Core Data related code, allow for clear, simple, one-line fetches, and still allow the modification of the `NSFetchRequest` when request optimizations are needed.
 
-#### [Objective-Record](https://github.com/mneorr/Objective-Record)
+#### [ObjectiveRecord](https://github.com/supermarin/ObjectiveRecord)
 
-> 这是管理Core Data对象的轻量级ActiveRecord方式。
-> 该语法借助于Ruby on Rails。
-> 没有AppDelegate代码。
-> 经过[Kiwi](https://github.com/allending/Kiwi)的完整测试。
+> This is a lightweight ActiveRecord way of managing Core Data objects.
+> The syntax is borrowed from Ruby on Rails.
+> And yeah, no AppDelegate code.
+> It's fully tested with [Kiwi](https://github.com/kiwi-bdd/Kiwi).
 
-### 来自[LINQ](http://en.wikipedia.org/wiki/Language_Integrated_Query)的启发
+### Inspired by [LINQ](http://en.wikipedia.org/wiki/Language_Integrated_Query)
 
-这儿有个有趣的游戏：下次你遇到来自.NET界的开发者，设置一个定时器看看他们夸赞[LINQ](http://en.wikipedia.org/wiki/Language_Integrated_Query)用了多长时间。说真的，LINQ是 _真爱_ 。
+Here's a fun game: the next time you meet a developer coming over from the .NET world, set a timer to see how long it takes them to start raving about [LINQ](http://en.wikipedia.org/wiki/Language_Integrated_Query). Seriously, people _love_ LINQ.
 
-对外行来说，LINQ就像是[SQL](http://en.wikipedia.org/wiki/SQL)，但整合成了一种语言特性。想想`NSPredicate`，[`NSSortDescriptor`](http://nshipster.com/nssortdescriptor/)，和[`Key-Value Coding`](http://nshipster.com/kvc-collection-operators/)都有更棒的语法：
+For the uninitiated, LINQ is like [SQL](http://en.wikipedia.org/wiki/SQL), but integrated as a language feature. Think `NSPredicate`, [`NSSortDescriptor`](http://nshipster.com/nssortdescriptor/), and [`Key-Value Coding`](http://nshipster.com/kvc-collection-operators/) with a much nicer syntax:
 
 ~~~
 from c in SomeCollection
@@ -171,70 +169,71 @@ from c in SomeCollection
 
 #### [ios-queryable](https://github.com/martydill/ios-queryable)
 
-> ios-queryable支持LINQ-风格组合查询和延迟执行，并实现了IEnumerable方法的一个子集，包括`where`，`take`，`skip`，`orderBy`，`first/firstOrDefault`，`single/singleOrDefault`，`count`，`any`和`all`。
+> ios-queryable supports LINQ-style query composition and deferred execution, and implements a subset of IEnumerable's methods, including `where`, `take`, `skip`, `orderBy`, `first/firstOrDefault`, `single/singleOrDefault`, `count`, `any`, and `all`.
 
-### 来自[ReactiveCocoa](https://github.com/ReactiveCocoa)的启发
+### Inspired by [ReactiveCocoa](https://github.com/ReactiveCocoa)
 
-ReactiveCocoa [为Objective-C带来了函数式反应型范例](http://nshipster.com/reactivecocoa/), 它现在正为Core Data带来一些函数式的稳健性和条理性。这仍是个未知的领域，但最初的结果是的确是有希望的。
+ReactiveCocoa, which itself [brings the functional reactive paradigm to Objective-C](http://nshipster.com/reactivecocoa/), is now being used to bring some functional sanity and order to Core Data. This is still uncharted territory, but the initial results are indeed promising.
 
 #### [ReactiveCoreData](https://github.com/apparentsoft/ReactiveCoreData)
 
-> ReactiveCoreData (RCD)试图将Core Data带入ReactiveCocoa (RAC)的世界。
+> ReactiveCoreData (RCD) is an attempt to bring Core Data into the ReactiveCocoa (RAC) world.
 
 ## Adapters
 
-大多数iOS应用与网络服务通信。对于使用Core Data的应用，从REST或RPC-风格的网络服务获取、更新、删除记录是很常见的。保持本地缓存和服务器之间的一致性是一件看似棘手的事情。
+Most iOS apps communicate with a webservice in some capacity. For apps using Core Data, it's common for records to be fetched, updated, and deleted from a REST or RPC-style webservice. Maintaining consistency between a local cache and the server is a deceptively tricky enterprise.
 
-保持对象更新，删除重复的记录，将实体映射到接口端点，协调冲突，管理网络可通性...这些只是一个开发者创建稳健的客户端-服务器应用时面对的部分挑战。
+Keeping objects up-to-date, removing duplicate records, mapping entities to API endpoints, reconciling conflicts, managing network reachability... these are just some of the challenges a developer faces when creating a robust client-server application.
 
-幸运的是，有大量的开源库可以减轻部分烦恼。
+Fortunately, there are a wealth of open-source libraries that can help alleviate some of this pain.
 
 #### [RestKit](https://github.com/RestKit/RestKit)
 
-> RestKit是一个现代化的Objective-C框架用于在iOS和OS X上实现RESTful网络服务客户端。它提供一种强大的[对象映射](https://github.com/RestKit/RestKit/wiki/Object-mapping)引擎与[Core Data](http://developer.apple.com/library/mac/#documentation/cocoa/Conceptual/CoreData/cdProgrammingGuide.html)无缝集成，并为建立在[AFNetworking](https://github.com/AFNetworking/AFNetworking)之上的映射HTTP请求和响应提供了一组简单的网络层原语。它有一套精心设计的接口，使得访问和建模RESTful资源几乎有种不可思议的感觉。
+> RestKit is a modern Objective-C framework for implementing RESTful web services clients on iOS and OS X. It provides a powerful [object mapping](https://github.com/RestKit/RestKit/wiki/Object-mapping) engine that seamlessly integrates with [Core Data](http://developer.apple.com/library/mac/#documentation/cocoa/Conceptual/CoreData/cdProgrammingGuide.html) and a simple set of networking primitives for mapping HTTP requests and responses built on top of [AFNetworking](https://github.com/AFNetworking/AFNetworking). It has an elegant, carefully designed set of APIs that make accessing and modeling RESTful resources feel almost magical.
 
 #### [AFIncrementalStore](https://github.com/AFNetworking/AFIncrementalStore)
 
-> AFIncrementalStore是NSIncrementalStore的子类，它使用AFNetworking自动请求资源作为必要的属性和联系。
+> AFIncrementalStore is an NSIncrementalStore subclass that uses AFNetworking to automatically request resources as properties and relationships are needed.
 
 #### [MMRecord](https://github.com/mutualmobile/MMRecord)
 
-> MMRecord是用于iOS和OS X的基于block的无缝网络服务集成库。它利用Core Data模型配置从接口响应自动创建和填充一个完整的对象图。MMRecord适用于任何网络库，设置简单，包含了许多流行特性使得网络服务的使用更加容易。
+> MMRecord is a block-based seamless web service integration library for iOS and OS X. It leverages the Core Data model configuration to automatically create and populate a complete object graph from an API response. It works with any networking library, is simple to setup, and includes many popular features that make working with web services even easier.
 
 #### [SLRESTfulCoreData](https://github.com/OliverLetterer/SLRESTfulCoreData)
 
-> `SLRESTfulCoreData`建于[AFNetworking](https://github.com/AFNetworking/AFNetworking)和[SLCoreDataStack](https://github.com/OliverLetterer/SLCoreDataStack) 之上，使你在几分钟内就能映射JSON REST API到你的CoreData模型。
+> `SLRESTfulCoreData` builds on top of [AFNetworking](https://github.com/AFNetworking/AFNetworking) and [SLCoreDataStack](https://github.com/OliverLetterer/SLCoreDataStack) and let's you map your JSON REST API to your CoreData model in minutes.
 
 #### [Overcoat](https://github.com/gonzalezreal/Overcoat)
 
-> Overcoat是一个[AFNetworking](https://github.com/AFNetworking/AFNetworking)扩展，它让开发者使用REST客户端的Mantle模型对象变得超级简单。
+> Overcoat is an [AFNetworking](https://github.com/AFNetworking/AFNetworking) extension that makes it super simple for developers to use Mantle model objects with a REST client.
 
 #### [Mantle](https://github.com/github/Mantle)
 
-> Mantle简化了编写简单的Cocoa或Cocoa Touch应用模型层。
+> Mantle makes it easy to write a simple model layer for your Cocoa or Cocoa Touch application.
 
 ## Synchronizers
 
-鉴于适配器通过现有的、通用接口（如，REST）同步信息，同步装置以可移植性和通用性为代价，使用更加直接的协议提供更好的集成和性能。
+Whereas adapters synchronize information through an existing, general purpose interface such as REST, synchronizers use a more direct protocol, offering better integration and performance at the expense of portability and generality.
 
 ### [TICoreDataSync](https://github.com/nothirst/TICoreDataSync)
 
-> 自动同步Core Data应用，在OS X和iOS之间任意组合：从Mac到iPhone或iPad或iPod touch，以及从iPhone或iPad或iPod touch到Mac。
+> Automatic synchronization for Core Data Apps, between any combination of OS X and iOS: Mac to iPhone to iPad to iPod touch and back again
 
 #### [UbiquityStoreManager](https://github.com/lhunath/UbiquityStoreManager)
 
-> UbiquityStoreManager控制器实现了iCloud与Core Data的集成。
+> UbiquityStoreManager is a controller that implements iCloud integration with Core Data for you.
 
 ## Utilities
 
-在未提及Mogenerator时我们会疏忽对开源Core Data生态系统的反馈。在前iPhone时代幸存下来的项目中，Mogenerator已成为这些年来开发者不可或缺的工具。这些年来，虽然Core Data改变了很多，但是这一常量已经成为Apple综合工具的典型不足。幸运的是，有Mr. Wolf Rentzsch罩着我们。
+We would be remiss to survey the open source Core Data ecosystem without mentioning Mogenerator. Among one of the surviving projects from the pre-iPhone era, Mogenerator has become indispensable to developers over the years. Although much has changed about Core Data over the years, the one constant has been Apple's characteristic lack of comprehensive tooling. Fortunately, Mr. Wolf Rentzsch has us covered.
 
 #### [Mogenerator](https://github.com/rentzsch/mogenerator)
 
-> `mogenerator`是命令行工具，创建一个`.xcdatamodel` 文件，并创建*两个类（每个实体中）*。第一个类`_MyEntity`是单独为机器准备的，它将不断重写保持与数据模型的同步。第二个类`MyEntity`，是`_MyEntity`的子类，它将不会被重写，是个存放自定义逻辑的好地方。
+> `mogenerator` is a command-line tool that, given an `.xcdatamodel` file, will generate *two classes per entity*. The first class, `_MyEntity`, is intended solely for machine consumption and will be continuously overwritten to stay in sync with your data model. The second class, `MyEntity`, subclasses `_MyEntity`, won't ever be overwritten and is a great place to put your custom logic.
 
 ---
 
-记住：这儿没有包治百病的良药，也没有放之四海皆准的解答。就像Core Data可能只是在特定情况下建议使用，前面提到的Core Data库也是如此。
+Remember: there is no silver bullet. There is no one-size-fits-all solution. Just as Core Data may only be advisable in particular circumstances, so too are the aforementioned Core Data libraries.
 
-即使只为了帮助每个库确定相对优势和对比权衡，把生态系统分成大类也是有益的。只有你自己知道（当然，有时候需要通过试错）哪种方法是最适合自己的。
+Dividing the ecosystem up into broad categories is informative if only to help identify the relative strengths and trade-offs of each library. Only you can determine (yes, sometimes through trial and error) which solution is the best for you.
+

@@ -1,25 +1,36 @@
 ---
-layout: post
 title: NSLinguisticTagger
-category: Cocoa
-excerpt: "NSLinguisticTagger在语言学功能上来讲是一把名副其实的瑞士军刀，它可以讲自然语言的字符串标记为单词、确定词性和词根、划分出人名地名和组织名称、告诉你字符串使用的语言和语系。"
 author: Mattt Thompson
-translator: Croath Liu
+category: Cocoa
+tags: nshipster
+excerpt: "NSLinguisticTagger is a veritable Swiss Army Knife of linguistic functionality, with the ability to tokenize natural language strings into words, determine their part-of-speech & stem, extract names of people, places, & organizations, and tell you the languages & respective writing system used in the string."
 ---
 
-`NSLinguisticTagger` 在语言学功能上来讲是一把名副其实的瑞士军刀，它可以讲自然语言的字符串[标记](http://en.wikipedia.org/wiki/Tokenization)为单词、确定词性和[词根](http://en.wikipedia.org/wiki/Word_stem)、划分出人名地名和组织名称、告诉你字符串使用的语言和[语系](http://en.wikipedia.org/wiki/Writing_system)。
+`NSLinguisticTagger` is a veritable Swiss Army Knife of linguistic functionality, with the ability to [tokenize](http://en.wikipedia.org/wiki/Tokenization) natural language strings into words, determine their part-of-speech & [stem](http://en.wikipedia.org/wiki/Word_stem), extract names of people, places, & organizations, and tell you the languages & respective [writing system](http://en.wikipedia.org/wiki/Writing_system) used in the string.
 
-对于我们大多数人来说，这其中蕴含着意义远超过我们所知道的，但或许也只是我们没有合适的机会使用而已。但是，几乎所有使用某种方式来处理自然语言的应用如果能够用上 `NSLinguisticTagger` ，或许就会润色不少，没准会催生一批新特性呢。
+For most of us, this is far more power than we know what to do with. But perhaps this is just for lack sufficient opportunity to try. After all, almost every application deals with natural language in one way or another--perhaps `NSLinguisticTagger` could add a new level of polish, or enable brand new features entirely.
 
 ---
 
-`NSLinguisticTagger` 和Siri同时出现于iOS 5上，所以可以推测这可能是苹果在私人助理方向开发时候的副产品。
+Introduced with iOS 5, `NSLinguisticTagger` is a contemporary to Siri, raising speculation that it was a byproduct of the personal assistant's development.
 
-回想一下我们经常问Siri的一个问题：
+Consider a typical question we might ask Siri:
 
-> 旧金山的天气怎么样？（What is the weather in San Francisco?）
+> What is the weather in San Francisco?
 
-电脑不可能通过逐字翻译"理解"问题的含义，不过我们耍一点儿小花招就可以合理地理解这个问题的_含义_：
+Computers are a long ways off from "understanding" this question literally, but with a few simple tricks, we can do a reasonable job understanding the _intention_ of the question:
+
+~~~{swift}
+let question = "What is the weather in San Francisco?"
+let options: NSLinguisticTaggerOptions = .OmitWhitespace | .OmitPunctuation | .JoinNames
+let schemes = NSLinguisticTagger.availableTagSchemesForLanguage("en")
+let tagger = NSLinguisticTagger(tagSchemes: schemes, options: Int(options.rawValue))
+tagger.string = question
+tagger.enumerateTagsInRange(NSMakeRange(0, (question as NSString).length), scheme: NSLinguisticTagSchemeNameTypeOrLexicalClass, options: options) { (tag, tokenRange, sentenceRange, _) in
+    let token = (question as NSString).substringWithRange(tokenRange)
+    println("\(token): \(tag)")
+}
+~~~
 
 ~~~{objective-c}
 NSString *question = @"What is the weather in San Francisco?";
@@ -32,29 +43,29 @@ tagger.string = question;
 }];
 ~~~
 
-输出如下：
+This code would print the following:
 
-> What: _Pronoun（代词）_
-> is: _Verb（动词）_
-> the: _Determiner（限定词）_
-> weather: _Noun（名词）_
-> in: _Preposition（介词）_
-> San Francisco: _PlaceName（地名）_
+> What: _Pronoun_
+> is: _Verb_
+> the: _Determiner_
+> weather: _Noun_
+> in: _Preposition_
+> San Francisco: _PlaceName_
 
-如果我们过滤名词、动词、地名，就会得到结果：`[is, weather, San Francisco]`。
+If we filter on nouns, verbs, and place name, we get `[is, weather, San Francisco]`.
 
-仅以来这个结果，或者配合[潜在语义映射（Latent Semantic Mapping）](http://developer.apple.com/library/mac/#documentation/LatentSemanticMapping/Reference/LatentSemanticMapping_header_reference/Reference/reference.html)库，我们就可以推断出合理解释，然后就可以通过调用相关API去获取旧金山此时此刻的天气状况了。
+Just based on this alone, or perhaps in conjunction with something like the [Latent Semantic Mapping](http://developer.apple.com/library/mac/#documentation/LatentSemanticMapping/Reference/LatentSemanticMapping_header_reference/Reference/reference.html) framework, we can conclude that a reasonable course of action would be to make an API request to determine the current weather conditions in San Francisco.
 
-## 特征标记方案
+## Tagging Schemes
 
-我们可以通过给 `NSLinguisticTagger` 设置下列scheme来标记不同类型的信息：
+`NSLinguisticTagger` can be configured to tag different kinds of information by specifying any of the following tagging schemes:
 
-- `NSLinguisticTagSchemeTokenType`：将短语在大粒度上分成词语、标点符号、空格等。
-- `NSLinguisticTagSchemeLexicalClass`：将短语根据类型分为话语部分、标点空格等。
-- `NSLinguisticTagSchemeNameType`：将短语根据是否为命名实体分类。
-- `NSLinguisticTagSchemeNameTypeOrLexicalClass`：遵守 `NSLinguisticTagSchemeNameType` 对名字的规则和 `NSLinguisticTagSchemeLexicalClass` 对所有其它部分的原则。
+- `NSLinguisticTagSchemeTokenType`: Classifies tokens according to their broad type: word, punctuation, whitespace, etc.
+- `NSLinguisticTagSchemeLexicalClass`: Classifies tokens according to class: part of speech for words, type of punctuation or whitespace, etc.
+- `NSLinguisticTagSchemeNameType`: Classifies tokens as to whether they are part of named entities of various types or not.
+- `NSLinguisticTagSchemeNameTypeOrLexicalClass`: Follows `NSLinguisticTagSchemeNameType` for names, and `NSLinguisticTagSchemeLexicalClass` for all other tokens.
 
-这里有一个不同短语类型和每一个分词方案之间关系的表：（`NSLinguisticTagSchemeNameTypeOrLexicalClass`表示`NSLinguisticTagSchemeNameType` 和 `NSLinguisticTagSchemeLexicalClass`的组合关系）：
+Here's a list of the various token types associated with each scheme (`NSLinguisticTagSchemeNameTypeOrLexicalClass`, as the name implies, is the union between `NSLinguisticTagSchemeNameType` & `NSLinguisticTagSchemeLexicalClass`):
 
 <table>
   <thead>
@@ -113,35 +124,35 @@ tagger.string = question;
   </tbody>
 </table>
 
-用 `NSLinguisticTagSchemeTokenType` 来进行基本的分词（tokenization）就可以分辨出词语空格和标点符号了。至于话语信息或者区分话语的不同部分应该用 `NSLinguisticTagSchemeLexicalClass`。
+So for basic tokenization, use `NSLinguisticTagSchemeTokenType`, which will allow you to distinguish between words and whitespace or punctuation. For information like part-of-speech, or differentiation between different parts of speech, `NSLinguisticTagSchemeLexicalClass` is your new bicycle.
 
-继续说其它scheme：
+Continuing with the tagging schemes:
 
-- `NSLinguisticTagSchemeLemma`： 在词根可知时可分析出词根。
-- `NSLinguisticTagSchemeLanguage`：根据短语的语言来标记。标记出的值会以标准语言所写形式给出，例如`"en"`、`"fr"`、`"de"`等，和用 `NSOrthography` 类的效果相同。_注意此类分词根据的是词语在整个句子或段落中的表意，而不是只根据该词本身来判断_。
-- `NSLinguisticTagSchemeScript`：类似上述也是标记不同语言，但会以如下的缩略形式给出：`"Latn"`、`"Cyrl"`、`"Jpan"`、`"Hans"`、`"Hant"`等。
+- `NSLinguisticTagSchemeLemma`: This tag scheme supplies a stem forms of the words, if known.
+- `NSLinguisticTagSchemeLanguage`: Tags tokens according to their script. The tag values will be standard language abbreviations such as `"en"`, `"fr"`, `"de"`, etc., as used with the `NSOrthography` class. _Note that the tagger generally attempts to determine the language of text at the level of an entire sentence or paragraph, rather than word by word._
+- `NSLinguisticTagSchemeScript`: Tags tokens according to their script. The tag values will be standard script abbreviations such as `"Latn"`, `"Cyrl"`, `"Jpan"`, `"Hans"`, `"Hant"`, etc.
 
-回头看上面给出的样例代码，首先用一个你想要用到的scheme组成的数组来初始化一个 `NSLinguisticTagger`，然后在判断输入字符串的标记之后枚举出每一个tag。
+As demonstrated in the example above, first you initialize an `NSLinguisticTagger` with an array of all of the different schemes that you wish to use, and then assign or enumerate each of the tags after specifying the tagger's input string.
 
-## 标记选项
+## Tagging Options
 
-除可用的标记scheme之外，还有一些可以传给 `NSLinguisticTagger` 的附加选项（用按位或`|`）来改变细微的分词行为：
+In addition to the available tagging schemes, there are several options you can pass to `NSLinguisticTagger` (combined with bitwise OR `|`) to slightly change its behavior:
 
 - `NSLinguisticTaggerOmitWords`
 - `NSLinguisticTaggerOmitPunctuation`
 - `NSLinguisticTaggerOmitWhitespace`
 - `NSLinguisticTaggerOmitOther`
 
-这些选项的每一个都可以细化标记所代表的广义类别。例如：`NSLinguisticTagSchemeLexicalClass` 配合 `NSLinguisticTaggerOmitPunctuation` 就可以在不同种类的标点符号中再细化。推荐用带block的迭代器或predicate来实现。
+Each of these options omit the broad categories of tags described. For example, `NSLinguisticTagSchemeLexicalClass`, which distinguishes between many different kinds of punctuation, all of those would be omitted with `NSLinguisticTaggerOmitPunctuation`. This is preferable to manually filtering these tag types in enumeration blocks or with predicates.
 
-最后一个选项是针对 `NSLinguisticTagSchemeNameType` 的：
+The last option is specific to `NSLinguisticTagSchemeNameType`:
 
 - `NSLinguisticTaggerJoinNames`
 
-默认一个名字中的每个短语都被分成不同的实例。很多情况下需要将类似“San Francisco”这样的名字当作一个短语而不是两个短语来看待。传入这个属性即可实现这个功能。
+By default, each token in a name is treated as separate instances. In many circumstances, it makes sense to treat names like "San Francisco" as a single token, rather than two separate tokens. Passing this token makes this so.
 
 ---
 
-不幸的是在移动设备的UI设计中，自然语言处理并没有并没有被充分的利用。如果能够有效的利用，用户就可以用说话来代替手上的触摸动作来完成相同的事，而且会花费更少的时间。
+Natural language is woefully under-utilized in user interface design on mobile devices. When implemented effectively, a single utterance from the user can achieve the equivalent of a handful of touch interactions, in a fraction of the time.
 
-当然要做到这点并不容易，但如果我们花费一点点时间能让应用在视觉上更赞，就可以给用户与设备和应用的交互体验上带来很大的颠覆。等到那时，再加上 `NSLinguisticTagger`，使用移动应用将从未如此简单。
+Sure, it's not easy, but if we spent a fraction of the time we use to make our visual interfaces pixel-perfect, we could completely re-imagine how users best interact with apps and devices. And with `NSLinguisticTagger`, it's never been easier to get started.

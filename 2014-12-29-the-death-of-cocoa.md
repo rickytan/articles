@@ -1,113 +1,115 @@
 ---
-layout: post
 title: The Death of Cocoa
-category: ""
 author: Mattt Thompson
-translator: Henry Lee
-excerpt: "对于我们大多数而言，苹果的简洁、优雅和它软硬件的结合是我们为什么在这个平台开发的原因，尽管如此，即使 Swift 才开始被使用几个月，Cocoa 已经开始失去它原有的光芒了。"
+category: ""
+excerpt: "For many of us, the simplicity, elegance, and performance of Apple's hardware and software working together are the reason why we build on their platforms. And yet, after just a few months of working with Swift, Cocoa has begun to lose its luster."
 ---
-Cocoa实际就是Objective-C的标准库，包含了许多用语言编写程序最需要的一些框架，例如 Foundation、AppKit 和 Core Data。而 Cocoa Touch 基本上是用 UIKit 替换 AppKit，而且它与 Cocoa 在很多系统框架都是能互换的。
 
-对于我们大多数人而言，苹果的简洁、优雅和它软硬件的结合是我们为什么在这个平台开发的原因。实际上，我们在这个网站上也从来不吝啬对 Cocoa 设计与功能的吹捧。
+Cocoa is the de facto standard library of Objective-C, containing many of the essential frameworks for working in the language, such as Foundation, AppKit, and Core Data. Cocoa Touch is basically just Cocoa with UIKit substituted for AppKit, and is often used interchangeably with Cocoa to refer to the system frameworks on iOS.
 
-尽管如此，即使 Swift 才开始被使用几个月，Cocoa 已经开始失去它原有的光芒了。在语言方面，我们都见到了 Swift 是终结 Objective-C 的开始，但是作为基本库的Cocoa呢？_(这
-已经不是苹果第一次把它的标准库淘汰了，记得 Carbon 么)_。
+For many of us, the simplicity, elegance, and performance of Apple's hardware and software working together are the reason why we build on their platforms. Indeed, no shortage of words have been penned on this site in adulation of Cocoa's design and functionality.
 
-Swift的现代语言特性使用它产出的代码更安全也更有效率。但是，如果你觉得Swift只不过是苹果编译器团队在语言层面的一次小小的优化，其实也是能被理解的，因为Swift对传统应用开发的好处实在寥寥。
+And yet, after just a few months of working with Swift, Cocoa has begun to lose its luster. We all saw Swift as the beginning of the end for Objective-C, but Cocoa? _(It wouldn't be the first time an Apple standard library would be made obsolete. Remember Carbon?)_
 
-经过论证后，在战略上一开始让 Objective-C 与 Swift 代码并用是必要的，让团队里更有冒险精神的工程师把 Swift 加入既有工程对于这门新语言的广泛接受是十分关键的，但是由于所有精力都被放在了资源映射和API校对上，又有一个论点被提出来了：Cocoa 作为框架已经开始成为了一个累赘。
+Swift is designed with modern language features that allow for safer, more performant code. However, one could be forgiven for seeing Swift as little more than a distraction for the compiler tools team, as very few of Swift's advantages trickle down into conventional application usage.
 
-如果我们用 Swift 基本库重新建立一套 Foundation 会怎么样？我们会如何不同地实现呢？我们又能从过去的错误里学到什么？这在 NSHipster 里看起来像是个奇怪的主题，因为 NSHipster 毕竟是一个基于对 Objective-C 和 Cocoa 的热爱才建立起来的网站，但是，这依旧是一个值得尝试的主题。
+Having Objective-C and Swift code interoperate in a meaningful way from launch was a strategic—and arguably necessary—decision. Allowing the more adventurous engineers within a team a low-risk way to introduce Swift into existing code bases has been crucial to the wide adoption the new language has already seen. But for all of the effort that's been put into source mapping and API auditing, there's an argument to be made that Cocoa has become something of a liability.
 
-所以，让我们来稍微花些时间往前看看未来的可能性来结束作为 iOS 开发者历史性的一年，。
+What if we were to build a new Foundation from the Swift Standard Library? What would we do differently, and how could we learn from the mistakes of our past? This may seem an odd thesis for NSHipster, a site founded upon a great deal of affection for Objective-C and Cocoa, but it's one worth exploring.
 
-***
+So to close out this historic year for Apple developers, let's take a moment to look forward at the possibilities going forward.
 
->如果说我看得更远，那是因为我站在巨人的肩膀上。  
-><cite>艾萨克·牛顿</cite>
+* * *
 
-我们所有高效的生产力其实都是亏欠于标准库的。
+> If I have seen further it is by standing on the shoulders of giants.
+> <cite>Isaac Newton</cite>
 
-在做得好的情况下，标准库不仅提供了一些最常用基础架构的实现，而且他们用一种可移植的方式厘清了很多概念，这也是一门语言标准库偏离现有的习俗开始[拥有自己的风格](http://eev.ee/blog/2012/04/09/php-a-fractal-of-bad-design/)的时候。
+We owe all of our productivity to standard libraries.
 
-例如，[`NSURLComponents`](http://nshipster.com/nsurl/) 符合 [RFC 3986](http://www.ietf.org/rfc/rfc3986) 标准，并在[文档](https://developer.apple.com/library/prerelease/ios/documentation/Foundation/Reference/NSURLComponents_class/index.html)里标说明很清楚。不仅 API 使用者自动地吸收了作为用法副产品的术语和概念，而且对于那些已经熟悉 RFC 3986 的新的 API 使用者依旧能积极地开始工作（究竟写文档有多容易呢？你还是点开链接自己去读文档吧）。
+When done well, standard libraries not only provide a common implementation of the most useful programming constructs, but they clarify those concepts in a transferable way. It's when a language's standard library diverges from existing (or even internal) convention that [things go south](http://eev.ee/blog/2012/04/09/php-a-fractal-of-bad-design/).
 
-标准库理应实现标准。
+For example, [`NSURLComponents`](http://nshipster.com/nsurl/) conforms to [RFC 3986](http://www.ietf.org/rfc/rfc3986)—a fact made explicit [in the documentation](https://developer.apple.com/library/prerelease/ios/documentation/Foundation/Reference/NSURLComponents_class/index.html). Not only do API consumers osmotically absorb the proper terminology and concepts as a byproduct of usage, but newcomers to the API that are already familiar with RFC 3986 can hit the ground running. (And how much easier it is to write documentation; just "RTFM" with a link to the spec!)
 
-当我们说科技应该更直觉化，我们一般的意思是他们应该与我们之前熟悉的东西相似。从 IETF、ISO 等来的标准应该作为新标准库建立的根基。
+Standard libraries should implement standards.
 
-基于这个断言，让我们来看看一些 Cocoa 做过的具体的例子，并看看一个新的 Swift 基本库在哪些地方可以提高。
+When we talk about technologies being intuitive, what we usually mean is that they're familiar. Standards from the IETF, ISO, and other bodies should be the common ground on which any new standard library should be built.
 
+Based on this assertion, let's take a look at some specific examples of what Cocoa does, and how a new Swift standard library could improve.
 
 ### Numbers
 
-`Number`是一个纯粹封装了整数、浮点数、双精度数和布尔值等原始数据类型的对象。没有了以上顾虑的 Swift ，倒是没有建立这个结构的必要了。
+`NSNumber` exists purely as an object wrapper around integer, float, double, and boolean primitives. Without such concerns in Swift, there is no practical role for such a construct.
 
-Swift标准库已经通过绝妙的[上层函数与操作符](http://nshipster.com/swift-default-protocol-implementations/)的结合与类型继承在建立基本数值类型上做了很棒的工作(额外加分项还有包括 [二进制文件的文字化、八进制十六进制与十进制的相加](https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/TheBasics.html#//apple_ref/doc/uid/TP40014097-CH5-XID_487))。由于缺乏一些现在比较真实的反馈，这里只有一些可以被加进来的建议：
+Swift's standard library has done a remarkable job in structuring its numeric primitives, through a clever combination of [top-level functions and operators](http://nshipster.com/swift-default-protocol-implementations/) and type hierarchies. (And bonus points for including [literals for binary, octal, and hexadecimal in addition to decimal](https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/TheBasics.html#//apple_ref/doc/uid/TP40014097-CH5-XID_487)). For lack of any real complaints about what's currently there, here are some suggestions for what might be added:
 
-- `NSDecimalNumber` 的一个合适的替换者。Swift 的 `Double` 在[文档上](https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/TheBasics.html#//apple_ref/doc/uid/TP40014097-CH5-XID_484)说是有64位的，而 `NSDecimalNumber` 是可以代表["可以表示为 `小数部分x10^次方` 的任意数，小数部分是一个高达38位的十进制数，而指数部分则是可以从 `-128` 到 `127` 的整数"](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSDecimalNumber_Class/index.html)。同时，[这个代码段](https://gist.github.com/mattt/1ed12090d7c89f36fd28)也为Swift的 `NSDecimalNumber` 提供了一些必要的补充。
+- A suitable replacement for `NSDecimalNumber`. Swift `Double`s are [documented as having 64-bit](https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/TheBasics.html#//apple_ref/doc/uid/TP40014097-CH5-XID_484), while `NSDecimalNumber` can represent ["any number that can be expressed as `mantissa x 10^exponent` where mantissa is a decimal integer up to 38 digits long, and exponent is an integer from `–128` through `127`"](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSDecimalNumber_Class/index.html). In the meantime, [this gist](https://gist.github.com/mattt/1ed12090d7c89f36fd28) provides some of the necessary additions to work with `NSDecimalNumber` in Swift as one would any of the native numeric types.
+- Complex number support, such as what's described in [this gist](https://gist.github.com/mattt/0576b9e4396ab5645aa9).
+- Simple native methods for [generating random numbers](http://nshipster.com/random/). [This gist](https://gist.github.com/mattt/f2ee2eed3570d1a9d644) has some examples of what that might look like.
+- Methods that take advantage of overloading to provide a uniform interface to performing calculations on one or many numbers, such as those in [Surge](https://github.com/mattt/surge).
+- For Playgrounds, a framework with built-in mathematical notation, such as [Euler](https://github.com/mattt/euler), could make for a neat teaching tool.
 
-- 复数的支持，例如在这个[代码段](https://gist.github.com/mattt/0576b9e4396ab5645aa9)里说的。
+### Strings
 
-- 更简单的本地的随机数[生成方法](http://nshipster.com/random/)。[这个代码段](https://gist.github.com/mattt/f2ee2eed3570d1a9d644)提供了一些类似的例子。
+The peril of strings is that they can encode so many different kinds of information. [As written previously](http://nshipster.com/nslocalizedstring/):
 
-- 一些通过 Swift 的重载，为单个或多个数的运算提供统一的接口，例如 [Surge](https://github.com/mattt/surge) 里做的。
+> Strings are perhaps the most versatile data type in computing. They're passed around as symbols, used to encode numeric values, associate values to keys, represent resource paths, store linguistic content, and format information.
 
-- 在 Playgrounds 里增加增加一些内置的计算框架，例如 [Euler](https://github.com/mattt/euler) 所作的，那在 Playgrounds 还能变成一个很好的教学工具。
+`NSString` is perhaps _too_ versatile, though. Although it handles Unicode like a champ, the entire API is burdened by the conflation of strings as paths. `stringByAppendingPathComponent:` and its ilk are genuinely useful, but this usefulness ultimately stems from a misappropriation of strings as URLs.
 
-### String
+Much of this is due to the fact that `@"this"` (a string literal) is much more convenient than `[NSURL URLWithString:@"that"]` (a constructor). However, with [Swift's literal convertibles](http://nshipster.com/swift-literal-convertible/), it can be just as easy to build URL or Path values.
 
-字符串的危险在于它能够编码如此不同的信息，例如在[前文所述](http://nshipster.com/nslocalizedstring/)：
+One of the truly clever design choices for Swift's `String` is the internal use of encoding-independent Unicode characters, with exposed "views" to specific encodings:
 
-> 字符串可能是在计算里最通用的数据类型了。他们能传递符号、编码数值、连接键值、表示支援了路径、储存与发信息和格式化的内容。
+> - A collection of UTF-8 code units (accessed with the string’s `utf8` property)
+> - A collection of UTF-16 code units (accessed with the string’s `utf16` property)
+> - A collection of 21-bit Unicode scalar values, equivalent to the string’s UTF-32 encoding form (accessed with the string's `unicodeScalars` property)
 
-尽管如此，`NSString` 可能有些_太过_通用了。虽然它处理Unicode的时候信手拈来，但是整个API被字符串和路径的混合所负累，`stringByAppendingPathComponent:` 和与它类似的方法都十分有用，但是这个有用最终导致了把URL当做字符串的滥用。
+One of the only complaints of Swift `String`s are how much of its functionality is hampered by the way functionality is hidden in top-level functions. Most developers are trained to type `.` and wait for method completion for something like "count"; it's less obvious to consult the top-level `countElements` function. (Again, as described in the [Default Protocol Implementations article](http://nshipster.com/swift-default-protocol-implementations/), this could be solved if either Xcode or Swift itself allowed automatic bridging of explicit and implicit self in functions).
 
-以上其实是因为像类似于 `@"this"` （一个字符串本身）比 `[NSURL URLWithString:@"that"]` （一个构造函数）要方便多了。但是，有了[ Swift 字符串转换工具](http://nshipster.com/swift-literal-convertible/)，建立URL或者路径将会更容易。
+### URI, URL, and URN
 
-Swift 的 `String` 一个真心聪明的设计选择是，它在内部使用了与编码无关的Unicode字符串，并暴露了以下编码方式：
+An ideal URL implementation would be a value-type (i.e. `struct`) implementation of `NSURLComponents`, which would take over all of the aforementioned path-related APIs currently in `NSString`. [Something along these lines](https://gist.github.com/mattt/d2fa3107e41c63e875e5). A clear implementation of URI schemes, according to [RFC 4395](http://tools.ietf.org/html/rfc4395), could mitigate the conflation of file (`file://`) URLs as they are currently in `NSURL`. A nice implementation of URNs, according to [RFC 2141](https://www.ietf.org/rfc/rfc2141) would do wonders for getting developers to realize what a URN is, and how URIs, URLs, and URNs all relate to one another. _(Again, it's all about transferrable skills)_.
 
-> - UTF-8 字符集（通过 `String` 的 `utf8` 属性访问）
-> - UTF-16 字符集（通过 `String` 的 `utf16` 属性访问）
-> - 21位的 Unicode 标量，相当于字符串的 UTF-32 编码 （通过 `String` 的 `unicodeScalars` 属性访问）
+### Data Structures
 
-对 Swift 的 `String` 的唯一一个小抱怨就是，它的功能多少有些被它上层函数隐蔽的命名方式所掩盖了。许多开发者都被训练成打一个 `.` 然后等待着方法自动完成蹦出来类似 `count` 的属性，用类似 `countElements` 之类的上层函数查阅起来相较而言肯定没那么明显。（再一次强调，正如在[协议的默认实现](http://nshipster.com/swift-default-protocol-implementations/)）一篇文章里描述的一样，这可以通过 Xcode 或者 Swift 本身桥接模糊函数来解决。
+Swift's functional data structures, from generators to sequences to collections, are, well, beautiful. The use of `Array` and `Dictionary` literals for syntactic sugar strikes a fine balance with the more interesting underlying contours of the Standard Library.
 
-###URI、URL 和 URN
+Building on these strong primitives, it is remarkably easy to create production-ready implementations of the data structures from an undergraduate Computer Science curriculum. Armed with Wikipedia and a spare afternoon, pretty much anyone could do it—or at least get close.
 
-一个理想的URL实现应该是一个由 `NSURLComponents` 构成的值的类型（也就是`结构`），它能避免所有之前提到的在 `NSString` 里路径相关的 API，[还有这些](https://gist.github.com/mattt/d2fa3107e41c63e875e5)。根据 [RFC 4395](http://tools.ietf.org/html/rfc4395)，一个清晰的 URL 策略实现应该减少与文件路径的耦合，而这正是 `NSURL` 在做的。根据 [RFC 2141](https://www.ietf.org/rfc/rfc2141)，一个漂亮的URN实现一定会让开发者意识到 URN 是什么、URIs、URL 和 URN 是如何互相联系的，并因此让开发者感觉满眼惊奇_(再一次，这些都是一些可传移植的技能)_。
+It'd be amazing if the Swift standard library provided canonical implementations of a bunch of these (e.g. Tree, Singly- Doubly-Linked Lists, Queue / Stack). But I'll only make the case for one: Set.
 
-### 数据结构
+The three big collections in Foundation are `NSArray`, `NSDictionary`, and `NSSet` (and their mutable counterparts). Of these, `Set` is the only one currently missing. As a fundamental data structure, they are applicable to a wide variety of use cases. Specifically for Swift, though, `Set` could resolve one of the more awkward corners of the language—[RawOptionSetType](http://nshipster.com/rawoptionsettype/).
 
-从发生器、序列到集合，Swift 的基础数据结构还挺美好的。`Array` 和 `Dictionary` 语法糖的设计很好地与越来越有趣的底层标注库的边界达到了平衡。
+> For your consideration, [Nate Cook](http://nshipster.com/authors/nate-cook/) has built [a nice, complete implementation of `Set`](http://natecook.com/blog/2014/08/creating-a-set-type-in-swift/).
 
-在如此强壮的基础类型的基础上，一个只上了本科计算机科学课程的人都能用这些数据结构的结合十分容易地创造产品。加上维基百科和一个闲暇的下午，基本上每个人都能做到、至少能几近能做到。
+### Dates & Times
 
-如果Swift标准库能提供类似树、单向链表、双向链表、栈、列表等结构的标准实现那就更好了，不过我只做一个举例：无序数据集（`Set`）。
+The calendaring functionality is some of the oldest and most robust in Cocoa. Whereas with most other languages, date and time programming is cause for fear, one does not get the same sense of dread when working with `NSDate` and `NSCalendar`. However, it suffers from being difficult to use and impossible to extend.
 
-在 Foundation 框架里的三大集合分别是 `NSArray`、`NSDictionary`、和 `NSSet`（以及他们的可变对应），而在 Swift 里，`Set` 是唯一缺失的。作为一个基础数据结构，它能应用到很广泛的案例当中。特别是对于 Swift，集合能解决越来越尴尬的语言问题的其中一个 [RawOptionSetType](http://nshipster.com/rawoptionsettype/)。
+In order to do any calendaring calculations, such as getting the date one month from today, one would use `NSCalendar` and [`NSDateComponents`](http://nshipster.com/nsdatecomponents/). That's the _correct_ way to do it, at least... a majority of developers probably still use `dateWithTimeIntervalSinceNow:` with a constant number of seconds hardcoded. Tragically, it's not enough for an API to do things the right way, it must also be easier than doing it the wrong way.
 
-> 另外，[Nate Cook](http://nshipster.com/authors/nate-cook/) 已经实现了一个[漂亮、完备的 `Set` 实现](http://natecook.com/blog/2014/08/creating-a-set-type-in-swift/)供您参考。
+Another shortfall (albeit incredibly minor) of `NSCalendar` is that it doesn't allow for new calendars to be added. For someone doing their darnedest to advocate conversion to the [French Republican Calendar](http://en.wikipedia.org/wiki/French_Republican_Calendar), this is bothersome.
 
+Fortunately, all of the new language features of Swift could be used to solve both of these problems in a really elegant way. It'd take some work to implement, but a calendaring system based on generics could really be something. If anyone wants to take me up on that challenge, [here are some ideas](https://gist.github.com/mattt/7edb54f8f4fde4a3783e).
 
-### 日期和时间
+### Interchange Formats
 
-日历功能是Cocoa里历史最悠久也是最健壮的功能之一了吧。相较于其他语言令人恐惧的日期编程，你不会在用 `NSDate` 或者 `NSCalendar` 的时候有类似的恐惧。尽管如此，它还是越来越难用并且难以扩展。
+One of the most astonishing things about Objective-C is how long it took for it to have a standard way of working with JSON (iOS 5 / OS X Lion!). Developers hoping to work with the _most popular interchange format for new web services_ were forced to choose from one of a handful of mutually incompatible third-party libraries.
 
-为了进行如计算从今天起一个月以后的日期的日历计算，你会用到 `NSCalendar` 和 [`NSDateComponents`](http://nshipster.com/nsdatecomponents/)，这_是正确的_做法，但是至少，大部分开发者还在用 `dateWithTimeIntervalSinceNow:` 加以写死的秒数常数来计算时间间隔。悲剧的是，没有一个 API 能直接立马做以上功能，不过那也好过通过一个错的方式做到。
+However, `NSJSONSerialization` is such a miserable experience in Swift that we're repeating history with a new crop of third-party alternatives:
 
-另一个`NSCalendar`的一个小失误是它没有给新的日历功能提供接口，如果有时候我们需要实现[法国公历](http://en.wikipedia.org/wiki/French_Republican_Calendar)还是很麻烦的。
+```swift
+let data: NSData
+var error: NSError? = nil
+if let JSON = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &error) as? NSDictionary {
+    for product in JSON["products"]! as NSArray {
+        let name: String = product["name"] as String
+        let price: Double = product["price"] as Double
+    }
+}
+```
 
-不过幸运的是，Swift 的所有新语言特性能用来非常优雅地解决这些问题，我已经完成了实现了一些，但是一个有通用术语的日历系统还是需要蛮多功夫的。如果你想带我一起完成这个挑战，[这是我的一些想法](https://gist.github.com/mattt/7edb54f8f4fde4a3783e)。
-
-### 数据交换格式
-
-Objective-C 还有一个令人震惊的是，他竟然花了这么久（iOS 5 / OS X Lion!）才提供了一个标准方法来处理 JSON，盼望着用_最流行的Web服务的数据交换格式_的开发者只能被迫使用一堆互不兼容的第三方库。
-
-尽管如此，`NSJSONSerialization` 在 Swift 里依然是一场灾难，我们只能继续用第三方类库。
-
-
-```Objective-c
+```objective-c
 NSData *data;
 NSError *error = nil;
 id JSON = [NSJSONSerialization JSONObjectWithData:data
@@ -123,29 +125,18 @@ if (!error) {
 }
 ```
 
-```swift
-let data: NSData
-var error: NSError? = nil
-if let JSON = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &error) as? NSDictionary {
-    for product in JSON["products"]! as NSArray {
-        let name: String = product["name"] as String
-        let price: Double = product["price"] as Double
-    }
-}
-```
+> In defense of Apple, I once asked an engineer at a WWDC Lab why it took so long for iOS to support JSON. Their answer made a lot of sense. Paraphrasing:
+>> Apple is a company with a long view of technology. It's _really_ difficult to tell whether a technology like JSON is going to stick, or if it's just another fad. Apple once released a framework for [PubSub](https://developer.apple.com/library/mac/documentation/InternetWeb/Reference/PubSubReference/_index.html), which despite not being widely known or used, still has to be supported for the foreseeable future. Each technology is a gamble of engineering resources.
 
-> 帮苹果辩护一下的话，我曾经在WWDC Lab上问过一个苹果的工程师，为什么 iOS 经过了那么长时间才开始支持 JSON，他们的回答还是十分在理的，如下：
->> 苹果是一家需要有十分长远技术眼光的公司，而实际上要去看清一个像 JSON 的技术是否能持久还是昙花一现_十分_困难。苹果曾经发布过一个给 [PubSub](https://developer.apple.com/library/mac/documentation/InternetWeb/Reference/PubSubReference/_index.html) 用的框架，这个框架并没有被广泛了解或使用，但是苹果仍需要为一些可预测的未来给它提供支持，每项技术都是对工程师资源的一次赌博。
+Data marshaling and serialization are boring tasks, and boring tasks are exactly what a standard library should take care of. Apple knew this when developing Cocoa, which has robust implementations for both text and binary [property lists](http://en.wikipedia.org/wiki/Property_list), which are the lifeblood of iOS and OS X. It may be difficult to anticipate what other interchange formats will be viable in the long term, but providing official support for emerging technologies on a probationary basis would do a lot to improve things for developers.
 
-数据排列和序列化是无聊的任务，无聊的任务更应该交给一个标注库去处理，苹果在开发Cocoa的时候就知道这个道理，他们据此开发了健壮的字符串和二进制文件机制[属性列表](http://en.wikipedia.org/wiki/Property_list)，它是iOS和OSX的生命血液。也许预计其他的数据交换格式的长期发展是一件困难的事情，但是为紧急的技术提供官方支持的基础试用版本，能够帮开发者提供提高很多。
+### Regular Expressions
 
-### 正则表达式
+Regexes are a staple of scripting languages—enough so that they often have a dedicated syntax for literals, `/ /`. If Swift ever moves on from Cocoa, it would be well-advised to include a successor to `NSRegularExpression`, such as [this wrapper](https://gist.github.com/mattt/3f12f56d72b8d2ebbe62).
 
-正杂表达式其实是足够可以有一本详尽的语法说明了的脚本语言`/ /`。如果Swift是从Cocoa演化过来，那最好能加入一个`NSRegularExpression`的继承者，例如这个[封装](https://gist.github.com/mattt/3f12f56d72b8d2ebbe62)。
+### Errors
 
-### 错误
-
-Objective-C 还是习惯用[错误指针](http://nshipster.com/nserror/)(`NSError **`)来处理运行时异常，而不是用 `@throw` 来抛出。以下是每一个 Cocoa 开发者应该熟悉的范式：
+Objective-C is rather exceptional in [how it uses error pointers](http://nshipster.com/nserror/) (`NSError **`) to communicate runtime failures rather than `@throw`-ing exceptions. It's a pattern every Cocoa developer should be familiar with:
 
 ```objective-c
 NSError *error = nil;
@@ -156,15 +147,16 @@ if (!success) {
     NSLog(@"%@", error);
 }
 ```
-返回的 `error` 是一个针对 Objective-C 只能有一个返回值的解决，如果有错误产生，`NSError` 的实例会被赋予一个包含错误详情的值，然后被返回。
 
-在 Swift 里，这一个范式其实是不必要了的，因为方法在Swift里能返回元组，顺便就把一个 optional 的可能的返回值和可能错误返回了：
+The `out` parameter for `error` is a workaround for the fact that Objective-C can only have a single return value. If something goes wrong, the `NSError` instance will be populated with a new object with details about the issue.
+
+In Swift, this pattern is unnecessary, since a method can return a tuple with an optional value and error instead:
 
 ```swift
 func moveItemAtPath(from: String toPath to: String) -> (Bool, NSError?) { ... }
 ```
 
-我们甚至还能更进一步，来定义一个拥有泛型的`Result`类型，在成功与失败的时候返回相应的值：
+We can even take things a step further and define a generic `Result` type, with associated values for success and failure cases:
 
 ```swift
 struct Error { ... }
@@ -174,7 +166,8 @@ public enum Result<T> {
     case Failure(Error)
 }
 ```
-用了上面这个范式，错误处理将被编译器强制着要考虑所有情况：
+
+Using this new pattern, error handling is enforced by the compiler in order to exhaust all possible cases:
 
 ```swift
 HTTPClient.getUser { (result) in
@@ -184,61 +177,60 @@ HTTPClient.getUser { (result) in
     }
 }
 ```
-为了极大提升现有的纯Swift设置，上面这种范式已经在社区里出现。它对于编纂一些最有用的标准库并在为开发者提升讨论效率而创建的一个共有的话语习惯是十分有用的。
 
-### AppKit 和 UIKit
+Patterns like this have emerged from a community eager to improve on existing patterns in pure Swift settings. It would be helpful for a standard library to codify the most useful of these patterns in order to create a shared vocabulary that elevates the level of discourse among developers.
 
-AppKit和UIKit是整篇讨论的主题，似乎他们俩在各自分开走路一步以后，又会在Swfit这里融合起来。一个更有意思的问题是，是否Swfit会拓展到 iOS 和 OS X 开发之上，例如系统级别的或者Web脚本，而这又会从根本上改变 Cocoa 作为一个基本库的角色。
+### AppKit & UIKit
+
+AppKit and UIKit are entire topics unto themselves. It's much more likely that the two would take further steps to unify than be rewritten or adapted to Swift anytime soon. A much more interesting question is whether Swift will expand beyond the purview of iOS & OS X development, such as for systems or web scripting, and how that would fundamentally change the role of Cocoa as a de facto standard library.
 
 * * *
 
+## Thinking Further
 
-## 想得更远一些
+Perhaps we're thinking too small about what a standard library can be.
 
+The Wolfram Language has [The Mother of All Demos](https://www.youtube.com/watch?v=_P9HqHVPeik#t=1m02.5s) ([with apologies to Douglas Engelbart](http://en.wikipedia.org/wiki/The_Mother_of_All_Demos)) for a programming language.
 
-或许我们把一个基本库能成为的东西想得太小了。
+> Granted, Wolfram is a parallel universe of computation where nothing else exists, and the language itself is a hot mess.
 
-作为一个编程语言，Wolfram 有[所有 Demo 之母](https://www.youtube.com/watch?v=_P9HqHVPeik#t=1m02.5s)的 Demo 集（[抱歉冒犯了，Douglas Engelbart](http://en.wikipedia.org/wiki/The_Mother_of_All_Demos)）。
-
-> 即使在另外一个平行宇宙，其他语言都不存在，Wolfram的语言本身也可以说是一团糟。
-
-这是一个他[标准库](http://reference.wolfram.com/language/)提供功能的概览:
+Here's an overview of the [functionality offered in its standard library](http://reference.wolfram.com/language/):
 
 |  |  |  |  |
 |----------------------------|-------------------------|--------------------------------|--------------------------|
-| 2D / 3D 视觉化 | 图像分析 | 数据分析 | 图像处理 |
-| 音频处理 | 机器学习 | 方程求解 | 数值运算 |
-| 任意精度 | 微积分计算 | 矩阵运算 | 字符串处理 |
-| 组合优化 | 计算几何 | 数据库连接 | 内建测试 |
-| 设备连接 | 函数式编程 | 自然语言理解 | 序列分析 |
-| 时序 | 地理数据 | 地理映射 | 天气信息 |
-| 物理化学数据 | 基因组数据 | 单位与测量 | 控制论 |
-| 可靠性分析 | 并行计算 | 工程数据 | 金融数据 |
-| 金融计算 | 社会经济学数据 | 大众文化数据 | 布尔运算 |
-| 数论 | 文档生成 | 表格式化 | 数学排版 |
-| 交互式控件 | 接口架设 | 组织好的结构 | XML模板 |
+| 2D / 3D Visualization | Graph Analysis | Data Analytics | Image Processing |
+| Audio Processing | Machine Learning | Equation Solving | Algebraic Computation |
+| Arbitrary Precision | Calculus Computation | Matrix Computation | String Manipulation |
+| Combinatorial Optimization | Computational Geometry | Database Connectivity | Built-In Testing |
+| Device Connectivity | Functional Programming | Natural Language Understanding | Sequence Analysis |
+| Time Series | Geographic Data | Geomapping | Weather Data |
+| Physics & Chemistry Data | Genomic Data | Units & Measures | Control Theory |
+| Reliability Analysis | Parallel Computation | Engineering Data | Financial Data |
+| Financial Computation | Socioeconomic Data | Popular Culture Data | Boolean Computation |
+| Number Theory | Document Generation | Table Formatting | Mathematical Typesetting |
+| Interactive Controls | Interface Building | Form Construction | XML Templating |
 
+Conventional wisdom would suggest that, yes: it is unreasonable for a standard library to encode [the production budget of the movie _Avatar_](http://reference.wolfram.com/language/ref/MovieData.html#Examples), [the max speed of a McDonnell Douglas F/A-18 Hornet](http://reference.wolfram.com/language/ref/AircraftData.html#Example), or [the shape of France](http://reference.wolfram.com/language/ref/CountryData.html#Example). That is information that can be retrieved by querying IMDB, scraping Wikipedia, and importing from a GIS system.
 
-传统的智者肯定会建议说道，是的，让一个标准库去计算[电影《阿凡达》的预算](http://reference.wolfram.com/language/ref/MovieData.html#Examples)、[McDonnell Douglas F/A-18 Hornet 的最快飞行速度](http://reference.wolfram.com/language/ref/AircraftData.html#Example)或者[法国的形状](http://reference.wolfram.com/language/ref/CountryData.html#Example)是完全不可能的，那分别是查询IMDb、抓取维基百科和导入GIS系统应该做的。
+But other things, like [converting miles to kilometers](http://reference.wolfram.com/language/ref/UnitConvert.html#Example), [clustering values](http://reference.wolfram.com/language/ref/FindClusters.html), or [knowing the size of the Earth](http://reference.wolfram.com/language/ref/PlanetData.html#Example)—these are things that would be generally useful to a variety of different applications.
 
-但是另外的，像[转换英里到公里](http://reference.wolfram.com/language/ref/UnitConvert.html#Example)、计算[聚类值](http://reference.wolfram.com/language/ref/FindClusters.html)和[知道地球的大小](http://reference.wolfram.com/language/ref/PlanetData.html#Example)这些东西，是对不同应用场景都是大体有用的。
+Indeed, what sets Cocoa apart from most other standard libraries is all of the specific information it encodes in `NSLocale` and `NSCalendar`, but most of this comes from the [Unicode Common Locale Data Repository (CLDR)](http://cldr.unicode.org).
 
-确实，把 Cocoa 和其他标准库区分开的是它在 `NSLocale` 和 `NSCalendar` 里的一些特定信息，但是其他的更多基本信息都来自于 [Unicode Common Locale Data Repository (CLDR)](http://cldr.unicode.org)。
+What's to stop a standard library from pulling in other data sources? Why not expose an interface to [libphonenumber](https://github.com/googlei18n/libphonenumber), or expand on what [HealthKit is already doing](http://nshipster.com/nsformatter/#mass,-length,-&-energy-formatters) for fundamental units?
 
-那究竟是什么让标准库停止吸收其他数据源里的内容呢？为什么标准库不暴露一个接口去访问 [libphonenumber](https://github.com/googlei18n/libphonenumber)，或者拓展[ HealthKit 已经做了的](http://nshipster.com/nsformatter/#mass,-length,-&-energy-formatters)到一些更基本的计算单位？
+Incorporating this kind of data in an organized, meaningful way is too much to expect for a third-party framework, and too important to delegate to the free market of open source.
 
-把这类数据通过一个有序、很有意义的方式组合起来这件事，对于第三方框架来说可能工作量有些过多，而对于自由市场下的开源软件又承担了太重的责任。
-
-> 是的，多年以来，一个标准库的角色问题，就如同社会里公开与隐私的问题，无党派自由主义者遇到了另一个无党派自由主义。
+> Yes, in many ways, the question of the role of a standard library is the same as the question of what roles the public and private sectors have in society. Third-Party Libertarians, meet Third-Party Librarytarians.
 
 * * *
 
-Swift 的引人注目不光在这个语言本身能做到什么，而是在与它对于苹果公司、对于 iOS 和 OS X 开发者以及更广泛的开发者社区他能做到什么。技术上的可行性问题永远不能从其带来的经济社会后果摆脱，实在有太多因素要考虑。
+Swift is compelling not just in terms of what the language itself can do, but what it means to Apple, to iOS & OS X developers, and the developer community at large. There are so many factors in play that questions of technical feasibility cannot be extricated from their social and economic consequences.
 
-Swift 会以开源的形式发布么？在Safari里加上解释器以后，Swift 会不会成为撼动 Javascript 这个唯一的Web脚本语言？最终，这些问题都会影响到 Swift 标准库到底是什么样子。如果 Swift 会变成一个移动系统的脚本语言，那它首先得从 Objective-C 运行时和一堆沉重的依赖中摆脱出来。
+Will Swift be released under an open source license? Will Swift unseat Javascript as the only viable web scripting language by adding interpreter to Safari? Ultimately, these will be the kinds of deciding factors for what will become of the Swift Standard Library. If Swift is to become a portable systems and scripting language, it would first need to extricate itself from the Objective-C runtime and a web of heavy dependencies.
 
-有一点肯定的是，Cocoa，如同 Objective-C 一样，注定要逝去，这基本不是一个会不会的问题，而是什么时候会的问题_(当然，我们说的是现在开始后的几年时间，应该不会有人争辩 Objective-C 和 Cocoo 会立即消亡吧)_。
+What is almost certain, however, is that Cocoa, like Objective-C, is doomed. It's not as much a question of whether, but when. _(And we're talking years from now; no one is really arguing that Objective-C & Cocoa are going away entirely all at once)_.
 
-**Swift 标准库正处于与 Cocoa 冲突的一个过程，只要新的语言再继续增加势头，我们将会很快看到旧物的破碎与新的系统框架的重新诞生。**
+**The Swift Standard Library is on a collision course with Cocoa, and if the new language continues to gain momentum, one should expect to see further fracturing and reinvention within the system frameworks.**
 
-三十年来，这些技术很好地为我们服务，我们最好的纪念他们贡献的方式是从他们的错误中学习，让最后取代这些技术的东西超级伟大。
+For 30 years, these technologies have served us well, and the best we can do to honor their contributions is to learn from their mistakes and make sure that what replaces them are insanely great.
+

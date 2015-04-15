@@ -1,33 +1,31 @@
 ---
-layout: post
 title: instancetype
-category: Cocoa
-excerpt: "Objective-C 是一门正迅速发展的语言，这种发展速度在别的现有语言中是不曾有过的。从普通到范例转变的发展，真要说清它们之间的差异还得慢慢来。因为我们正在讨论的是底层语言的特性，对于API设计的更深层含义还比较难理解。"
 author: Mattt Thompson
-translator: JJ Mao
+category: Cocoa
+excerpt: "Objective-C is a rapidly evolving language, in a way that you just don't see in established programming languages. Developments range from the mundane to paradigm-changing, but telling the difference takes practice. Because we're talking about low-level language features, it's difficult to understand what implications they may have higher up with API design."
 ---
 
-想知道Objective-C接下去会发生什么吗？[请多关注Objective-C最新动向](http://clang.llvm.org/docs/LanguageExtensions.html)。
+Want to know what's coming next in Objective-C? [Keep your ear to the ground](http://clang.llvm.org/docs/LanguageExtensions.html).
 
-Objective-C 是一门正迅速发展的语言，这种发展速度在别的现有语言中是不曾有过的。ARC，object literals，subscripting，blocks：在短短的三年时间里，Objective-C编程的许多方式发生了改变（变得更好）。
+Objective-C is a rapidly evolving language, in a way that you just don't see in established programming languages. ARC, object literals, subscripting, blocks: in the span of just three years, so much of how we program in Objective-C has been changed (for the better).
 
-这一切的创新都是Apple垂直整合的成果。正如Apple在设计[自主研发芯片](http://en.wikipedia.org/wiki/Apple_A4)中的投资一样，利用杠杠作用与手机硬件展开激烈的竞争。在[LLVM](http://llvm.org) 上的投资也是一样，使软件跟上业界最新步伐。
+All of this innovation is a result of Apple's philosophy of vertical integration. Just as Apple's investment in designing [its own chipsets](http://en.wikipedia.org/wiki/Apple_A4) gave them leverage to compete aggressively with their mobile hardware, so too has their investment in [LLVM](http://llvm.org) allowed their software to keep pace.
 
-Clang从普通到范例转变的发展，真要说清它们之间的差异还得慢慢来。因为我们正在讨论的是底层语言的特性，对于API设计的更深层含义还比较难理解。
+Clang developments range from the mundane to paradigm-changing, but telling the difference takes practice. Because we're talking about low-level language features, it's difficult to understand what implications they may have higher up with API design.
 
-其中一个例子就是 `instancetype` ，这也是本周文章的主题。
+One such example is `instancetype`, the subject of this week's article.
 
 ---
 
-Objective-C的一些使用惯例不仅仅是好的编程习惯，更是给编译器的隐藏指令。
+In Objective-C, conventions aren't just a matter of coding best-practices, they are implicit instructions to the compiler.
 
-例如， `alloc` 和 `init` 的返回类型都是 `id` ，然而在Xcode中，编译器会检查所有正确类型。它是怎么做到的呢？
+For example, `alloc` and `init` both have return types of `id`, yet in Xcode, the compiler makes all of the correct type checks. How is this possible?
 
-在Cocoa中，约定 `alloc` 或 `init` 的方法总是返回接收器类实例的对象。据说这些方法有一个**相关返回类型**。
+In Cocoa, there is a convention that methods with names like `alloc`, or `init` always return objects that are an instance of the receiver class. These methods are said to have a **related result type**.
 
-虽然类构造方法也是返回 `id` ，但是类构造方法并没有做同样的类型检查，因为它们不遵循命名规范。
+Class constructor methods, although they similarly return `id`, don't get the same type-checking benefit, because they don't follow that naming convention.
 
-你可以自己试着这样：
+You can try this out for yourself:
 
 ~~~{objective-c}
 [[[NSArray alloc] init] mediaPlaybackAllowsAirPlay]; // ❗ "No visible @interface for `NSArray` declares the selector `mediaPlaybackAllowsAirPlay`"
@@ -35,15 +33,15 @@ Objective-C的一些使用惯例不仅仅是好的编程习惯，更是给编译
 [[NSArray array] mediaPlaybackAllowsAirPlay]; // (No error)
 ~~~
 
-由于 `alloc` 和 `init` 作为相关返回类型遵循命名规范，执行对 `NSArray` 的正确类型检查。然而，等价类构造函数 `array` 不遵循命名规范，它被认为是 `id` 类型。
+Because `alloc` and `init` follow the naming convention for being a related result type, the correct type check against `NSArray` is performed. However, the equivalent class constructor `array` does not follow that convention, and is interpreted as `id`.
 
-`id` 类型对于禁用类型安全性检查非常有用，但当你 _确实_ 需要它的时候却没有时，情况会变得非常糟糕。
+`id` is useful for opting-out of type safety, but losing it when you _do_ want it sucks.
 
-另一种显示声明返回类型（在之前例子中的 `(NSArray *)`）的方式有了稍微的改进，但是它不利于子类的发挥。
+The alternative, of explicitly declaring the return type (`(NSArray *)` in the previous example) is a slight improvement, but is annoying to write, and doesn't play nicely with subclasses.
 
-所以编译器从这里介入以解决Objective-C类型系统的这个永恒边界情况：
+This is where the compiler steps in to resolve this timeless edge case to the Objective-C type system:
 
-`instancetype` 关键字，它可以表示一个方法的相关返回类型。例如：
+`instancetype` is a contextual keyword that can be used as a result type to signal that a method returns a related result type. For example:
 
 ~~~{objective-c}
 @interface Person
@@ -51,19 +49,19 @@ Objective-C的一些使用惯例不仅仅是好的编程习惯，更是给编译
 @end
 ~~~
 
-> `instancetype` 与 `id` 不一样, `instancetype` 只能在方法声明中作为返回类型使用。
+> `instancetype`, unlike `id`, can only be used as the result type in a method declaration.
 
-使用 `instancetype` ，编译器将正确的推断出 `+personWithName:` 是 `Person` 的一个实例。
+With `instancetype`, the compiler will correctly infer that the result of `+personWithName:` is an instance of a `Person`.
 
-为了在不久的将来使用 `instancetype` ，你可以在Foundation中查找类构造函数。例如[UICollectionViewLayoutAttributes](http://developer.apple.com/library/ios/#documentation/uikit/reference/UICollectionViewLayoutAttributes_class/Reference/Reference.html) 就已经正在使用 `instancetype` 了。
+Look for class constructors in Foundation to start using `instancetype` in the near future. New APIs, such as [UICollectionViewLayoutAttributes](http://developer.apple.com/library/ios/#documentation/uikit/reference/UICollectionViewLayoutAttributes_class/Reference/Reference.html) are using `instancetype` already.
 
-## 深层含义
+## Further Implications
 
-语言特性十分有趣，因为它在高级软件设计方面的的影响往往是模糊的。
+Language features are particularly interesting because, again, it's often unclear of what impact they'll have on higher-level aspects of software design.
 
-然而 `instancetype` 看似普通，尽管它能为编译器锦上添花，但它可用于更棒的结果。
+While `instancetype` may seem to be a rather mundane, albeit welcome addition to the compiler, it can be used to some rather clever ends.
 
-[Jonathan Sterling](https://twitter.com/jonsterling) 写了[这篇十分有趣的文章](http://www.jonmsterling.com/posts/2012-02-05-typed-collections-with-self-types-in-objective-c.html), 文章中详细描述了 `instancetype` 在没有[泛型](http://en.wikipedia.org/wiki/Generic_programming)的情况下是如何用于静态类型collections编码的:
+[Jonathan Sterling](https://twitter.com/jonsterling) wrote [this quite interesting article](http://www.jonmsterling.com/posts/2012-02-05-typed-collections-with-self-types-in-objective-c.html), detailing how `instancetype` could be used to encode statically-typed collections, without [generics](http://en.wikipedia.org/wiki/Generic_programming):
 
 ~~~{objective-c}
 NSURL <MapCollection> *sites = (id)[NSURL mapCollection];
@@ -75,16 +73,16 @@ NSURL <MapCollection> *sites = (id)[NSURL mapCollection];
 NSURL *jonsSite = [sites at:@"jon"]; // => http://www.jonmsterling.com/
 ~~~
 
-静态类型collections会使APIs更富有表现力--开发者可以确定一个collection参数中允许使用的对象类型。
+Statically-typed collections would make APIs more expressive--no longer would a developer be unsure about what kinds of objects are allowed in a collection parameter.
 
-不论这是否能在Objective-C中成为公认的规范，更令人着迷的是像 `instancetype` 这样的底层特性是如何用于改变语言轮廓的(在这种情况下，使其看似更像[C#][1]）。
+Whether or not this becomes an accepted convention in Objective-C, it's fascinating to how a low-level feature like `instancetype` can be used to change shape of the language (in this case, making it look more like [C#][1]).
 
 ---
 
-`instancetype` 只是众多语言之中的一种对Objective-C的扩展，使它更多的被添加到每个新版本中。
+`instancetype` is just one of the many language extensions to Objective-C, with more being added with each new release.
 
-认识它并爱上它。
+Know it, love it.
 
-以此作为如何关注底层细节的例子，将给你带来全新的视角以强有力的方式去改变Objective-C。
+And take it as an example of how paying attention to the low-level details can give you insights into powerful new ways to transform Objective-C.
 
 [1]: http://en.wikipedia.org/wiki/C_Sharp_(programming_language)

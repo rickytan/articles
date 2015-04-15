@@ -1,39 +1,33 @@
 ---
-layout: post
 title: NSFileManager
 author: Mattt Thompson
-translator: "Lin Xiangyu"
 category: Cocoa
-rating: 7.9
-description: "文件系统是一个复杂的主题，它有数十年的历史，一些遗留下的复杂性和一些特别的地方，已经不是一篇文章就可以描述的了。现在大多数的应用除了简单的文件操作之外不会经常与文件系统交互，所以有时候简单了解它的基础就行了。"
+tags: nshipster
+excerpt: "File systems are a complex topic, with decades of history, vestigial complexities, and idiosyncrasies, and is well outside the scope of a single article. And since most applications don't often interact with the file system much beyond simple file operations, one can get away with only knowing the basics."
 ---
 
+`NSFileManager` is Foundation's high-level API for working with file systems. It abstracts Unix and Finder internals, providing a convenient way to create, read, move, copy, and delete files & directories on local or networked drives, as well as iCloud ubiquitous containers.
 
-`NSFileManager` 是处理文件系统的 Foundation 框架的高级API。它抽象了 Unix 和 Finder 的内部构成，和 iCloud ubiquitous containers 一样， 提供了创建，读取，移动，拷贝以及删除本地或者网络驱动器上的文件或者目录的方法。
+File systems are a complex topic, with decades of history, vestigial complexities, and idiosyncrasies, and is well outside the scope of a single article. And since most applications don't often interact with the file system much beyond simple file operations, one can get away with only knowing the basics.
 
-文件系统是一个复杂的主题，它有数十年的历史，一些遗留下的复杂性和一些特别的地方，已经不是一篇文章就可以描述的了。现在大多数的应用除了简单的文件操作之外不会经常与文件系统交互，所以有时候简单了解它的基础就行了。
+What follows are some code samples for your copy-pasting pleasure. Use them as a foundation for understanding how to adjust parameters to your particular use case:
 
-你可以复制粘贴下面的代码试试看，用他们作为你的代码基础，修改这些参数来达到你期望的效果。
+## Common Tasks
 
-## 常用操作
+> Throughout the code samples is the magical incantation `NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)`. This may be tied with KVO as one of the worst APIs in Cocoa. Just know that this returns an array containing the user documents directory as the first object. Thank goodness for the inclusion of `NSArray -firstObject`.
 
- 纵观苹果提供的样例代码，尽是这样的黑魔法： `NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)` ， 它或许绑定了KVO，也是Cocoa最糟糕的API之一。你只需要知道它返回了一个包含用户文档目录作为第一个元素的数组就行了。真要感谢 `NSArray -firstObject`。
-
-## 确定文件是否存在
+### Determining If A File Exists
 
 ~~~{objective-c}
-
 NSFileManager *fileManager = [NSFileManager defaultManager];
 NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
 NSString *filePath = [documentsPath stringByAppendingPathComponent:@"file.txt"];
 BOOL fileExists = [fileManager fileExistsAtPath:filePath];
-
 ~~~
 
-## 列出文件里面的所有目录
+### Listing All Files In A Directory
 
 ~~~{objective-c}
-
 NSFileManager *fileManager = [NSFileManager defaultManager];
 NSURL *bundleURL = [[NSBundle mainBundle] bundleURL];
 NSArray *contents = [fileManager contentsOfDirectoryAtURL:bundleURL
@@ -43,17 +37,13 @@ NSArray *contents = [fileManager contentsOfDirectoryAtURL:bundleURL
 
 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"pathExtension == 'png'"];
 for (NSURL *fileURL in [contents filteredArrayUsingPredicate:predicate]) {
-    // 在目录中枚举 .png 文件
+    // Enumerate each .png file in directory
 }
-
 ~~~
 
-
-### 在目录中递归地遍历文件
-
+## Recursively Enumerating Files In A Directory
 
 ~~~{objective-c}
-
 NSFileManager *fileManager = [NSFileManager defaultManager];
 NSURL *bundleURL = [[NSBundle mainBundle] bundleURL];
 NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtURL:bundleURL
@@ -87,25 +77,22 @@ for (NSURL *fileURL in enumerator) {
         [mutableFileURLs addObject:fileURL];
     }
 }
-
 ~~~
 
-### 创建一个目录
+### Creating a Directory
 
 ~~~{objective-c}
-
 NSFileManager *fileManager = [NSFileManager defaultManager];
 NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
 NSString *imagesPath = [documentsPath stringByAppendingPathComponent:@"images"];
 if (![fileManager fileExistsAtPath:imagesPath]) {
     [fileManager createDirectoryAtPath:imagesPath withIntermediateDirectories:NO attributes:nil error:nil];
-}］
-
+}
 ~~~
-### 删除一个目录
+
+### Deleting a File
+
 ~~~{objective-c}
-
-
 NSFileManager *fileManager = [NSFileManager defaultManager];
 NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
 NSString *filePath = [documentsPath stringByAppendingPathComponent:@"image.png"];
@@ -115,10 +102,10 @@ if (![fileManager removeItemAtPath:filePath error:&error]) {
     NSLog(@"[Error] %@ (%@)", error, filePath);
 }
 ~~~
-### 删除文件的创建日期
+
+### Determining the Creation Date of a File
 
 ~~~{objective-c}
-
 NSFileManager *fileManager = [NSFileManager defaultManager];
 NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
 NSString *filePath = [documentsPath stringByAppendingPathComponent:@"Document.pages"];
@@ -130,51 +117,50 @@ if ([fileManager fileExistsAtPath:filePath]) {
 }
 ~~~
 
-通过NSFileManager的 `-attributesOfItemAtPath:error:` 和其它方法可以访问很多文件的属性
+There are a number of file attributes that are made accessible through `NSFileManager`, which can be fetched with `-attributesOfItemAtPath:error:`, and other methods:
 
-#### 文件属性的键
+#### File Attribute Keys
 
-> - `NSFileAppendOnly`: 文件是否只读
-> - `NSFileBusy`: 文件是否繁忙
-> - `NSFileCreationDate`: 文件创建日期
-> - `NSFileOwnerAccountName`:  文件所有者的名字
-> - `NSFileGroupOwnerAccountName`: 文件所有组的名字
-> - `NSFileDeviceIdentifier`: 文件所在驱动器的标示符
-> - `NSFileExtensionHidden`:  文件后缀是否隐藏
-> - `NSFileGroupOwnerAccountID`:  文件所有组的group ID
-> - `NSFileHFSCreatorCode`: 文件的HFS创建者的代码
-> - `NSFileHFSTypeCode`: 文件的HFS类型代码
-> - `NSFileImmutable`: 文件是否可以改变
-> - `NSFileModificationDate`:  文件修改日期
-> - `NSFileOwnerAccountID`: 文件所有者的ID
-> - `NSFilePosixPermissions`: 文件的Posix权限
-> - `NSFileReferenceCount`: 文件的链接数量
-> - `NSFileSize`: 文件的字节
-> - `NSFileSystemFileNumber`:  文件在文件系统的文件数量
-> - `NSFileType`: 文件类型
-> - `NSDirectoryEnumerationSkipsSubdirectoryDescendants`: 浅层的枚举，不会枚举子目录
-> - `NSDirectoryEnumerationSkipsPackageDescendants`: 不会扫描pakages的内容
-> - `NSDirectoryEnumerationSkipsHiddenFile`: 不会扫描隐藏文件
+> - `NSFileAppendOnly`: The key in a file attribute dictionary whose value indicates whether the file is read-only.
+> - `NSFileBusy`: The key in a file attribute dictionary whose value indicates whether the file is busy.
+> - `NSFileCreationDate`: The key in a file attribute dictionary whose value indicates the file's creation date.
+> - `NSFileOwnerAccountName`: The key in a file attribute dictionary whose value indicates the name of the file's owner.
+> - `NSFileGroupOwnerAccountName`: The key in a file attribute dictionary whose value indicates the group name of the file's owner.
+> - `NSFileDeviceIdentifier`: The key in a file attribute dictionary whose value indicates the identifier for the device on which the file resides.
+> - `NSFileExtensionHidden`: The key in a file attribute dictionary whose value indicates whether the file's extension is hidden.
+> - `NSFileGroupOwnerAccountID`: The key in a file attribute dictionary whose value indicates the file's group ID.
+> - `NSFileHFSCreatorCode`: The key in a file attribute dictionary whose value indicates the file's HFS creator code.
+> - `NSFileHFSTypeCode`: The key in a file attribute dictionary whose value indicates the file's HFS type code.
+> - `NSFileImmutable`: The key in a file attribute dictionary whose value indicates whether the file is mutable.
+> - `NSFileModificationDate`: The key in a file attribute dictionary whose value indicates the file's last modified date.
+> - `NSFileOwnerAccountID`: The key in a file attribute dictionary whose value indicates the file's owner's account ID.
+> - `NSFilePosixPermissions`: The key in a file attribute dictionary whose value indicates the file's Posix permissions.
+> - `NSFileReferenceCount`: The key in a file attribute dictionary whose value indicates the file's reference count.
+> - `NSFileSize`: The key in a file attribute dictionary whose value indicates the file's size in bytes.
+> - `NSFileSystemFileNumber`: The key in a file attribute dictionary whose value indicates the file's filesystem file number.
+> - `NSFileType`: The key in a file attribute dictionary whose value indicates the file's type.
 
 
+> - `NSDirectoryEnumerationSkipsSubdirectoryDescendants`: Perform a shallow enumeration; do not descend into directories.
+> - `NSDirectoryEnumerationSkipsPackageDescendants`: Do not descend into packages.
+> - `NSDirectoryEnumerationSkipsHiddenFiles`: Do not enumerate hidden files.
 
 ## NSFileManagerDelegate
 
-NSFileManager 可以设置一个  `<NSFileManagerDelegate>` protocol 来确认是否要进行特定的文件操作。它允许进行一些业务逻辑，比如保护一些文件删除，在 Controller 中删除一些元素
+`NSFileManager` may optionally set a delegate to verify that it should perform a particular file operation. This allows the business logic of, for instance, which files to protect from deletion, to be factored out of the controller.
 
-`NSFileManagerDelegate`里面有四个方法，每个按照path变化
+There are four kinds of methods in the `<NSFileManagerDelegate>` protocol, each with a variation for working with paths, as well as methods for error handling:
 
 - `-fileManager:shouldMoveItemAtURL:toURL:`
 - `-fileManager:shouldCopyItemAtURL:toURL:`
 - `-fileManager:shouldRemoveItemAtURL:`
 - `-fileManager:shouldLinkItemAtURL:toURL:`
 
-如果你想用 `alloc init` 初始化你自己的 `NSFileManager` 来取代shared实例，那就要用它了，就像文档说的
+If you were wondering when you might `alloc init` your own `NSFileManager` rather than using the shared instance, this is it. As per the documentation:
 
-> 如果你使用一个delegate 来接受移动，拷贝，涉案出，以及链接的操作，你需要创建一个独一无二的实例，将delegate绑定到你的实例中，用这个fielmanager开始你的操作
+> If you use a delegate to receive notifications about the status of move, copy, remove, and link operations, you should create a unique instance of the file manager object, assign your delegate to that object, and use that file manager to initiate your operations.
 
 ~~~{objective-c}
-
 NSFileManager *fileManager = [[NSFileManager alloc] init];
 fileManager.delegate = delegate;
 
@@ -187,13 +173,9 @@ NSArray *contents = [fileManager contentsOfDirectoryAtURL:bundleURL
 for (NSString *filePath in contents) {
     [fileManager removeItemAtPath:filePath error:nil];
 }
-
-
 ~~~
 
 #### CustomFileManagerDelegate.m
-
-
 
 ~~~{objective-c}
 #pragma mark - NSFileManagerDelegate
@@ -207,22 +189,19 @@ shouldRemoveItemAtURL:(NSURL *)URL
 
 ## Ubiquitous Storage
 
+Documents can also be moved to iCloud. If you guessed that this would be anything but straight forward, you'd be 100% correct.
 
-文档也可与放到iCloud里面。如果你猜可以直截了当的进行操作，恭喜你猜对了。
+This is another occasion when you'd `alloc init` your own `NSFileManager` rather than using the shared instance. Because `URLForUbiquityContainerIdentifier:` and `setUbiquitous:itemAtURL:destinationURL:error:` are blocking calls, this entire operation needs to be dispatched to a background queue.
 
-这里有一个其它用到 `alloc init` 的地方，因为 `URLForUbiquityContainerIdentifier: and setUbiquitous:itemAtURL:destinationURL:error:` 是代码块调用，所以整个操作需要在后台队列分发
-
-### 将文件放到iCloud里面
+### Moving an Item to Ubiquitous Storage
 
 ~~~{objective-c}
-
-
 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
     NSFileManager *fileManager = [[NSFileManager alloc] init];
     NSString *documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
     NSURL *fileURL = [NSURL fileURLWithPath:[documentsPath stringByAppendingPathComponent:@"Document.pages"]];
 
-    //这里的 identifier 应该设置为 entitlements 的第一个元素；当你使用这段代码的时候需要把 identifier 设置为你自己的真实 identifier
+    // Defaults to first listed in entitlements when `nil`; should replace with real identifier
     NSString *identifier = nil;
 
     NSURL *ubiquitousContainerURL = [fileManager URLForUbiquityContainerIdentifier:identifier];
@@ -237,14 +216,10 @@ dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0),
         NSLog(@"[Error] %@ (%@) (%@)", error, fileURL, ubiquitousFileURL);
     }
 });
-
 ~~~
 
-
-> 你可以在苹果的 `iCloud File Management` 文档里面找到更多信息
+> You can find more information about ubiquitous document storage in Apple's "iCloud File Management" document.
 
 * * *
 
-
-关于文件系统需要知道很多东西，但大多数是理论测验层面的。别误会，这些理论测验并没有错！但理论并不能教你代码该怎么写。NSFileManager可以让你不用学习它们大多数的内容就能完成工作。
-
+There's a lot to know about file systems, but as an app developer, it's mostly an academic exercise. Now don't get me wrong—academic exercises are great! But they don't ship code. `NSFileManager` allows you to ignore most of the subtlety of all of this and get things done.

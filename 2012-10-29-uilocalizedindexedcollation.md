@@ -1,86 +1,99 @@
 ---
-layout: post
 title: UILocalizedIndexedCollation
-category: Cocoa
 author: Mattt Thompson
-translator: Tony Li
-excerpt: 当 UITableView 有一百来行时，它就变得有些笨重了。如果用户为了找到他们想要的东西，像玩水果忍者的猫那样疯狂地滑动屏幕时，你可能会想要重新考虑一下用户界面的展现方式。
+category: Cocoa
+tags: nshipster
+excerpt: "UITableView starts to become unwieldy once it gets to a few hundred rows. If users are reduced to frantically scratching at the screen like a cat playing Fruit Ninja in order to get at what they want... you may want to rethink your UI approach."
 ---
 
-当 UITableView 有一百来行时，它就变得有些笨重了。如果用户为了找到他们想要的东西，像[玩水果忍者的猫](http://www.youtube.com/watch?v=CdEBgZ5Y46U)那样疯狂地滑动屏幕时，你可能会想要重新考虑一下用户界面的展现方式。
+UITableView starts to become unwieldy once it gets to a few hundred rows. If users are reduced to frantically scratching at the screen like a [cat playing Fruit Ninja](http://www.youtube.com/watch?v=CdEBgZ5Y46U) in order to get at what they want... you may want to rethink your UI approach.
 
-那么，你可以做些什么呢？
+So, what are your options?
 
-首先，你可以按层级的方式组织你的数据，基于层级的[分支数](http://en.wikipedia.org/wiki/Branching_factor)，这种方式可以很明显地减少每个节目上的行数。
+Well, you could organize your data into a hierarchy, which could dramatically reduce the number of rows displayed on each screen in fashion, based on its [branching factor](http://en.wikipedia.org/wiki/Branching_factor).
 
-同时，你也可以在列表上方加个 `UISearchBar`，允许用户根据关键字过滤，从而找到他们想要的东西（或者，也许更重要的是，看他们想要找的东西在不在列表里）。
+You could also add a `UISearchBar` to the top of your table view, allowing the user to filter on keywords to get exactly what they're looking for (or--perhaps more importantly--determine that what they seek doesn't exist in the first place).
 
-还有第三种在 iOS 应用中并没有被很好利用的办法：**区域索引标题（section index titles）**。它们是在列表右边纵向排列的字母，你可以在电话本联系人界面和音乐曲库界面中看到它们。
+There is also a third approach, which is generally under-utilized in iOS applications: **section index titles**. These are the vertically flowing letters found along the right side of table views in your Address Book contacts list or Music library:
 
 ![Section Index Titles Example](http://nshipster.s3.amazonaws.com/uilocalizedindexedcollation-example.png)
 
-当用户在那个列表里向下移动手指时，列表会在对应的区域间跳动。这会使得冗长的列表视图变得超级好用。
+As the user scrolls their finger down the list, the table view jumps to the corresponding section. Even the most tiresome table view is rendered significantly more usable as a result.
 
-可以通过实现下列 `UITableViewDataSource` 中的方法来显示区域索引标题：
+Section index titles can be enabled by implementing the following `UITableViewDataSource` delegate methods:
 
-- `-sectionIndexTitlesForTableView:` —— 返回一个区域索引标题的数组，用于在列表右边显示，例如字母序列 A...Z 和 #。区域索引标题很短，通常不能多于两个 Unicode 字符。
+- `-sectionIndexTitlesForTableView:` - Returns an array of the section index titles to be displayed along the right hand side of the table view, such as the alphabetical list "A...Z" + "#". Section index titles are short--generally limited to 2 Unicode characters.
 
-- `-tableView:sectionForSectionIndexTitle:atIndex:` —— 返回当用户触摸到某个索引标题时列表应该跳至的区域的索引。
+- `-tableView:sectionForSectionIndexTitle:atIndex:` - Returns the section index that the table view should jump to when the user touches a particular section index title.
 
-NSHipster 的老读者可能已经猜到了，我们肯定不想自己去生成这个字母列表。对于不同的地区来说，字母的顺序，甚至「字母」，的意义都会大不相同。
+As longtime readers of NSHipster doubtless have already guessed, the process of generating that alphabetical list is not something you would want to have to generate yourself. What it means to something to be alphabetically sorted, or even what is meant by an "alphabet" varies wildly across different locales.
 
-`UILocalizedIndexedCollation` 来拯救我们了。
+Coming to our rescue is `UILocalizedIndexedCollation`.
 
 ---
 
-`UILocalizedIndexedCollation` 是一个帮助我们组织列表数据的类，它能够根据地区来生成与之对应区域索引标题。不需要直接创建它的对象，我们可以通过 `UILocalizedIndexedCollation +currentCollation` 获得一个对应当前地区的单例对象。
+`UILocalizedIndexedCollation` is a class that helps to organize data in table views with section index titles in a locale-aware manner. Rather than creating the object directly, a shared instance corresponding to the current locale supported by your application is accessed, with `UILocalizedIndexedCollation +currentCollation`
 
-`UILocalizedIndexedCollation` 的首要任务就是决定对于当前地区区域索引标题应该是什么，我们可以通过 `sectionIndexTitles` 属性来获得它们。
+The first task for `UILocalizedIndexedCollation` is to determine what section index titles to display for the current locale, which are can be read from the `sectionIndexTitles` property.
 
-下表可以帮助你更好的了解不同地区之间区域索引标题的差别。
+To give you a better idea of how section index titles vary between locales:
 
-> 如果你自己想要看这些的话，你需要把对应的地区加入到你的项目本地化列表中。
+> In order to see these for yourself, you'll need to explicitly add the desired locales to your Project Localizations list.
 
-<table>
-  <thead>
-    <tr>
-      <th>Locale</th>
-      <th>Section Index Titles</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>en_US</td>
-      <td><tt>A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, #</tt></td>
-    </tr>
-    <tr>
-      <td>ja_JP</td>
-      <td><tt>A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, あ, か, さ, た, な, は, ま, や, ら, わ, #</tt></td>
-    </tr>
-    <tr>
-      <td>sv_SE</td>
-      <td><tt>A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Å, Ä, Ö, #</tt></td>
-    </tr>
-    <tr>
-      <td>ko_KO</td>
-      <td><tt>A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, ㅅ, ㅇ, ㅈ, ㅊ, ㅋ, ㅌ, ㅍ, ㅎ, #</tt></td>
-    </tr>
-    <tr>
-      <td>ar_SA</td>
-      <td><tt>A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, آ, ب, ت, ث, ج, ح, خ, د, ذ, ر, ز, س, ش, ص, ض, ط, ظ, ع, غ, ف, ق, ك, ل, م, ن, ه, و, ي, #</tt></td>
-    </tr>
-  </tbody>
-</table>
+| Locale     | Section Index Titles |
+|------------|----------------------|
+| en_US      | `A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, #` |
+| ja_JP      | `A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, あ, か, さ, た, な, は, ま, や, ら, わ, #` |
+| sv_SE      | `A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, Å, Ä, Ö, #` |
+| ko_KO      | `A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, ㅅ, ㅇ, ㅈ, ㅊ, ㅋ, ㅌ, ㅍ, ㅎ, #` |
+| AR_sa      | A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, آ, ب, ت, ث, ج, ح, خ, د, ذ, ر, ز, س, ش, ص, ض, ط, ظ, ع, غ, ف, ق, ك, ل, م, ن, ه, و, ي, # |
 
-你难道不为不用自己做这些事情而高兴吗？
+Aren't you glad you don't have to do this yourself?
 
-有了你面前的这些区域标题，下一步就是判断每个模型对象分别对应哪个区域了。这可以通过实现 `-sectionForObject:collationStringSelector:` 做到。这个方法返回 `NSInteger` 类型的索引，它对应了模型对象的指定方法的返回值。方法名称可以为 `localizedName`、`title` 甚至 `description` 等。
+So with the list of section titles laid out before you, the next step is to determine what section each object should be assigned to. This is accomplished with `-sectionForObject:collationStringSelector:`. This method returns the `NSInteger` index corresponding to the string value of the object when performing the specified selector. This selector might be something like `localizedName`, `title`, or even just `description`.
 
-显而易见，列表数据源中会有一个数组，它对应了列表中有多少区域，数组元素表示区域中的每一行。由于整理工作是由 `UILocalizedIndexedCollation` 来做的，因此理所当然地，也应该由它来为每个区域中的行进行排序。和 `-sectionForObject:collationStringSelector:` 的实现方式类似，`– sortedArrayFromArray:collationStringSelector:` 可以为我们基于模型对象的本地化标题来排列模型对象。
+So, as it stands, your table view data source has a NSArray property corresponding to the number of sections in the table view, with each element of the array containing an array representing each row in the section. Since collation was handled by `UILocalizedIndexedCollation`, it makes sense for it to sort the rows in each section as well. `– sortedArrayFromArray:collationStringSelector:` does this in similar fashion to `-sectionForObject:collationStringSelector:`, by sorting the objects in the section by their respective localized title.
 
-最后，数据源应该实现 `-tableView:sectionForSectionIndexTitle:atIndex:` 方法，这样当我们触摸到区域索引标题时，能够让列表调至对应的区域。`UILocalizedIndexedCollation -sectionForSectionIndexTitleAtIndex:` 可以轻松帮我们做到。
+Finally, the table view should implement `-tableView:sectionForSectionIndexTitle:atIndex:`, so that touching a section index title jumps to the corresponding section in the table view. `UILocalizedIndexedCollation -sectionForSectionIndexTitleAtIndex:` does the trick.
 
-都说完了，下边是列表数据源的一个常见实现：
+All told, here's what a typical table view data source implementation looks like:
+
+~~~{swift}
+class ObjectTableViewController: UITableViewController {
+    let collation = UILocalizedIndexedCollation.currentCollation() as UILocalizedIndexedCollation
+    var sections: [[Object]] = []
+    var objects: [Object] {
+        didSet {
+            let selector: Selector = "localizedTitle"
+
+
+            sections = [[Object]](count: collation.sectionTitles.count, repeatedValue: [])
+
+            let sortedObjects = collation.sortedArrayFromArray(objects, collationStringSelector: selector) as [Object]
+            for object in sortedObjects {
+                let sectionNumber = collation.sectionForObject(object, collationStringSelector: selector)
+                sections[sectionNumber].append(object)
+            }
+
+            self.tableView.reloadData()
+        }
+    }
+
+    // MARK: UITableViewDelegate
+
+    override func tableView(tableView: UITableView!, titleForHeaderInSection section: Int) -> String! {
+        return collation.sectionTitles![section] as String
+    }
+
+    override func sectionIndexTitlesForTableView(tableView: UITableView!) -> [AnyObject]! {
+        return collation.sectionIndexTitles
+    }
+
+    override func tableView(tableView: UITableView!, sectionForSectionIndexTitle title: String!, atIndex index: Int) -> Int {
+        return collation.sectionForSectionIndexTitleAtIndex(index)
+    }
+}
+~~~
 
 ~~~{objective-c}
 - (void)setObjects:(NSArray *)objects {
@@ -127,14 +140,15 @@ sectionForSectionIndexTitle:(NSString *)title
 
 ## UITableViewIndexSearch
 
-有一个特殊的区域索引标题需要提一下：`UITableViewIndexSearch`。列表中一般同时会有搜索框和区域索引。为了方便同时也保持视觉上的一致性，通常第一个区域索引处会放个搜索图标，当你触摸这个图标时，列表会滑至顶部的搜索框区域。
+There is one special section index title worth mentioning, and that's `UITableViewIndexSearch`. It's a common pattern to have both a search bar and section indexes. In equal parts convenience and visual consistency, a search icon is often included as the first section index title, which can be touched to bring up the `UISearchBar` in the header of the table view.
 
-为了在列表右边可以看到搜索图标，你需要把 `UITableViewIndexSearch` 这个 `NSString` 常量插入到 `-sectionIndexTitlesForTableView:` 返回值的前边，并且调整 `-tableView:sectionForSectionIndexTitle:atIndex:` 使得它返回正确的区域索引。
+To include the search icon in your table view, you would simply prepend the `NSString` constant `UITableViewIndexSearch` to the return value of `-sectionIndexTitlesForTableView:`, and adjust `-tableView:sectionForSectionIndexTitle:atIndex:` to account for the single element shift.
 
 ---
 
-请所有的 NSHipsters 记住：如果你看到了一个超长的列表，那就一把火把它烧掉！
+So remember, NSHipsters one and all: if you see an excessively long table view, kill it with fire!
 
-……其实是说，要用层级、搜索框以及区域索引标题来改变展现方式。当你要实现区域索引标题时，可以用 `UILocalizedIndexedCollation` 来帮你。
+...which is to say, refactor your content with some combination of hierarchies, a search bar, and section indexes. And when implementing section index titles, take advantage of `UILocalizedIndexedCollation`.
 
-我们都这样做了之后，那就能够摆脱因滑动超长列表而带来的压力，从而可以花更多的时间享受更美好的事情，比如看些宠物玩 iPad 的视频。
+Together, we can put an end to scroll view-induced repetitive stress injuries, and spend more time enjoying the finer things in life, like watching videos of pets playing with iPads.
+

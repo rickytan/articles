@@ -1,39 +1,50 @@
 ---
-layout: post
 title: CGGeometry
 author: Mattt Thompson
-translator: Ricky Tan
 category: Cocoa
-excerpt: "除非你是个数学极客或者一个古希腊人，否则几何学应该不是你高中时最喜欢的课程。不过你仍有机会成为那个在课堂上尽职尽责地将所有必要的公式的程序写到你的TI-8X计算器里的那个人。为了保持尽可能少地做数学问题的传统，这里列出了一些不算复杂的 CoreGraphics 函数使你的工作更简单。"
+excerpt: "Unless you were a Math Geek or an Ancient Greek, Geometry was probably not your favorite subject in high school. No, chances are that you were that kid in class who dutifully programmed all of the necessary formulae into your TI-8X calculator. Keeping in the tradition of doing the least amount of math possible, here are some semi-obscure CoreGraphics functions to make your job easier."
+revisions:
+    "2015-02-17": Added Swift examples and information about how `Swift + CGRect == awesome`; added section for `CGRectIntersect` and `CGRectUnion`.
 ---
 
-除非你是一个数学极客或者一个古希腊人，否则几何学应该不是你高中时最喜欢的课程。不过你可能就是班里的那种学生，那种会老老实实把所有公式都输进TI-8X图形计算器里去看结果。
+Unless you were a Math Geek or an Ancient Greek, Geometry was probably not your favorite subject in high school. No, chances are that you were that kid in class who dutifully programmed all of the necessary formulæ into your TI-8X calculator.
 
-对于那些在学习TI-BASIC花的时间多于欧式几何的人，这里有一份iOS和OS X上绘图系统[Quartz 2D][1]的备忘录：
+So for those of you who spent more time learning TI-BASIC than Euclidean geometry, here's the cheat-sheet for how geometry works in [Quartz 2D][1], the drawing system used in iOS and OS X:
 
-- `CGPoint` 是个表示二维坐标系中的点的结构体。在 iOS中，坐标原点在左上方，所以向右和向下分别是 `x` 和 `y` 的正方向。相反，在 OS X 中 `(0, 0)` 在左下方， `y` 的正方向朝上。
+- A `CGPoint` is a struct that represents a point in a two-dimensional coordinate system. For iOS, the origin is at the top-left, so points move right and down as their `x` and `y` values, respectively, increase. OS X, by contrast, is oriented with `(0, 0)` in the bottom left, with `y` moving up as it increases.
 
-- `CGSize` 是个表示 `长` 和 `宽` 的结构体。
+- A `CGSize` is a struct that represents the dimensions of `width` and `height`.
 
-- `CGRect` 是个包含一个 `CGPoint` （`原点`）和一个 `CGSize` （`大小`）的结构体，表示一个在 `原点` 处画 `大小` 中表示的 `长` 和 `宽` 的矩形。
+- A `CGRect` is a struct with both a `CGPoint` (`origin`) and a `CGSize` (`size`), representing a rectangle drawn from its `origin` point with the `width` and `height` of its `size`.
 
-正因为 `CGRect` 用于表示屏幕上绘制的所有视图的 `frame`，一个程序员操作矩形几何体的能力决定着他在图形编程上的成功。
+Because `CGRect` is used to represent the `frame` of every view drawn on screen, a programmer's success in graphical programming is contingent on their ability to effectively manipulate rectangle geometry.
 
-幸运的是，Quartz 带来了一批好用的函数，减少了本应该我们自己做的浮点数学运算。即使 Cocoa 中视图编程非常重要，即使这些函数都非常有用，但它们对于大部分 iOS 开发者说来仍是相对陌生的。
+Fortunately for us, Quartz comes with a slew of useful functions to reduce the amount of floating point math we have to do ourselves. As central as view programming is to Cocoa, and as useful as these functions are, however, they remain relatively unknown to most iOS developers.
 
-这个情况不会持续太久！让我们来了解一下这些最有用的函数，并帮你们节省一些编程的工作量吧！
+This will not stand! Let's shine some light on the most useful functions and save y'all some typing!
+
+> In Swift, the CoreGraphics framework augments `CGRect` by adding all this functionality as static properties, instance properties, and both mutating and non-mutating functions where appropriate. For idiomatic Swift code, prefer properties and nonmutating instance methods whenever possible.
 
 ---
 
-变换
+Transformations
 ---------------
 
-我们的列表中的第一个是几何变换。这些函数返回在传入的矩形中做某些特定操作后的 `CGRect`
+First on our list are the geometric transformations. These functions return a `CGRect`, which is the result of performing a particular set of operations on the passed rectangle.
 
 ### `CGRectOffset`
 
-> `CGRectOffset`: 返回一个原点在源矩形基础上进行了偏移的矩形。
+> `rectByOffsetting` / `CGRectOffset`: Returns a rectangle with an origin that is offset from that of the source rectangle.
 
+~~~{swift}
+// methods:
+extension CGRect {
+    func rectByOffsetting(dx: CGFloat, dy: CGFloat) -> CGRect
+    mutating func offset(dx: CGFloat, dy: CGFloat)
+}
+// function:
+func CGRectOffset(rect: CGRect, dx: CGFloat, dy: CGFloat) -> CGRect
+~~~
 ~~~{objective-c}
 CGRect CGRectOffset(
   CGRect rect,
@@ -42,12 +53,21 @@ CGRect CGRectOffset(
 )
 ~~~
 
-注意，用这个你只改变了矩形的原点。它不仅能让你在同时改变水平和垂直位置的时候减少一行代码，更重要的是，它所表示的平移比直接分开操作原点的值更具有几何意义。
+Consider using this anytime you're changing the origin of a rectangle. Not only can it save a line of code when changing both the horizontal and vertical position, but more importantly, it represents the translation more semantically than manipulating the origin values individually.
 
 ### `CGRectInset`
 
-> `CGRectInset`: 返回一个与源矩形共中心点的，或大些或小些的新矩形。
+> `rectByInsetting` / `CGRectInset`: Returns a rectangle that is smaller or larger than the source rectangle, with the same center point.
 
+~~~{swift}
+// methods:
+extension CGRect {
+    func rectByInsetting(dx: CGFloat, dy: CGFloat) -> CGRect
+    mutating func inset(dx: CGFloat, dy: CGFloat)
+}
+// function:
+func CGRectInset(rect: CGRect, dx: CGFloat, dy: CGFloat) -> CGRect
+~~~
 ~~~{objective-c}
 CGRect CGRectInset(
   CGRect rect,
@@ -56,32 +76,42 @@ CGRect CGRectInset(
 )
 ~~~
 
-想一个视图中的视图更好看吗？用`CGRectInset`给它设置一个 10pt 的边距吧。需要记住的是，矩形将围绕它的中心点进行缩放，左右分别增减`dx`（总共`2 x dx`），上下分别增减 `dy`（总共 `2 x dy`）。
+Want to make a view-within-a-view look good? Give it a nice 10pt padding with `CGRectInset`. Keep in mind that the rectangle will be resized around its center by ± `dx` on its left and right edge (for a total of `2 × dx`), and ± `dy` on its top and bottom edge (for a total of `2 × dy`).
 
-如果你用 `CGRectInset` 作为缩放矩形的快捷方法，一般通用的做法是嵌套调用`CGRectOffset`，把`CGRectInset`的返回值作为`CGRectOffset`的参数。
+If you're using `CGRectInset` as a convenience function for resizing a rectangle, it is common to chain this with `CGRectOffset` by passing the result of `CGRectInset` as the `rect` argument in `CGRectOffset`.
 
 ### `CGRectIntegral`
 
-> `CGRectIntegral`: 返回包围源矩形的最小整数矩形。
+> `integerRect` / `CGRectIntegral`: Returns the smallest rectangle that results from converting the source rectangle values to integers.
 
+~~~{swift}
+// methods:
+extension CGRect {
+    var integerRect: CGRect { get }
+    mutating func integerize()
+}
+// function:
+func CGRectIntegral(rect: CGRect) -> CGRect
+~~~
 ~~~{objective-c}
 CGRect CGRectIntegral (
   CGRect rect
 )
 ~~~
 
-将`CGRect` 取整到最近的完整点是非常重要的。小数值会让边框画在_像素边界_处。因为像素已经是最小单元（不能再细分），小数值会使绘制时取周围几个像素的平均值，这样看起来就模糊了。
+It's important that `CGRect` values all are rounded to the nearest whole point. Fractional values cause the frame to be drawn on a _pixel boundary_. Because pixels are atomic units (cannot be subdivided†) a fractional value will cause the drawing to be averaged over the neighboring pixels, which looks blurry.
 
-`CGRectIntegral` 将表示原点的值向下取整，表示大小的值向上取整，这样就保证了你的绘制代码平整地对齐到像素边界。
+`CGRectIntegral` will `floor` each origin value, and `ceil` each size value, which will ensure that your drawing code will crisply align on pixel boundaries.
 
-作为一个经验性的原则，如果你在执行任何一个可能产生小数值的操作（例如除法，`CGGetMid[X|Y]`，或是 `CGRectDivide`），在把一矩形作为视图的边框之前应该用`CGRectIntegral`正则化它。
+As a rule of thumb, if you are performing any operations that could result in fractional point values (e.g. division, `CGRectGetMid[X|Y]`, or `CGRectDivide`), use `CGRectIntegral` to normalize rectangles to be set as a view frame.
 
-> 从技术上讲，坐标系讲的是点，而视网膜屏一个点中有四个像素，所以它在奇数像素`± 0.5f`处绘制也不会产生模糊。
+> † Technically, since the coordinate system operates in terms of points, Retina screens, which have 4 pixels for every point, can draw `± 0.5f` point values on odd pixels without blurriness.
 
-取值辅助函数
+
+Value Helper Functions
 ----------------------
 
-这些函数提供了取特定`CGRect`的有意思的尺寸值的便捷方法。
+These functions provide a shorthand way to calculate interesting dimensional values about a particular `CGRect`.
 
 ### `CGRectGet[Min|Mid|Max][X|Y]`
 
@@ -92,62 +122,165 @@ CGRect CGRectIntegral (
 - `CGRectGetMaxX`
 - `CGRectGetMaxY`
 
-这六个函数返回矩形`x`或`y`的最小、中间或最大值，原型如下：
+These six functions return the minimum, middle, or maximum `x` or `y` value for a rectangle, taking the form:
 
+~~~{swift}
+func CGRectGet[Min|Mid|Max][X|Y](rect: CGRect) -> CGPoint
+~~~
 ~~~{objective-c}
 CGFloat CGRectGet[Min|Mid|Max][X|Y] (
   CGRect rect
 )
 ~~~
 
-用这些函数代替诸如`frame.origin.x + frame.size.width`之类的代码将更加清晰、语义上更为生动的（特别是用取中间和取最大函数）。
+These functions will replace code like `frame.origin.x + frame.size.width` with cleaner, more semantically expressive equivalents (especially with the mid and max functions).
 
 ### `CGRectGet[Width|Height]`
 
-> `CGRectGetHeight`: 返回矩形的高度。
+~~~{swift}
+// Returns the height of a rectangle.
+func CGRectGetHeight(rect: CGRect) -> CGFloat
 
+// Returns the width of a rectangle.
+func CGRectGetWidth(rect: CGRect) -> CGFloat
+~~~
 ~~~{objective-c}
+// Returns the height of a rectangle.
 CGFloat CGRectGetHeight (
    CGRect rect
 )
-~~~
 
-> `CGRectGetWidth`: 返回矩形的宽度。
-
-~~~{objective-c}
+// Returns the width of a rectangle.
 CGFloat CGRectGetWidth (
    CGRect rect
 )
 ~~~
 
-跟之前的函数一样，用`CGRectGetWidth` 和 `CGRectGetHeight`返回`CGRect`的`size`成员更可取。这绝不只是节省了几个字符，语义上的清晰胜过简洁。
+Much like the previous functions, `CGRectGetWidth` & `CGRectGetHeight` are often preferable to returning the corresponding member of a `CGRect`'s `size`. While it's not extremely competitive in terms of character savings, remember that semantic clarity trumps brevity every time.
 
-常量
+### Swift Additions
+
+~~~{swift}
+extension CGRect {
+    var minX: CGFloat { get }
+    var minY: CGFloat { get }
+    var midX: CGFloat { get }
+    var midY: CGFloat { get }
+    var maxX: CGFloat { get }
+    var maxY: CGFloat { get }
+    var width: CGFloat { get }
+    var height: CGFloat { get }
+}
+~~~
+
+The `CGRect` Swift extensions for dimensional values make a huge difference in code readability, as each of the value helper functions is mapped to individual computed properties.
+
+~~~{swift}
+// instead of calling the function
+let rightEdge = CGRectMaxX(view.frame)
+
+// simply access the property
+let leftEdge = view.frame.minX
+~~~
+
+
+Identities
 ----------
 
-这里列出了三个我们必须了解的特殊矩形值，它们都有一些独一无二的属性：
+There are three special rectangle values, each of which have unique properties that are important to know about:
 
-### `CGRectZero`， `CGRectNull`，和 `CGRectInfinite`
+### `CGRectZero`, `CGRectNull`, & `CGRectInfinite`
 
-> - `const CGRect CGRectZero`: 一个原点在(0, 0)，且长宽均为 0 的常数矩形。这个零矩形与 CGRectMake(0.0f, 0.0f, 0.0f, 0.0f) 是等价的。
-> - `const CGRect CGRectNull`: 空矩形。这个会在，比如说，求两个不相交的矩形的相交部分时返回。**注意，空矩形不是零矩形**。
-> - `const CGRect CGRectInfinite`: 无穷大矩形。
+> - `CGRect.zeroRect` / `const CGRect CGRectZero`: A rectangle constant with location (0,0), and width and height of 0. The zero rectangle is equivalent to CGRectMake(0.0f, 0.0f, 0.0f, 0.0f).
+> - `CGRect.nullRect` / `const CGRect CGRectNull`: The null rectangle. This is the rectangle returned when, for example, you intersect two disjoint rectangles. **Note that the null rectangle is not the same as the zero rectangle**.
+> - `CGRect.infiniteRect` / `const CGRect CGRectInfinite`: A rectangle that has infinite extent.
 
-`CGRectZero` 可能是所有这些特殊矩形中最有用的了。当初始化一个视图时，它们的边框通常设置为`CGRectZero`，把布局放到 `-layoutSubviews`中。
+`CGRectZero` is perhaps the most useful of all of the special rectangle values. When initializing subviews, their frames are often initialized to `CGRectZero`, deferring their layout to `-layoutSubviews`.
 
-`CGRectNull` 跟 `CGRectZero` 是两回事，尽管它隐隐约约让你感觉到`NULL` == `0`。这个值在概念上与`NSNotFound`相近，所以它表示预期值的缺失。请注意函数可能返回 `CGRectNull`，同时也应让它能正确处理传入的`CGRectIsNull`。
+`CGRectNull` is distinct from `CGRectZero`, despite any implied correspondence to `NULL` == `0`. This value is conceptually similar to `NSNotFound`, in that it represents the absence of an expected value. Be aware of what functions can return `CGRectNull`, and be prepared to handle it accordingly, by testing with `CGRectIsNull`.
 
-`CGRectInfinite` 是以上所有当中最有异国风情的，并且有一些最有趣的属性。它与所有的点或矩形相交，包含所有矩形，且它与任何矩形的并集等于它自身。用 `CGRectIsInfinite` 来检查一矩形是否为无限大。
+`CGRectInfinite` is the most exotic of all, and has some of the most interesting properties. It intersects with all points and rectangles, contains all rectangles, and its union with any rectangle is itself. Use `CGRectIsInfinite` to check to see if a rectangle is infinite.
 
-最后……
+
+Relationships
+-------------
+
+Moving from one rectangle to two, a pair of rectangles can be either intersected or combined to create a new `CGRect`:
+
+### `CGRectIntersection`
+
+> `rectByIntersecting` / `CGRectIntersection`: Returns the intersection of two rectangles.
+
+~~~{swift}
+// methods:
+extension CGRect {
+    func rectByIntersecting(withRect: CGRect) -> CGRect
+    mutating func intersect(withRect: CGRect)
+}
+// function:
+func CGRectIntersection(rect1: CGRect, rect2: CGRect) -> CGRect
+~~~
+~~~{objective-c}
+CGRect CGRectIntersection (
+  CGRect rect1,
+  CGRect rect2
+)
+~~~
+
+`CGRectIntersection` is a fast way to find the overlapping region between two views. The intersection of two non-overlapping rectangles is a null rect, but if you need to simply check for intersection or containment, use `intersects` / `CGRectIntersectsRect` or `contains` / `CGRectContainsRect` instead.
+
+
+### `CGRectUnion`
+
+> `rectByUnion` / `CGRectUnion`: Returns the smallest rectangle that contains the two source rectangles.
+
+~~~{swift}
+// methods:
+extension CGRect {
+    func rectByUnion(withRect: CGRect) -> CGRect
+    mutating func union(withRect: CGRect)
+}
+// function:
+func CGRectUnion(rect1: CGRect, rect2: CGRect) -> CGRect
+~~~
+~~~{objective-c}
+CGRect CGRectUnion (
+  CGRect rect1,
+  CGRect rect2
+)
+~~~
+
+Need a rectangle that can wrap two separate regions in your view? Remember that you can chain together different methods to produce the rectangle you need. Use `CGRectUnion` and negative values with `CGRectInset` to find a padded rectangle around two items:
+
+~~~{swift}
+let combinedRect = imageRect.rectByUnion(textRect).rectByInsetting(dx: -10, dy: -10)
+~~~
+~~~{objective-c}
+CGRect combinedRect = CGRectInset(CGRectUnion(imageRect, textRect), -10, -10);
+~~~
+
+And Finally...
 --------------
 
-看吧，最复杂、最容易误解、也最有用的`CGGeometry` 函数：`CGRectDivide`。
+Behold, the most obscure, misunderstood, and useful of the `CGGeometry` functions: `CGRectDivide`.
 
-## `CGRectDivide`
+### `CGRectDivide`
 
-> `CGRectDivide`: 将源矩形分为两个子矩形。
+> `CGRectDivide`: Divides a source rectangle into two component rectangles.
 
+~~~{swift}
+// method:
+extension CGRect {
+    func rectsByDividing(atDistance: CGFloat, fromEdge edge: CGRectEdge) 
+            -> (slice: CGRect, remainder: CGRect)
+}
+// function:
+CGRectDivide(rect: CGRect, 
+            slice: UnsafeMutablePointer<CGRect>,
+        remainder: UnsafeMutablePointer<CGRect>,
+           amount: CGFloat,
+             edge: CGRectEdge)
+~~~
 ~~~{objective-c}
 void CGRectDivide(
   CGRect rect,
@@ -158,15 +291,27 @@ void CGRectDivide(
 )
 ~~~
 
-`CGRectDivide` 用以下方式将矩形分割为两部分：
+`CGRectDivide` divides a rectangle into two components in the following way:
 
-- 传入一个矩形并选择一条`edge`（上，下，左，右）；
-- 平行那个边在矩形里量出`amount`的长度；
-- 从`edge` 到量出的`amount`区域都保存到`slice` 参数中；
-- 剩余的部分保存到`remainder` 参数中。
+- Take a rectangle and choose an `edge` (left, right, top, or bottom).
+- Measure out an `amount` from that edge.
+- Everything from the `edge` to the measured `amount` is stored in the rectangle referenced in the `slice` argument.
+- The rest of the original rectangle is stored in the `remainder` out argument.
 
-其中 `edge` 参数是一个`CGRectEdge` 枚举类型：
+> Don't fret about the `UnsafeMutablePointer<CGRect>` in the Swift version; those pointers act just like `inout` properties in this case. Create your slice and remainder instances up-front, and prefix with an `&` in the call. Or better yet, use the instance method on an existing `CGRect`:
+>
+> `let (slice, remainder) = frame.rectsByDividing(120, fromEdge:.MinXEdge)`
 
+That `edge` argument takes a value from the `CGRectEdge` enum:
+
+~~~{swift}
+enum CGRectEdge {
+   case MinXEdge
+   case MinYEdge
+   case MaxXEdge
+   case MaxYEdge
+}
+~~~
 ~~~{objective-c}
 enum CGRectEdge {
    CGRectMinXEdge,
@@ -176,12 +321,12 @@ enum CGRectEdge {
 }
 ~~~
 
-`CGRectDivide` 用于在几个视图之间分割可用空间真是太完美了（把它在随后的`remainder`容纳多于两个的视图）。下次当你需要手机布局一个`UITableViewCell`时试试吧。`CGRectDivide`  is perfect for dividing up available space among several views (call it on subsequent `remainder` amounts to accommodate more than two views). Give it a try next time you're manually laying-out a `UITableViewCell`.
+`CGRectDivide` is perfect for dividing up available space among several views (call it on subsequent `remainder` amounts to accommodate more than two views). Give it a try next time you're manually laying-out a `UITableViewCell`.
 
 ---
 
-综上所述，如果你不重视 Geometry 类的话将会怎样——这就是真实的世界，在这个真实世界里，你有 `CGGeometry.h`。
+So what if you didn't pay attention in Geometry class—this is the real world, and in the real world, you have `CGGeometry.h`.
 
-很好地了解它之后，你将从在应用中发掘出超棒的新界面的路上启程。用它将工作做得足够好的话，你就可能陷入世界上最伟大的算术问题：数通过你的出色应用赚到的钱。数学万岁！
+Know it well, and you'll be on your way to discovering great new user interfaces in your apps. Do good enough of a job with that, and you may run into the greatest arithmetic problem of all: adding up all of the money you'll make with your awesome new app. Mathematical!
 
 [1]: https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/drawingwithquartz2d/Introduction/Introduction.html#//apple_ref/doc/uid/TP30001066

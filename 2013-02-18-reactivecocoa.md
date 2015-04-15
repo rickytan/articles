@@ -1,45 +1,43 @@
 ---
-layout: post
 title: ReactiveCocoa
-category: Open Source
-excerpt: "打破了苹果API排他性的盾牌，本期NSHipster将介绍一个为Objective-C勇敢构建新纪元的开源项目：ReactiveCocoa"
 author: Mattt Thompson
-translator: Croath Liu
+category: Open Source
+excerpt: "Breaking from a tradition of covering Apple APIs exclusively, this edition of NSHipster will look at an open source project that exemplifies a brave new era of open source contribution to Objective-C: ReactiveCocoa."
 ---
 
-编程语言是有生命的。语言在自由无方向迅速发展的生命周期中不断被推动、被挑战、被变得不规范化、或被蒙上了神秘面纱。科技在不停的改变中、在开发团队和开源社区不断来了又走中得以不断发展；隐晦的神秘力量凭借新兴项目的巨人肩膀被磨练得力量日益突出，很快就会在长期的蛰伏后觉醒，大力开辟出一片新天地。
+Languages are living works. They are nudged and challenged and bastardized and mashed-up in a perpetual cycle of undirected and rapid evolution. Technologies evolve, requirements change, corporate stewards and open source community come and go; obscure dialects are vaulted to prominence on the shoulders of exciting new frameworks, and thrust into a surprising new context after a long period of dormancy.
 
-Objective-C在几十年间的非凡发展史可以分为四个阶段：
+Objective-C has a remarkable history spanning four acts in as many decades:
 
-**第1阶段**，NeXT接手了Objective-C用以支持[NeXTSTEP](http://en.wikipedia.org/wiki/NeXTSTEP)和[世界上第一个web server](http://en.wikipedia.org/wiki/Web_server#History)。
+**In its 1<sup>st</sup> act**, Objective-C was adopted as the language of NeXT, powering [NeXTSTEP](http://en.wikipedia.org/wiki/NeXTSTEP) and [the world's first web server](http://en.wikipedia.org/wiki/Web_server#History).
 
-**第2阶段**，苹果并购了NeXT，（在与Java的长期拉锯战之后），Objective-C处于苹果技术栈的核心地位。
+**In its 2<sup>nd</sup> act**, Objective-C positioned itself in the heart Apple's technology stack (after a prolonged turf war with Java) with Apple's acquisition of NeXT.
 
-**第3阶段**，随着iOS系统的发布，Objective-C上升到了空前重要的地位，成为移动计算领域最重要的语言。
+**In its 3<sup>rd</sup> act**, Objective-C rose to unprecedented significance with the release of iOS, making it the most important language of mobile computing.
 
-**Objective-C的第4阶段，也就是现如今**，伴随着大批从Ruby、Python、Javascript社区转型的iOS工程师的涌入，Objective-C开始在开源领域大放异彩。Objective-C第一次直接被苹果以外的其他人打磨和引导。
+**Objective-C's 4<sup>th</sup> act takes us to the present day**, with an influx of new iOS developers from the Ruby, Python, and Javascript communities sparking a revolution in open source participation. For the first time, Objective-C is being directly shaped and guided by the contributions of individuals outside of Apple.
 
-打破了苹果API排他性的盾牌，本期NSHipster将介绍一个为Objective-C勇敢构建新纪元的开源项目：[ReactiveCocoa](https://github.com/ReactiveCocoa/ReactiveCocoa)。
+Breaking from a tradition of covering Apple APIs exclusively, this edition of NSHipster will look at an open source project that exemplifies this brave new era for Objective-C: [ReactiveCocoa](https://github.com/ReactiveCocoa/ReactiveCocoa).
 
 ---
 
-> 为了对ReactiveCocoa有全方位了解，请查看其项目的[README](https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/README.md)、[Framework Overview](https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/FrameworkOverview.md)和[Design Guidelines](https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/DesignGuidelines.md)。
+> For a complete look at ReactiveCocoa, refer to the project's [README](https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/README.md), [Framework Overview](https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/FrameworkOverview.md) and [Design Guidelines](https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/DesignGuidelines.md).
 
-[ReactiveCocoa](https://github.com/ReactiveCocoa/ReactiveCocoa)是一个将函数响应式编程范例带入Objective-C的开源库。由[Josh Abernathy](https://github.com/joshaber)和[Justin Spahr-Summers](https://github.com/jspahrsummers)在对[GitHub for Mac](http://mac.github.com)的开发过程中建立。上周，ReactiveCocoa发布了其[1.0 release](https://github.com/ReactiveCocoa/ReactiveCocoa/tree/v1.0.0)，达到了第一个重要里程碑。
+[ReactiveCocoa](https://github.com/ReactiveCocoa/ReactiveCocoa) is an open source library that brings Functional Reactive Programming paradigm to Objective-C. It was created by [Josh Abernathy](https://github.com/joshaber) & [Justin Spahr-Summers](https://github.com/jspahrsummers) in the development of [GitHub for Mac](http://mac.github.com). Last week, ReactiveCocoa reached a major milestone with its [1.0 release](https://github.com/ReactiveCocoa/ReactiveCocoa/tree/v1.0.0).
 
-[函数响应式编程(Functional Reactive Programming a.k.a FRP)](http://en.wikipedia.org/wiki/Functional_reactive_programming)是思考软件将输入转化为输出在时间上的持续过程的一种方式。[Josh Abernathy这样解释它](http://blog.maybeapps.com/post/42894317939/input-and-output)：
+[Functional Reactive Programming](http://en.wikipedia.org/wiki/Functional_reactive_programming) (FRP) is a way of thinking about software in terms of transforming inputs to produce output continuously over time. [Josh Abernathy frames the paradigm thusly](http://blog.maybeapps.com/post/42894317939/input-and-output):
 
-> 程序接收输入产生输出。输出就是对输入做了一些事的结果。输入，转换，输出，完成。
+> Programs take input and produce output. The output is the result of doing something with the input. Input, transform, output, done.
 >
-> 输入是应用动作的全部来源。点击、键盘事件、定时器事件、GPS时间、网络请求响应都算是输入。这些事件被传递到应用中，应用将他们以某种方式混合，产生了结果：就是输出。
+> The input is all the sources of action for your app. It's taps. It's keyboard events. It's timer triggers, GPS events, and web service responses. These things are all inputs. They all feed into the app, and the app combines them all in some way to produce a result: the output.
 >
-> 输出通常会改变应用的UI。开关状态变化、列表有了新的元素都是UI变化。也有可能让磁盘上某个文件产生变化，或者产生一个API请求，这都是应用的输出。
+> The output is often a change in the app's UI. A switch is toggled or a list gets a new item. Or it could be more than that. It could be a new file on the device's disk, or it could be an API request. These things are the outputs of the app.
 >
-> 但不像传统的输入输出设计，应用的输入输出可以产生很多次。应用打开后，不只是一个简单的 输入→工作→输出 就构成了一个生命周期。应用经常有大量的输入并基于这些输入产生输出。
+> But unlike the classic input/output design, this input and output happens more than once. It's not just a single input → work → output—the cycle continues while the app is open. The app is always consuming inputs and producing outputs based on them.
 
-为了举例说明传统范式即Objective-C的命令响应式编程和函数响应式范式的区别，来思考一下下面这个判断注册项是否合法的常用样例：
+To illustrate the difference between the conventional, imperative paradigm of Objective-C programming versus a functional reactive approach, consider the common example of validating a signup form:
 
-### 传统范式
+### Conventional
 
 ~~~{objective-c}
 - (BOOL)isFormValid {
@@ -61,9 +59,9 @@ replacementString:(NSString *)string
 }
 ~~~
 
-传统范式的样例中，逻辑被放在了很多方法里，零碎地摆放在view controller里，通过到处散布到delegate里的`self.createButton.enabled = [self isFormValid];`方法在页面的生命周期中被调用。
+In the conventional example, logic is fragmented across different methods in the view controller, with calls to `self.createButton.enabled = [self isFormValid];` interspersed throughout delegate methods and view lifecycle callbacks.
 
-比较一下用ReactiveCocoa写的同样功能的代码：
+Compare this with equivalent code using ReactiveCocoa:
 
 ### ReactiveCocoa
 
@@ -82,35 +80,45 @@ RACSignal *formValid = [RACSignal
 RAC(self.createButton.enabled) = formValid;
 ~~~
 
-所有对于判断表单输入是否合法的逻辑都被整合为一串逻辑了。每次不论哪个输入框被修改了，用户的输入都会被reduce成一个布尔值，然后就可以自动来控制注册按钮的可用状态了。
+Here, all of the logic for validating form input is contained in a single chain of logic and responsibility. Each time any of the text fields is updated, their inputs are reduced into a single boolean value, which automatically enables / disables the create button.
 
-## 概述
+## Overview
 
-ReactiveCocoa由两大主要部分组成：[signals](https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/FrameworkOverview.md#signals) (`RACSignal`) 和 [sequences](https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/FrameworkOverview.md#sequences) (`RACSequence`)。
+ReactiveCocoa is comprised of two major components: [signals](https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/FrameworkOverview.md#signals) (`RACSignal`) and [sequences](https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/FrameworkOverview.md#sequences) (`RACSequence`).
 
-signal 和 sequence 都是[streams](https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/FrameworkOverview.md#streams)，他们共享很多相同的方法。ReactiveCocoa在功能上做了语义丰富、一致性强的一致性设计：signal是_push_驱动的stream，sequence是_pull_驱动的stream。
+Both signals and sequences are kinds of [streams](https://github.com/ReactiveCocoa/ReactiveCocoa/blob/master/Documentation/FrameworkOverview.md#streams), sharing many of the same operators. ReactiveCocoa has done well to abstract a wide scope of functionality into a semantically dense, consistent design: signals are a _push_-driven stream, and sequences are a _pull_-driven stream.
 
 ### `RACSignal`
 
-> - **异步控制或事件驱动的数据源**：Cocoa编程中大多数时候会关注用户事件或应用状态改变产生的响应。
-> - **链式以来操作**：网络请求是最常见的依赖性样例，前一个对server的请求完成后，下一个请求才能构建。
-> - **并行独立动作**：独立的数据集要并行处理，随后还要把他们合并成一个最终结果。这在Cocoa中很常见，特别是涉及到同步动作时。
+> - **Handling Asynchronous Or Event-driven Data Sources**: Much of Cocoa programming is focused on reacting to user events or changes in application state.
+> - **Chaining Dependent Operations**: Dependencies are most often found in network requests, where a previous request to the server needs to complete before the next one can be constructed.
+> - **Parallelizing Independent Work**: Working with independent data sets in parallel and then combining them into a final result is non-trivial in Cocoa, and often involves a lot of synchronization.
 
-> Signal会触发它们的subscriber三种不同类型的事件：
+> Signals send three different types of events to their subscribers:
 >
-> * **下一个**事件从stream中提供一个新值。不像Cocoa集合，它是完全可用的，甚至一个signal可以包含 `nil`。
-> * **错误**事件会在一个signal结束之前被标示出来这里有一个错误。这种事件可能包含一个 `NSError` 对象来标示什么发生了错误。错误必须被特殊处理——错误不会被包含在stream的值里面。
-> * **完成**事件标示signal成功结束，不会再有新的值会被加入到stream当中。完成事件也必须被单独控制——它不会出现在stream的值里面。
+> * The **next** event provides a new value from the stream. Unlike Cocoa collections, it is
+   completely valid for a signal to include `nil`.
+> * The **error** event indicates that an error occurred before the signal could
+   finish. The event may include an `NSError` object that indicates what went
+   wrong. Errors must be handled specially – they are not included in the
+   stream's values.
+> * The **completed** event indicates that the signal finished successfully, and
+   that no more values will be added to the stream. Completion must be handled
+   specially – it is not included in the stream of values.
 >
-> 一个signal的生命由很多`下一个(next)`事件和一个`错误(error)`或`完成(completed)`事件组成（后两者不同时出现）。
+> The lifetime of a signal consists of any number of `next` events, followed by
+one `error` or `completed` event (but not both).
 
 ### `RACSequence`
 
-> - **简化集合转换**：你会痛苦地发现 `Foundation` 库中没有类似 `map` 和 `filter`、`fold/reduce` 等高级函数。
+> - **Simplifying Collection Transformations**: Higher-order functions like `map`, `filter`, `fold/reduce` are sorely missing from `Foundation`.
 
-> Sequence是一种集合，很像 `NSArray`。但和数组不同的是，一个sequence里的值默认是_延迟_加载的（只有需要的时候才加载），这样的话如果sequence只有一部分被用到，那么这种机制就会提高性能。像Cocoa的集合类型一样，sequence不接受 `nil` 值。
+> Sequences are a kind of collection, similar in purpose to `NSArray`. Unlike
+an array, the values in a sequence are evaluated _lazily_ (i.e., only when they
+are needed) by default, potentially improving performance if only part of
+a sequence is used. Just like Cocoa collections, sequences cannot contain `nil`.
 >
-> `RACSequence` 允许任意Cocoa集合在统一且显式地进行操作。
+> `RACSequence` allows any Cocoa collection to be manipulated in a uniform and declarative way.
 
 ~~~{objective-c}
 RACSequence *normalizedLongWords = [[words.rac_sequence
@@ -122,29 +130,29 @@ RACSequence *normalizedLongWords = [[words.rac_sequence
     }];
 ~~~
 
-## Cocoa中的先例
+## Precedents in Cocoa
 
 Capturing and responding to changes has a long tradition in Cocoa, and ReactiveCocoa is a conceptual and functional extension of that. It is instructive to contrast RAC with those Cocoa technologies:
 
-### RAC 与 KVO
+### RAC vs. KVO
 
-[Key-Value Observing](http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html)是Cocoa所有魔法的核心，它被广泛应用在ReactiveCocoa对于属性变化的影响动作中。然而KVO用起来即不简单也不开心：它的API有很多过度设计的参数，以及缺乏方便的block方式调用。
+[Key-Value Observing](http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html) is at the heart of all magic in Cocoa—indeed, it is used extensively by ReactiveCocoa to react to property changes. However, KVO is neither pleasant nor easy to use: its API is overwrought with unused parameters and sorely lacking a blocks-based interface.
 
-### RAC 与 Bindings
+### RAC vs. Bindings
 
-[Bindings](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaBindings/CocoaBindings.html)也是黑魔法。
+[Bindings](https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/CocoaBindings/CocoaBindings.html) are magic—voodoo, really.
 
-虽然对OS X控制的要点就是Bindings，但是它的意义在近年来越来越没那么重要了，因为焦点已经移动到了iOS和UIKit这些Bindings不支持的东西身上。Bindings替代了大量的模版胶水代码，允许在Interface Builder中完成编码，但严格上说还是比较有局限性的，并且_无法_debug。RAC提供了一种简洁易懂、扩展性强的以代码为基础的API来运行在iOS上，目标就是取代所有在OS X能用Bindings实现的神奇功能。
+Although essential to managing the complexity of a OS X application, Bindings' cultural relevance has waned for years, as the focus has shifted to iOS and UIKit, which notably lacks support. Bindings replace a lot of boilerplate glue code and allow programming to be done in Interface Builder, but they're severely limited and _impossible_ to debug. RAC offers a clear, understandable, and extensible code-based API that works in iOS and is apt to replace all but the most trivial uses of bindings in your OS X application.
 
 ---
 
-Objective-C在C的核心上吸收了Smalltalk的思想建立而成，但哲学理念上已经超越了它原本来源的血统。
+Objective-C was built from Smalltalk's ideas on top of C's metal, but its cultural imports go far beyond its original pedigree.
 
-`@protocol` 是对C++多重继承的拒绝，顺应抽象数据的类型范式是对Java `Interface`的吸收。Objective-C 2.0引入了`@property / @synthesize`则灵感来自C#的 `get; set;` 方法对getter和setter的速记（就语法上来说，这也是NeXTSETP强硬路线坚持者经常辩论的一点）。Block给这门语言带来了函数式编程的好处，可以使用Grand Central Dispatch——来自Fortran / C / C++ standard [OpenMP](http://en.wikipedia.org/wiki/OpenMP)思想而成的基于队列的并发API。下标和对象字面量都是像Ruby、Javascript这样的脚本语言的标准特性，如今也由一个Clang插件被带入了Objective-C的世界里。
+`@protocol` was a rejection of C++'s multiple inheritance, favoring an abstract data type pattern comparable to a Java `Interface`. Objective-C 2.0 introduced `@property / @synthesize`, a contemporary of C#'s `get; set;` shorthand for getter and setter methods (as well as dot syntax, which is still a point of contention for NeXTSTEP hard-liners). Blocks injected some functional programming flavor to the language, which paired nicely with Grand Central Dispatch--a queue-based concurrency API almost certainly influenced by Fortran / C / C++ standard [OpenMP](http://en.wikipedia.org/wiki/OpenMP). Subscripting and object literals, a standard feature in scripting languages like Ruby and Javascript, now finally brought to Objective-C thanks to a Clang language extension.
 
-ReactiveCocoa则给Objective-C带来了函数响应式编程的健康药剂。它本身也是受C#的[Rx library](http://msdn.microsoft.com/en-us/data/gg577609.aspx)、[Clojure](http://en.wikipedia.org/wiki/Clojure)和[Elm][2]的影响发展而成。
+ReactiveCocoa brings a healthy dose of functional and reactive programming influence to Objective-C, and was itself influenced by C#'s [Rx library](http://msdn.microsoft.com/en-us/data/gg577609.aspx), [Clojure](http://en.wikipedia.org/wiki/Clojure), and [Elm][2].
 
-好的点子会传染。ReactiveCocoa就是一种警示，提醒人们好的点子也可以从看似不太可能的地方传播过来，这样的新鲜思想对解决类似的问题也会有完全不同的方法呢。
+Good ideas are contagious. ReactiveCocoa is a reminder that good ideas can come from unlikely places, and that a fresh perspective can make all of the difference with familiar problems.
 
 [1]: http://en.wikipedia.org/wiki/State_(computer_science)#Program_state
 [2]: http://en.wikipedia.org/wiki/Elm_(programming_language)

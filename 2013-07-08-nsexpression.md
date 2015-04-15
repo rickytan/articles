@@ -1,49 +1,49 @@
 ---
-layout: post
 title: NSExpression
 author: Mattt Thompson
-translator: Zihan Xu
 category: Cocoa
+tags: nshipster
+excerpt: "Cocoa is the envy of other standard libraries when it comes to querying and arranging information. With NSPredicate, NSSortDescriptor, and an occasional NSFetchRequest, even the most complex data tasks can be reduced into just a few, extremely-understandable lines of code."
 ---
 
-每当涉及查询或者整理信息时，Cocoa总是其他标准库羡慕的对象。通过使用`NSPredicate`，[`NSSortDescriptor`](http://nshipster.com/nssortdescriptor/)，以及偶尔使用`NSFetchRequest`，即使是最复杂的数据任务也可以被简化成为几行_极其容易读懂_的代码。
+Cocoa is the envy of other standard libraries when it comes to querying and arranging information. With `NSPredicate`, [`NSSortDescriptor`](http://nshipster.com/nssortdescriptor/), and an occasional `NSFetchRequest`, even the most complex data tasks can be reduced into just a few, _extremely-understandable_ lines of code.
 
-现在，NSHipster们无疑已经熟悉`NSPredicate` 了（如果你还不熟悉，下周一定要过来看看），不过如果我们更进一步看看`NSPredicate`，我们会发现`NSPredicate`其实是由更小的部分而组成：两个`NSExpression`（一个左手值和一个右手值），和一个运算符相比较（比如`<`，`IN`，`LIKE`等等）。
+Now, NSHipsters are no doubt already familiar with `NSPredicate` (and if you aren't, be sure to tune in next week!), but if we take a closer look at `NSPredicate`, we see that `NSPredicate` is actually made up of smaller, atomic parts: two `NSExpression`s (a left-hand value & a right-hand value), compared with an operator (e.g. `<`, `IN`, `LIKE`, etc.).
 
-大多数开发者通过`+predicateWithFormat:`来使用`NSPredicate`，`NSExpression`是一个相对难懂的类。真可惜啊，因为`NSExpression`本身的功能非常强大。
+Because most developers only use `NSPredicate` by means of `+predicateWithFormat:`, `NSExpression` is a relatively obscure class. Which is a shame, because `NSExpression` is quite an incredible piece of functionality in its own right.
 
-所以，亲爱的读者，请允许我来表达我对`NSExpression`深深的尊重和着迷：
+So allow me, dear readers, to express my respect and fascination with `NSExpression`:
 
-## 评估数学
+## Evaluating Math
 
-关于`NSExpression`你所要知道的第一件事就是它的主要目的是减少表达。如果你思考一下评估`NSPredicate`的过程，你会发现它有两个表达和一个比较符号，所以我们需要将两个表达简化为运算符可以处理的表达--非常像编译一行代码的过程。
+The first thing you should know about `NSExpression` is that it lives to reduce terms. If you think about the process of evaluating an `NSPredicate`, there are two terms and a comparator, so those two terms need to simplify into something that the operator can handle—very much like the process of compiling a line of code.
 
-这就是我们要学习的`NSExpression`的第一招： **做数学题**。
+Which leads us to `NSExpression`'s first trick: **doing math**.
 
-~~~{objective-c}
+~~~ objective-c
 NSExpression *expression = [NSExpression expressionWithFormat:@"4 + 5 - 2**3"];
 id value = [expression expressionValueWithObject:nil context:nil]; // => 1
 ~~~
 
-这并不是[Wolfram Alpha](http://www.wolframalpha.com/input/?i=finn+the+human+like+curve)，但是如果加入评估数学表达式对于你的应用很有用的话，那么...你就可以使用NSExpression。
+It's no [Wolfram Alpha](http://www.wolframalpha.com/input/?i=finn+the+human+like+curve), but if your app does anything where evaluating mathematical expressions would be useful, well... there you go.
 
-## 函数
+## Functions
 
-我们仅仅触及了`NSExpression`的表面。觉得一台电脑仅仅做小学数学不怎么厉害？那高中的统计学怎么样？
+But we've only just scratched the surface with `NSExpression`. Not impressed by a computer doing primary-school maths? How about high school statistics, then?
 
-~~~{objective-c}
+~~~ objective-c
 NSArray *numbers = @[@1, @2, @3, @4, @4, @5, @9, @11];
 NSExpression *expression = [NSExpression expressionForFunction:@"stddev:" arguments:@[[NSExpression expressionForConstantValue:numbers]]];
 id value = [expression expressionValueWithObject:nil context:nil]; // => 3.21859...
 ~~~
 
-> `NSExpression` 函数以给定数目的子表达式作为参数。比如，在上述例子中，要得到集合的标准差，数列中的数字要被`+expressionForConstantValue:`封装。虽然只是一个小小的不便（它最终却能使得`NSExpression`变得极其灵活），却足以使第一次尝试它的人绊倒。
+> `NSExpression` functions take a given number of sub-expression arguments. For instance, in the above example, to get the standard deviation of the collection, the array of numbers had to be wrapped with `+expressionForConstantValue:`. A minor inconvenience (which ultimately allows `NSExpression` to be incredibly flexible), but enough to trip up anyone trying things out for the first time.
 
-如果你觉得 [键值编码简单集合运算符](http://nshipster.com/kvc-collection-operators/) （`@avg`，`@sum`等等）不够用，也许`NSExpression`的自带的统计，算术和位运算功能能激起你的兴趣。
+If you found the [Key-Value Coding Simple Collection Operators](http://nshipster.com/kvc-collection-operators/) (`@avg`, `@sum`, et al.) lacking, perhaps `NSExpression`'s built-in statistical, arithmetic, and bitwise functions will pique your interest.
 
-> **要注意的是**：[根据Apple的`NSExpression`文档中的表格](http://developer.apple.com/library/ios/#documentation/cocoa/reference/foundation/Classes/NSExpression_Class/Reference/NSExpression.html)，很明显，OS X & iOS的功能可用性之间没有重叠。看起来最近的iOS版本的确支持如`stddev`之类的函数，但这些变化并没有显示在头文件或者文档里。如果你注意到任何变化，请以[pull request的形式](https://github.com/NSHipster/articles/pulls)告诉我，不胜感激。
+> **A word of caution**: [according to this table in Apple's documentation for `NSExpression`](http://developer.apple.com/library/ios/#documentation/cocoa/reference/foundation/Classes/NSExpression_Class/Reference/NSExpression.html), there is apparently no overlap between the availability of functions between OS X & iOS. It would appear that recent versions of iOS do, indeed, support functions like `stddev:`, but this is not reflected in headers or documentation. Any details [in the form of a pull request](https://github.com/NSHipster/articles/pulls) would be greatly appreciated.
 
-### 统计
+### Statistics
 
 - `average:`
 - `sum:`
@@ -54,9 +54,9 @@ id value = [expression expressionValueWithObject:nil context:nil]; // => 3.21859
 - `mode:`
 - `stddev:`
 
-### 基本运算
+### Basic Arithmetic
 
-这些函数需要用两个`NSExpression`对象来表达数字。
+These functions take two `NSExpression` objects representing numbers.
 
 - `add:to:`
 - `from:subtract:`
@@ -65,7 +65,7 @@ id value = [expression expressionValueWithObject:nil context:nil]; // => 3.21859
 - `modulus:by:`
 - `abs:`
 
-### 高级运算
+### Advanced Arithmetic
 
 - `sqrt:`
 - `log:`
@@ -73,25 +73,25 @@ id value = [expression expressionValueWithObject:nil context:nil]; // => 3.21859
 - `raise:toPower:`
 - `exp:`
 
-### 边界函数
+### Bounding Functions
 
-- `ceiling:` - _（不小于数组中的值的最小积分值）_
-- `trunc:` - _（最接近但不大于数组中的值的积分值）_
+- `ceiling:` - _(the smallest integral value not less than the value in the array)_
+- `trunc:` - _(the integral value nearest to but no greater than the value in the array)_
 
-### 与`math.h`函数类似的函数
+### Functions Shadowing `math.h` Functions
 
-`ceiling`非常容易和`ceil(3)`混淆。`ceiling`作用于数字数组，而`ceil(3)`作用于一个`double`值（且它并没对应的内置`NSExpression`函数）。`floor:`在这里的作用和`floor(3)`一样。
+So mentioned, because `ceiling` is easily confused with `ceil(3)`. Whereas `ceiling` acts on an array of numbers, while `ceil(3)` takes a `double` (and doesn't have a corresponding built-in `NSExpression` function). `floor:` here acts the same as `floor(3)`.
 
 - `floor:`
 
-### 随机函数
+### Random Functions
 
-两个变量--一个带参数，一个不带参数。不带参数时，`random`返回`rand(3)`的等值，而`random:`则从`NSExpression`的数字数组中取任意元素。
+Two variations—one with and one without an argument. Taking no argument, `random` returns an equivalent of `rand(3)`, while `random:` takes a random element from the `NSExpression` of an array of numbers.
 
 - `random`
 - `random:`
 
-### 二进制运算
+### Binary Arithmetic
 
 - `bitwiseAnd:with:`
 - `bitwiseOr:with:`
@@ -100,26 +100,26 @@ id value = [expression expressionValueWithObject:nil context:nil]; // => 3.21859
 - `rightshift:by:`
 - `onesComplement:`
 
-### 日期函数
+### Date Functions
 
 - `now`
 
-### 字符串函数
+### String Functions
 
 - `lowercase:`
 - `uppercase:`
 
-### 空操作
+### No-op
 
 - `noindex:`
 
-## 自定义函数
+## Custom Functions
 
-除了这些内置的函数，你也可以在`NSExpression`中调用自定义函数。[由Dave DeLong所撰写的这篇文章](http://funwithobjc.tumblr.com/post/2922267976/using-custom-functions-with-nsexpression) 详述了这个过程。
+In addition to these built-in functions, it's possible to invoke custom functions in an `NSExpression`. [This article by Dave DeLong](http://funwithobjc.tumblr.com/post/2922267976/using-custom-functions-with-nsexpression) describes the process.
 
-首先，在类别中定义一个对应的函数：
+First, define the corresponding method in a category:
 
-~~~{objective-c}
+~~~ objective-c
 @interface NSNumber (Factorial)
 - (NSNumber *)factorial;
 @end
@@ -131,17 +131,17 @@ id value = [expression expressionValueWithObject:nil context:nil]; // => 3.21859
 @end
 ~~~
 
-然后，这样使用函数（`+expressionWithFormat:` 中的`FUNCTION()`宏是构造`-expressionForFunction:`等等的过程的简写。）:
+Then, use the function thusly (the `FUNCTION()` macro in `+expressionWithFormat:` is shorthand for the process of building out with `-expressionForFunction:`, et al.):
 
-~~~{objective-c}
+~~~ objective-c
 NSExpression *expression = [NSExpression expressionWithFormat:@"FUNCTION(4.2, 'factorial')"];
 id value = [expression expressionValueWithObject:nil context:nil]; // 32.578...
 ~~~
 
-这样的优势在于， 通过直接调用`-factorial`，我们可以调用`NSPredicate`查询中的函数。比如，我们可以定义一个`location:withinRadius:`方法来轻松的查询用户当前位置附近的管理对象。
+The advantage here, over calling `-factorial` directly is the ability to invoke the function in an `NSPredicate` query. For example, a `location:withinRadius:` method might be defined to easily query managed objects nearby a user's current location.
 
-正如Dave在他的文章中所提到的那样，这些用例十分边缘化，但它们肯定可以成为你的保留节目中有趣的技巧。.
+As Dave mentions in his article, the use cases are rather marginal, but it's certainly an interesting trick to have in your repertoire.
 
 ---
 
-下一周，我们将在刚刚学过的`NSExpression`的基础上继续探索`NSPredicate`和其它一切容易被忽视的内容。敬请期待！
+Next week, we'll build on what we just learned about `NSExpression` to further explore `NSPredicate`, and everything it has hidden up its sleeves. Stay tuned!

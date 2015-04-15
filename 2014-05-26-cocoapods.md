@@ -1,90 +1,96 @@
 ---
-layout: post
 title: CocoaPods
 author: Mattt Thompson
-translator: David Liu
 category: Open Source
-tag: popular
-excerpt: "只要设计和施工得当，基础设施可以帮助社会成倍的发展。 就Objective-C而言, CocoaPods提供了一个急需的疏导和管理开源软件的工具。"
+tags: cfhipsterref
+excerpt: "When well thought-out and implemented, infrastructure is a multiplying force that drives growth and development. In the case of Objective-C, CocoaPods has provided a much-needed tool for channeling and organizing open source participation."
 ---
 
-文明是建立在道路，桥梁，运河，下水道，管线，电线和光纤这些基础设施之上的。只要设计和施工得当，它们可以帮助社会成倍的发展。
+<img src="http://nshipster.s3.amazonaws.com/cfhipsterref-illustration-egg-merchant.png" width="139" height="300" alt="Egg Merchant, illustrated by Conor Heelan" style="float: right; margin-left: 2em; margin-bottom: 2em"/>
 
-唯一的问题就是可扩展性。
+Civilization is built on infrastructure: roads, bridges, canals, sewers, pipes, wires, fiber. When well thought-out and implemented, infrastructure is a multiplying force that drives growth and development. But when such formative structures are absent or ad hoc, it feels as if progress is made _in spite of_ the situation.
 
-不管是在一个新的区域容纳上百万家庭还是整合大量的开发者到新的语言环境中去，挑战都是相同的。
+It all has to do with solving the problem of scale.
 
-在Objective-C的情况下，[CocoaPods](http://cocoapods.org)提供了一个绝佳的整合合作开发的工具，并且在快速发展的开发社区中起到了一个集结点的作用。
+No matter what the medium, whether it's accommodating millions of families into a region, or integrating a large influx of developers into a language ecosystem, the challenges are the same.
 
-本周的NSHipster，我们将通过讨论CocoaPods的过去，现在以及将来，一起庆祝0.33版本（[具有里程碑意义](http://blog.cocoapods.org/CocoaPods-0.33/)）的发布。
+In the case of Objective-C, [CocoaPods](http://cocoapods.org) provided a much-needed tool for channeling and organizing open source participation, and served as a rallying point for the community at a time of rapid growth and evolution.
 
-> 接下来的对CocoaPods起源的历史回顾比较冗长，如果你只在乎技术细节，[点此直接跳过](#%E4%BD%BF%E7%94%A8cocoapods)。
+This week on NSHipster, we'll celebrate the launch of CocoaPods 0.33, [an important milestone for the project](http://blog.cocoapods.org/CocoaPods-0.33/), by taking a look back at where we came from, discussing where we are now, and thinking about what's to come.
 
----
-
-## 回望
-
-在Objective-C在它存在的前20年左右几乎鲜为人知。NeXT和后来的OS X作为一个边缘平台，只拥有一个相对较小的用户和开发者社区。像所有的社区一样，本地用户小组，邮件列表和网站该有的都有，但是开源合作开发缺很少见。诚然，开源在那时也只处于起步阶段，但是Objective-C却从未有过类似于CPAN (the Comprehensive Perl Archive Network)的组织。所有人除了能从Redwood和Cupertino拿到SDK（或者在论坛搜寻一下可用的代码）以外，剩下的问题只能靠自己解决。
-
-### Objective-C和iPhone
-
-这种情况一直持续到了2008年的夏天，当iPhone OS开始对第三方开发者开放的时候。几乎一夜之间，Objective-C从无人问津变的炙手可热。上百万开发者的涌入，给这门语言注入了新鲜的血液。
-
-就在此时，GitHub 也刚刚发布，并且开始通过新的分布式合作开发方式改变我们对开源的认知。
-
-一大批开源项目开始涌现，例如ASIHTTPRequest和Facebook的Three20。这些早期的库和框架主要是用来填补iPhone OS 2.0和3.0开发中遇到空白，并且在后续的OS迭代中慢慢被遗弃或取代，但是它们突破了每个开发者“单打独斗”的局面。
-
-在这波新的开发者中，那些来自Ruby背景的对 Objective-C 起来了很大的影响。Ruby作为Perl的精神继承者，有一个类似于CPAN的包管理器：[RubyGems](https://rubygems.org)
-
-为什么受Ruby的影响这么大？我的理论是：Ruby是在[Rails](http://rubyonrails.org) 2005年发布1.0版本的时候开始流行起来。假设创业公司的平均寿命在1.5到2.5年之间，那么此时第一批厌倦Rails的开发者正好可以跳上移动开发的大船上。
-
-就在Objective-C开源开发渐入佳境之时，代码分发的痛点开始显现：
-
-缺乏框架，iOS的代码虽然可以被打包成静态库，但是配置和同步分发却成了一个艰巨的任务。
-
-另外一个思路是用Git Submodules把源码直接放入项目。但是链接框架和配置生成环境的繁琐也使得这种方法也没有好到哪里去，尤其是当[ARC和 non-ARC](http://en.wikipedia.org/wiki/Automatic_Reference_Counting)的代码需要分开的时候。
-
-### 进入CocoaPods时代
-
-CocoaPods是由[Eloy Durán](https://twitter.com/alloy)于2011年8月12日创建。
-
-在Bundler和RubyGems的启发下，CocoaPods被设计成即能处理库之间的依赖关系，又能自动下载并且配置好所需要的库。试想一下[开发只有松散文档编制的Xcode项目](https://github.com/CocoaPods/xcodeproj)的难度，CocoaPods的存在简直就是奇迹。
-
-另一个早先的决定就是利用[central Git repository](https://github.com/cocoapods/specs)作为所有库的总数据库。虽然这带来了一些运筹上的顾虑，好在GitHub能够提供一个稳健的平台，帮助团队在后续的迭代中，开发出更好的工具链。
-
-时至今日，CocoaPods已经壮大拥有14个核心开发人员和多达[5000个开源项目](https://github.com/CocoaPods/Specs/tree/master/Specs)。绝大部分项目都是来自于Objective-C开源社区，我们应该感谢每一个参与其中的开发者。
+> The following historical look at the origins of CocoaPods is, admittedly, a bit wordy for this publication. So if you're looking for technical details, feel free to [skip directly to that](#using-cocoapods).
 
 ---
 
-## 使用CocoaPods
+## A Look Back
 
-制作和使用CocoaPods库都十分简单，往往几分钟就能配置完毕。
+For the first twenty or so years of its existence, Objective-C was not a widely known language. NeXT and later OS X were marginal platforms, with a comparatively small user base and developer community. Like any community, there were local user groups and mailing lists and websites, but open source collaboration was not a widespread phenomenon. Granted, Open Source was only just starting to pick up steam at that time, but there was no contemporary Objective-C equivalent to, for example, CPAN, the Comprehensive Perl Archive Network. Everyone took SDKs from Redwood City and Cupertino as far as they could, (maybe sprinkling in some code salvaged from a forum thread), but ultimately rolling their own solutions to pretty much everything else.
 
-想获取最新的官方教程，请[前往此处](http://guides.cocoapods.org)。
+### Objective-C and the iPhone
 
-### 安装CocoaPods
+This went on until the summer of 2008, when iPhone OS was first opened up to third party developers. Almost overnight, Objective-C went from being an obscure C++/C# also-ran to the one of the most sought-after programmer qualifications. Millions of developers flocked from all walks of code, bringing an influx of new ideas and influences to the language.
 
-CocoaPods可以方便地通过RubyGems安装，打开Terminal，然后键入以下命令：
+Around this same time, GitHub had just launched, and was starting to change the way we thought about open source by enabling a new distributed, collaborative workflow.
+
+In those early years of iPhone OS, we started to see the first massively adopted open source projects, like ASIHTTPRequest and Facebook's Three20. These first libraries and frameworks were built to fill in the gaps of app development on iPhone OS 2.0 and 3.0, and although largely made obsolete by subsequent OS releases or other projects, they demonstrated a significant break from the tradition of "every developer for themselves".
+
+Of this new wave of developers, those coming from a Ruby background had a significant influence on the code and culture of Objective-C. Ruby, a spiritual successor to Perl, had its own package manager similar to CPAN: [RubyGems](https://rubygems.org).
+
+> Why so much influence from Ruby? Here's my pet theory: Ruby started gaining popular traction because of [Rails](http://rubyonrails.org), which hit 1.0 at the end of 2005. Given that the average duration of a startup gig seems to be about 1½ – 2½ years, the timing works out such that those first and second waves of bored Rails developers itching to jump ship would find a place in the emerging app space.
+
+As open source contributions in Objective-C began to get some traction, the pain points of code distribution were starting to become pretty obvious:
+
+Lacking frameworks, code for iOS could be packaged as a static library, but getting that set up and keeping code and static distributions in sync was an arduous process.
+
+Another approach was to use Git submodules, and include the source directly in the project. But getting everything working, with linked frameworks and build flags configured, was not great either—especially at a time when the body of code was split between [ARC and non-ARC](http://en.wikipedia.org/wiki/Automatic_Reference_Counting).
+
+### Enter CocoaPods
+
+CocoaPods was created by [Eloy Durán](https://twitter.com/alloy) on August 12, 2011.
+
+Taking inspiration from Bundler and RubyGems, CocoaPods was designed to resolve a list of dependencies, download the required sources, and configure the existing project in such a way to be able to use them. Considering the challenges of [working with a sparsely documented Xcode project format](https://github.com/CocoaPods/xcodeproj) and build system, it's kind of a miracle that this exists at all.
+
+Another notable decision made early on was to use a [central Git repository](https://github.com/cocoapods/specs) as the database for all of the available libraries. Although there were certain logistical considerations with this approach, bootstrapping on GitHub provided a stable infrastructure, that allowed the team to iterate on building out the tool chain.
+
+Since its initial proof-of-concept, the project has grown to include [14 core team members](http://cocoapods.org/about) along with over 100 additional contributors. At the time of writing, there are nearly [5000 open source projects](https://github.com/CocoaPods/Specs/tree/master/Specs) available for anyone to add to their project.
+
+A significant portion of these prolific contributions from the open source community for Objective-C has been directly enabled and encouraged by increased ownership around tooling. Everyone involved should be commended for their hard work and dedication.
+
+> To break the 4th wall for a moment: Seriously, _thank you_, ladies and gentlemen of CocoaPods. You've done an amazing job. Keep up the good work!
+
+---
+
+## Using CocoaPods
+
+CocoaPods is easy to get started with both as a consumer and a library author. It should only take a few minutes to get set up.
+
+> For the most up-to-date information on how to use CocoaPods, check out the [official guides](http://guides.cocoapods.org).
+
+### Installing CocoaPods
+
+CocoaPods is installed through RubyGems, the Ruby package manager, which comes with a standard OS X install.
+
+To install, open Terminal.app and enter the following command:
 
 ~~~{bash}
 $ sudo gem install cocoapods
 ~~~
 
-就这么简单，现在你应该可以开始使用pod命令了。
+Now you should have the `pod` command available in the terminal.
 
-> 如果你使用Ruby版本管理器，如[rbenv](https://github.com/sstephenson/rbenv)，你可能需要运行以下指令来重新链接shim的二进制文件（例如：$ rbenv rehash）。
+> If you're using a Ruby versioning manager, like [rbenv](https://github.com/sstephenson/rbenv), you may need to run a command to re-link a binary shim to the library (e.g. `$ rbenv rehash`).
 
-### 管理相关性
+### Managing Dependencies
 
-一个相关性管理器可以将一系列的软件需求转化为具体的标签，然后下载并且整合进入相关的项目。
+A dependency manager resolves a list of software requirements into a list of specific tags to download and integrate into a project.
 
-申明需求可以自动化整个项目配置，这也是软件开发的[最佳实践之一](http://12factor.net/dependencies)，无论是在任何语言中。**甚至你不使用第三方库，CocoaPods仍然是一个管理代码相关性的绝佳工具。**
+Declaring requirements in such a way allows for project setup to be automated, which is [general best practice for software development practice](http://12factor.net/dependencies), no matter what the language. **Even if you don't include third-party libraries, CocoaPods is still an invaluable tool for managing code dependencies across projects.**
 
 #### Podfile
 
-`Podfile`这个文件是用来用来申明项目代码相关性的，正如[Bundler](http://bundler.io)的`Gemfile`，或者[npm](https://www.npmjs.org)的`package.json`
+A `Podfile` is where the dependencies of a project are listed. It is equivalent to `Gemfile` for Ruby projects using [Bundler](http://bundler.io), or `package.json` for JavaScript projects using [npm](https://www.npmjs.org).
 
-`cd`进入`.xcodeproj`文件所在的目录，通过以下命令来创建一个Podfile
+To create a Podfile, `cd` into the directory of your `.xcodeproj` file and enter the command:
 
 ~~~{bash}
 $ pod init
@@ -100,61 +106,65 @@ target "AppName" do
 end
 ~~~
 
-你可以申明需要不同版本的库，大部分情况下，申明到minor或者patch版本就足够了
+Dependencies can have varying levels of specificity. For most libraries, pegging to a minor or patch version is the safest and easiest way to include them in your project.
 
 ~~~{ruby}
 pod 'X', '~> 1.1'
 ~~~
 
-CocoaPods遵循[语意化版本规范](http://semver.org/lang/zh-CN/)。
+> CocoaPods follows [Semantic Versioning](http://semver.org) conventions.
 
-对于那些不在CocoaPods公共Git仓库中的库，你可以用任何一个Git, Mercurial或者SVN仓库取代，并且还可以指定具体的commit, branch或者tag。
+To include a library not included in the public specs database, a Git, Mercurial, or SVN repository can be used instead, for which a `commit`, `branch`, or `tag` can be specified.
 
 ~~~{ruby}
 pod 'Y', :git => 'https://github.com/NSHipster/Y.git', :commit => 'b4dc0ffee'
 ~~~
 
-一旦所有的相关性都申明完毕，你可以使用以下指令来安装所需要的库：
+Once all of the dependencies have been specified, they can be installed with:
 
 ~~~{bash}
 $ pod install
 ~~~
 
-安装过程中，CocoPods会使用递归来分析所有的需求，并且建立一个代码相关性的图，最后将Podfile序列化为`Podfile.lock`
+When this is run, CocoaPods will recursively analyze the dependencies of each project, resolving them into a dependency graph, and serializing into a `Podfile.lock` file.
 
-比如，如果两个库都需要使用[AFNetworking](http://afnetworking.com)，CocoaPods会确定一个同时能被这两库使用的版本，然后将同一个安装版本链接到两个不同的库中。
+> For example, if two libraries require [AFNetworking](http://afnetworking.com), CocoaPods will determine a version that satisfies both requirements, and links them with a common installation of it.
 
-CocoaPods会创建一个新的包含之前安装好的静态库Xcode项目，然后将它们链接成一个新的libPods.a target。你原有的项目将会依赖这个新的静态库。一个xcworkspace文件会被创建，从此之后，你应该只打开这个xcworkspace文件来进行开发。
+CocoaPods will create a new Xcode project that creates static library targets for each dependency, and then links them all together into a `libPods.a` target. This static library becomes a dependency for your original application target. An `xcworkspace` file is created, and should be used from that point onward. This allows the original `xcodeproj` file to remain unchanged.
 
-反复使用pod install命令，只会让CocoaPods重复以上步骤，重新安装这些库。所以，当你需要升级它们时，请使用以下命令：
+Subsequent invocations of `pod install` will add new pods or remove old pods according to the locked dependency graph. To update the individual dependencies of a project to the latest version, do the following:
 
 ~~~{bash}
 $ pod update
 ~~~
 
-### 试着使用CocoaPod
+### Trying Out a CocoaPod
 
-`try`是一个及其实用但又鲜为人知的CocoaPods命令，通过它你能够在安装一个库之前，先试用一下。
+One great, but lesser-known, feature of CocoaPods is the `try` command, which allows you to test-drive a library before you add it to your project.
 
-你只需要在`try`后面加上任意一个CocoaPods公共库的名称，就能试用它了！
+Invoking `$ pod try` with the name of a project in the public specs database opens up any example projects for the library:
 
 ~~~{bash}
 $ pod try Ono
 ~~~
 
-## 建立自己的CocoaPod
+![Ono.xcworkspace](http://nshipster.s3.amazonaws.com/cocoapods-try-ono.png)
 
-作为Objective-C软件分发实际上的标准，CocoaPods几乎是所有开源项目的标配，如果你想让你的项目被大家很方便地使用。
+## Creating a CocoaPod
 
-诚然，这会提高一点点你分享项目的门槛，但是，好处是显然易见的。你花几分钟创建一个`.podspec`文件可以节省下其他开发者无数的时间。
+Being the de facto standard for Objective-C software distribution, CocoaPods is pretty much a requirement for open source projects with the intention of being used by others
 
-### 规范
+Yes, it raises the barrier to entry for sharing your work, but the effort is minimal, and more than justifies itself. Taking a couple minutes to create a `.podspec` file saves every user at least that much time attempting to integrate it into their own projects.
 
-`.podspec`文件作为CocoaPods的一个独立单元，包含了名称，版本，许可证，和源码文件等所有信息。
+Remember: **_raising_ the bar for contribution within a software ecosystem _lowers_ the bar for participation**.
 
-> [官方指南](http://guides.cocoapods.org/using/the-podfile)中有许多信息和范例
+### Specification
 
-#### 以下是NSHipsterKit.podspec
+A `.podspec` file is the atomic unit of a CocoaPods dependency. It specifies the name, version, license, and source files for a library, along with other metadata.
+
+> The [official guide to the Podfile](http://guides.cocoapods.org/using/the-podfile) has some great information and examples.
+
+#### NSHipsterKit.podspec
 
 ~~~{ruby}
 Pod::Spec.new do |s|
@@ -172,7 +182,7 @@ Pod::Spec.new do |s|
 end
 ~~~
 
-一旦把这个`.podspec`发布到公共数据库中，任何想使用它的开发者，只需要在Podfile中加入如下声明即可：
+Once published to the public specs database, anyone could add it to their project, specifying their Podfile thusly:
 
 #### Podfile
 
@@ -180,42 +190,42 @@ end
 pod 'NSHipsterKit', '~> 1.0'
 ~~~
 
-`.podspec`文件也可以作为管理内部代码的利器：
+A `.podspec` file can be useful for organizing internal or private dependencies as well:
 
 ~~~{ruby}
 pod 'Z', :path => 'path/to/directory/with/podspec'
 ~~~
 
-### 发布CocoaPod
+### Publishing a CocoaPod
 
-CocoaPods 0.33中加入了[Trunk](http://guides.cocoapods.org/making/getting-setup-with-trunk)服务。
+New in CocoaPods 0.33 is [the new Trunk service](http://guides.cocoapods.org/making/getting-setup-with-trunk).
 
-虽然一开始使用GitHub Pull Requests来整理所有公共pods效果很好。但是，随着Pod数量的增加，这个工作对于spec维护人员[Keith Smiley](https://twitter.com/SmileyKeith)来说变得十分繁杂。甚至一些没有通过`$ pod lint`的spec也被提交上来，造成repo无法build。
+Although it worked brilliantly at first, the process of using Pull Requests on GitHub for managing new pods became something of a chore, both for library authors and spec organizers like [Keith Smiley](https://twitter.com/SmileyKeith). Sometimes podspecs would be submitted without passing `$ pod lint`, causing the specs repo build to break. Other times, rogue commits from people other than the original library author would break things unexpectedly.
 
-CocoaPods Trunk服务的引入，解决了很多类似的问题。CocoaPods作为一个集中式的服务，使得分析和统计平台数据变得十分方便。
+The CocoaPods Trunk service solves a lot of this, making the process nicer for everyone involved. Being a centralized service, it also has the added benefit of being able to get analytics for library usage, and other metrics.
 
-要想使用Trunk服务，首先你需要注册自己的电脑。这很简单，只要你指明你的邮箱地址（spec文件中的）和名称即可。
+To get started, you must first register your machine with the Trunk service. This is easy enough, just specify your email address (the one you use for committing library code) along with your name.
 
 ~~~{bash}
 $ pod trunk register mattt@nshipster.com "Mattt Thompson"
 ~~~
 
-至此，你就可以通过以下命令来方便地发布和升级你的Pod！
+Now, all it takes to publish your code to CocoaPods is a single command. The same command works for creating a new library or adding a new version to an existing one:
 
 ~~~{bash}
 $ pod trunk push NAME.podspec
 ~~~
 
-> 已经发布Pod的作者可以通过[几个简单的步骤](http://blog.cocoapods.org/Claim-Your-Pods/)来声明所有权。
+> Authors of existing CocoaPods can claim their libraries [with a few simple steps](http://blog.cocoapods.org/Claim-Your-Pods/).
 
 ***
 
-## 展望
+## A Look Forward
 
-CocoaPods例证了一个社区的凝聚力。在短短的几年内，Objective-C社区让我们所有人都引以为傲。
+CocoaPods exemplifies the compounding effect of infrastructure on a community. In a few short years, the Objective-C community has turned into something that we can feel proud to be part of.
 
-CocoaPods仅仅是众多Objective-C基础设施的一部分，还有诸如[Travis CI](http://blog.travis-ci.com/introducing-mac-ios-rubymotion-testing/), [CocoaDocs](http://cocoadocs.org)和[Nomad](http://nomad-cli.com)这些非常好的生产力工具。
+CocoaPods is just one example of the great work being done on Objective-C infrastructure. Other community tools, like [Travis CI](http://blog.travis-ci.com/introducing-mac-ios-rubymotion-testing/), [CocoaDocs](http://cocoadocs.org), and [Nomad](http://nomad-cli.com) have dramatically improved the everyday experience iOS and OS X development for the community.
 
-虽然整个社区的未来不会一帆风顺，不管怎样，让我们怀着信念，尽可能的提供建设性的意见。我们更应该互相帮助，乐于分享，共同努力推动整个社区的进步！
+It can be tempting to be snarky, contrarian, or grumpy about the direction of a community. No matter what, though, let us all try our best to enter into dialogue in good faith, offering constructive criticism where we can. We should help each other to be good [stewards](http://nshipster.com/stewardship/) of what we share, and strive towards [empathy](http://nshipster.com/empathy/) in all our interactions.
 
-CocoaPods已经是Objective-C不可或缺的一部分，它只会越来越强大！
+CocoaPods is a good thing for Objective-C. And it's only getting better.
