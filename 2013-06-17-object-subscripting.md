@@ -41,7 +41,7 @@ However, what remains relatively under-utilized even now—a year after the thes
 
 ---
 
-Elements in a C array are laid out contiguously in memory, and is referenced by the address of its first element. To get the value at a particular index, one would offset this address by the size of an array element, multiplied by the desired index. This pointer arithmetic is provided by the `[]` operator.
+Elements in a C array are laid out contiguously in memory, and are referenced by the address of the first element. To get the value at a particular index, one would offset this address by the size of an array element, multiplied by the desired index. This pointer arithmetic is provided by the `[]` operator.
 
 Over time, scripting languages began to take greater liberties with this familiar convention, expanding its role to get & set values in arrays, as well as hashes and objects.
 
@@ -58,11 +58,27 @@ Where this really becomes interesting is when you extend your own classes with s
 
 ### Custom Indexed Subscripting
 
-To add custom-indexed subscript reading support to your class, simply declare and implement `objectAtIndexedSubscript:`, where the parameter is of any integral type (such as `char`, `int`, or `NSUInteger`) and the return type is an Objective-C object pointer type. For indexed subscript writing, implement `setObject:atIndexedSubscript:`, where the first parameter is of Objective-C object pointer type, the second of integral type, and the return type is `void`.
+To add custom-indexed subscripting support to your class, simply declare and implement the following methods:
+
+~~~{objective-c}
+- (id)objectAtIndexedSubscript:(*IndexType*)idx;
+- (void)setObject:(id)obj atIndexedSubscript:(*IndexType*)idx;
+~~~
+
+`*IndexType*` can be any integral type, such as `char`, `int`, or `NSUInteger`, as used by `NSArray`.
 
 ### Custom Keyed Subscripting
 
-Similarly, custom-keyed subscripting can be added to your class by declaring and implementing `objectForKeyedSubscript:` and `setObject:forKeyedSubscript:`, where the subscript parameters are of Objective-C object pointer type.
+Similarly, custom-keyed subscripting can be added to your class by declaring and implementing these methods:
+
+~~~{objective-c}
+- (id)objectForKeyedSubscript:(*KeyType*)key;
+- (void)setObject:(id)obj forKeyedSubscript:(*KeyType*)key;
+~~~
+
+`*KeyType*` can be any Objective-C object pointer type.
+
+> In fact, for non-general-purpose collections, indexed and keyed subscripting can get and set *any* Objective-C object pointer type, not just `id`. 
 
 ## Custom Subscripting as DSL
 

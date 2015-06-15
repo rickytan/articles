@@ -1,9 +1,15 @@
 ---
 title: Swift Documentation
-author: Mattt Thompson
+author: Mattt Thompson & Nate Cook
+authors:
+    - Mattt Thompson
+    - Nate Cook
 category: Swift
 tags: swift
 excerpt: "Code structure and organization is a matter of pride for developers. Clear and consistent code signifies clear and consistent thought. Read on to learn about the recent changes to documentation with Xcode 6 & Swift."
+revisions:
+    "2014-07-28": Original publication.
+    "2015-05-05": Extended detail on supported markup; revised examples.
 ---
 
 Code structure and organization is a matter of pride for developers. Clear and consistent code signifies clear and consistent thought. Even though the compiler lacks a discerning palate when it comes to naming, whitespace, or documentation, it makes all of the difference for human collaborators.
@@ -14,15 +20,13 @@ Let's dive in.
 
 * * *
 
-> Ironically, much of the following is currently undocumented, and is subject to change or correction.
-
 Since the early 00's, [Headerdoc](https://developer.apple.com/library/mac/documentation/DeveloperTools/Conceptual/HeaderDoc/intro/intro.html#//apple_ref/doc/uid/TP40001215-CH345-SW1) has been the documentation standard preferred by Apple. Starting off as little more than a Perl script parsing trumped-up [Javadoc](http://en.wikipedia.org/wiki/Javadoc) comments, Headerdoc would eventually be the engine behind Apple's developer documentation online and in Xcode.
 
 With the announcements of WWDC 2014, the developer documentation was overhauled with a sleek new design that could accommodate switching between Swift & Objective-C. (If you've [checked out any of the new iOS 8 APIs online](https://developer.apple.com/library/prerelease/ios/documentation/HomeKit/Reference/HomeKit_Framework/index.html#//apple_ref/doc/uid/TP40014519), you've seen this in action)
 
 **What really comes as a surprise is that the _format of documentation_ appears to have changed as well.**
 
-In the latest Xcode 6 beta, Headerdoc comments are not parsed correctly when invoking Quick Documentation (`⌥ʘ`):
+In the midst of Swift code, Headerdoc comments are not parsed correctly when invoking Quick Documentation (`⌥ʘ`):
 
 ~~~{swift}
 /**
@@ -52,13 +56,84 @@ What _is_ parsed, however, is something markedly different:
 func foo(bar: String) -> AnyObject { ... }
 ~~~
 
-It gets weirder.
+So what is this strange new documentation format? It turns out that SourceKit (the private framework powering Xcode, previously known for its high FPS crashes) includes a basic parser for [reStructuredText](http://docutils.sourceforge.net/docs/user/rst/quickref.html). Only a subset of the [specification](http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html#field-lists) is implemented, but there's enough in there to cover basic formatting.
 
-Jump into a bridged Swift header for an Objective-C API, like say, HomeKit's `HMCharacteristic`, and option-clicking _does_ work. (Also, the documentation there uses `/*!` to open documentation, rather than the conventional `/**`).
 
-Little is known about this new documentation format... but in these Wild West times of strict typing and loose morals, that's not enough to keep us from using it ourselves:
+#### Basic Markup
 
-> **Update**: Sources from inside Cupertino have confirmed that SourceKit (the private framework powering Xcode that y'all probably know best for crashing in Playgrounds) includes a primitive parser for [reStructuredText](http://docutils.sourceforge.net/docs/user/rst/quickref.html). How reST is, well, re-structured and adapted to satisfy Apple's use case is something that remains to be seen.
+Documentation comments are distinguished by using `/** ... */` for multi-line comments or `/// ...` for single-line comments. Inside comment blocks, paragraphs are separated by blank lines. Unordered lists can be made with several bullet characters: `-`, `+`, `*`, `•`, etc, while ordered lists use Arabic numerals (1, 2, 3, ...) followed by a period `1.` or right parenthesis `1)` or surrounded by parentheses on both sides `(1)`:
+
+~~~{swift}
+/**
+	You can apply *italic*, **bold**, or `code` inline styles.
+	
+	- Lists are great,
+	- but perhaps don't nest
+	- Sub-list formatting
+
+	  - isn't the best.
+
+	1. Ordered lists, too
+	2. for things that are sorted;
+	3. Arabic numerals
+	4. are the only kind supported.
+*/
+~~~
+
+#### Definition & Field Lists
+
+Defininition and field lists are displayed similarly in Xcode's Quick Documentation popup, with definition lists a little more compact:
+
+~~~{swift}
+/**
+	Definition list
+		A list of terms and their definitions.
+	Format
+		Terms left-justified, definitions indented underneath.
+		
+	:Field header:
+		Field lists are spaced out a little more.
+		
+	:Another field: Field lists can start the body immediately, without a line break and indentation.
+		Subsequent indented lines are treated as part of the body, too.
+*/
+~~~
+
+Two special fields are used to document parameters and return values: `:param:` and `:returns:`, respectively. `:param:` is followed by the name of the paramenter, then the description. Return values don't have a name, so the description begins immediately after `:returns:`:
+
+~~~{swift}
+/**
+	Repeats a string `times` times.
+
+	:param: str     The string to repeat.
+	:param: times   The number of times to repeat `str`.
+
+	:returns: A new string with `str` repeated `times` times.
+*/
+func repeatString(str: String, times: Int) -> String {
+	return join("", Array(count: times, repeatedValue: str))
+}
+~~~
+
+#### Code blocks
+
+Code blocks can be embedded in documentation comments as well, which can be useful for demonstrating proper usage or implementation details. Inset the code block by at least two spaces:
+
+~~~{swift}
+/**
+	The area of the `Shape` instance.
+	
+	Computation depends on the shape of the instance. For a triangle, `area` will be equivalent to:
+	
+	  let height = triangle.calculateHeight()
+	  let area = triangle.base * height / 2
+*/
+var area: CGFloat { get }
+~~~
+
+## Documentation Is My New Bicycle
+
+How does this look when applied to an entire class? Quite nice, actually:
 
 ~~~{swift}
 import Foundation
@@ -73,7 +148,7 @@ class Bicycle {
         - Cruiser: For casual trips around town.
         - Hybrid: For general-purpose transportation.
     */
-    public enum Style {
+    enum Style {
         case Road, Touring, Cruiser, Hybrid
     }
 
@@ -83,7 +158,7 @@ class Bicycle {
         - Fixed: A single, fixed gear.
         - Freewheel: A variable-speed, disengageable gear.
     */
-    public enum Gearing {
+    enum Gearing {
         case Fixed
         case Freewheel(speeds: Int)
     }
@@ -135,7 +210,7 @@ class Bicycle {
         self.frameSize = centimeters
 
         self.numberOfTrips = 0
-        self.distanceTravelled = 0.0
+        self.distanceTravelled = 0
     }
 
     /**
@@ -144,9 +219,9 @@ class Bicycle {
         :param: meters The distance to travel in meters.
     */
     func travel(distance meters: Double) {
-        if meters > 0.0 {
-            self.distanceTravelled += meters
-            self.numberOfTrips++
+        if meters > 0 {
+            distanceTravelled += meters
+            ++numberOfTrips
         }
     }
 }
@@ -160,7 +235,6 @@ Open Quick Documentation for the method `travel`, and the parameter is parsed ou
 
 ![Swift func Declaration Documentation](http://nshipster.s3.amazonaws.com/swift-documentation-method-declaration.png)
 
-> Again, not much is known about this new documentation format yet... as it's currently undocumented. But this article will be updated as soon as more is known. In the meantime, feel free to adopt the conventions described so far, as they're at least useful for the time being.
 
 ## MARK / TODO / FIXME
 
@@ -184,44 +258,44 @@ To show these new tags in action, here's how the `Bicycle` class could be extend
 extension Bicycle: Printable {
     var description: String {
         var descriptors: [String] = []
-
+        
         switch self.style {
         case .Road:
-            descriptors += "A road bike for streets or trails"
+            descriptors.append("A road bike for streets or trails")
         case .Touring:
-            descriptors += "A touring bike for long journeys"
+            descriptors.append("A touring bike for long journeys")
         case .Cruiser:
-            descriptors += "A cruiser bike for casual trips around town"
+            descriptors.append("A cruiser bike for casual trips around town")
         case .Hybrid:
-            descriptors += "A hybrid bike for general-purpose transportation"
+            descriptors.append("A hybrid bike for general-purpose transportation")
         }
-
+        
         switch self.gearing {
         case .Fixed:
-            descriptors += "with a single, fixed gear"
+            descriptors.append("with a single, fixed gear")
         case .Freewheel(let n):
-            descriptors += "with a \(n)-speed freewheel gear"
+            descriptors.append("with a \(n)-speed freewheel gear")
         }
-
+        
         switch self.handlebar {
         case .Riser:
-            descriptors += "and casual, riser handlebars"
+            descriptors.append("and casual, riser handlebars")
         case .Café:
-            descriptors += "and upright, café handlebars"
+            descriptors.append("and upright, café handlebars")
         case .Drop:
-            descriptors += "and classic, drop handlebars"
+            descriptors.append("and classic, drop handlebars")
         case .Bullhorn:
-            descriptors += "and powerful bullhorn handlebars"
+            descriptors.append("and powerful bullhorn handlebars")
         }
-
-        descriptors += "on a \(self.frameSize)\" frame"
-
+        
+        descriptors.append("on a \(frameSize)\" frame")
+        
         // FIXME: Use a distance formatter
-        descriptors += "with a total of \(self.distanceTravelled) meters traveled over \(self.numberOfTrips) trips"
-
+        descriptors.append("with a total of \(distanceTravelled) meters traveled over \(numberOfTrips) trips.")
+        
         // TODO: Allow bikes to be named?
-
-        return join(", ", descriptors) + "."
+        
+        return join(", ", descriptors)
     }
 }
 ~~~

@@ -76,7 +76,7 @@ Equal to `NSPointerFunctionsObjectPointerPersonality`.
 
 ### Subscripting
 
-`NSMapTable` does not implement [object subscripting](http://nshipster.com/object-subscripting/), but it can be trivially added in a category:
+`NSMapTable` doesn't implement [object subscripting](http://nshipster.com/object-subscripting/), but it can be trivially added in a category. `NSDictionary`'s `NSCopying` requirement for keys belongs to `NSDictionary` alone:
 
 ~~~{objective-c}
 @implementation NSMapTable (NSHipsterSubscripting)
