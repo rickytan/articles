@@ -3,6 +3,8 @@ title: MirrorType
 author: Nate Cook
 category: Swift
 excerpt: "Reflection in Swift is a limited affair, providing read-only access to a subset of type metadata. While far from the rich array of run-time hackery familiar to seasoned Objective-C developers, Swift's tools enable the immediate feedback and sense of exploration offered by Xcode Playgrounds. This week, we'll reflect on reflection in Swift, its mirror types, and `MirrorType`, the protocol that binds them together."
+status:
+    swift: 1.2
 ---
 
 Reflection in Swift is a limited affair, providing read-only access to a subset of type metadata. While far from the rich array of run-time hackery familiar to seasoned Objective-C developers, Swift's tools enable the immediate feedback and sense of exploration offered by Xcode Playgrounds.
@@ -149,7 +151,7 @@ let session801 = WWDCSession(number: 801,
 
 By default, reflection on a `WWDCSession` instance uses the built-in `_StructMirror` type. This provides a property-based summary on the right (useful) but only the class name in a captured value pane (not so useful):
 
-![Default WWDCSession Representation](http://nshipster.s3.amazonaws.com/mirrortype-default.gif)
+![Default WWDCSession Representation]({{ site.asseturl }}/mirrortype-default.gif)
 
 To provide a richer representation of a `WWDCSession`, we'll implement a new type, `WWDCSessionMirror`. This type must conform to `MirrorType`,  including all the properties listed above:
 
@@ -214,7 +216,7 @@ extension WWDCSession : Reflectable {
 
 That's it! The Playground now uses our custom representation instead of the default:
 
-![Custom WWDCSession Representation](http://nshipster.s3.amazonaws.com/mirrortype-custom.gif)
+![Custom WWDCSession Representation]({{ site.asseturl }}/mirrortype-custom.gif)
 
 > In the absence of `Printable` conformance, `println()` and `toString()` will also pull the string representation from an instance's mirror.
 

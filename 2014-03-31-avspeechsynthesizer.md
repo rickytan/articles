@@ -3,6 +3,9 @@ title: AVSpeechSynthesizer
 author: Mattt Thompson
 category: Cocoa
 excerpt: "Though we're a long way off from Hal or Her, we should never forget about the billions of other people out there for us to talk to."
+status:
+    swift: 2.0
+    reviewed: September 10, 2015
 ---
 
 Though we're a long way off from [_Hal_](https://www.youtube.com/watch?v=ARJ8cAGm6JE) or [_Her_](https://www.youtube.com/watch?v=WzV6mXIOVl4), we should never forget about the billions of other people out there for us to talk to.
@@ -102,13 +105,13 @@ var utteranceLabel: UILabel!
 
 // MARK: AVSpeechSynthesizerDelegate
 
-func speechSynthesizer(synthesizer: AVSpeechSynthesizer!, willSpeakRangeOfSpeechString characterRange: NSRange, utterance: AVSpeechUtterance!) {
+func speechSynthesizer(synthesizer: AVSpeechSynthesizer, willSpeakRangeOfSpeechString characterRange: NSRange, utterance: AVSpeechUtterance) {
     let mutableAttributedString = NSMutableAttributedString(string: utterance.speechString)
     mutableAttributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.redColor(), range: characterRange)
     utteranceLabel.attributedText = mutableAttributedString
 }
 
-func speechSynthesizer(synthesizer: AVSpeechSynthesizer!, didFinishSpeechUtterance utterance: AVSpeechUtterance!) {
+func speechSynthesizer(synthesizer: AVSpeechSynthesizer, didFinishSpeechUtterance utterance: AVSpeechUtterance) {
     utteranceLabel.attributedText = NSAttributedString(string: utterance.speechString)
 }
 ```
@@ -133,7 +136,7 @@ willSpeakRangeOfSpeechString:(NSRange)characterRange
 }
 ~~~
 
-![AVSpeechSynthesizer Example](http://nshipster.s3.amazonaws.com/avspeechsynthesizer-example.gif)
+![AVSpeechSynthesizer Example]({{ site.asseturl }}/avspeechsynthesizer-example.gif)
 
 See [this example app](https://github.com/mattt/AVSpeechSynthesizer-Example) for a demonstration of live text-highlighting for all of the supported languages.
 

@@ -3,6 +3,9 @@ title: CMDeviceMotion
 author: Nate Cook
 category: Cocoa
 excerpt: "Beneath the smooth glass of each shiny iPhone, nestled on a logic board between touch screen controllers and Apple-designed SoCs, the gyroscope and accelerometer sit largely neglected."
+status:
+    swift: 2.2
+    reviewed: April 10, 2016
 ---
 
 Beneath the smooth glass of each shiny iPhone, nestled on a logic board between touch screen controllers and Apple-designed SoCs, the gyroscope and accelerometer sit largely neglected.
@@ -19,7 +22,7 @@ Both accelerometer and gyroscope data are presented in terms of three axes that 
 
 The composited device motion data are presented in a few different ways, each with their own uses, as we'll see below.
 
-![Device X-, Y-, and Z-axes](http://nshipster.s3.amazonaws.com/cmdm-axes.png)
+![Device X-, Y-, and Z-axes]({{ site.asseturl }}/cmdm-axes.png)
 
 ## CMMotionManager
 
@@ -59,7 +62,7 @@ After this call, `manager.gyroData` is accessible at any time with the device's 
 #### Starting Updates to "push" Data
 
 ```swift
-let queue = NSOperationQueue.mainQueue
+let queue = NSOperationQueue.mainQueue()
 manager.startGyroUpdatesToQueue(queue) {
     (data, error) in
     // ...
@@ -86,10 +89,11 @@ First, we check to make sure our device makes accelerometer data available, next
 if manager.accelerometerAvailable {
     manager.accelerometerUpdateInterval = 0.01
     manager.startAccelerometerUpdatesToQueue(NSOperationQueue.mainQueue()) {
-        [weak self] (data: CMAccelerometerData!, error: NSError!) in
-
-        let rotation = atan2(data.acceleration.x, data.acceleration.y) - M_PI
-        self?.imageView.transform = CGAffineTransformMakeRotation(CGFloat(rotation))
+        [weak self] (data: CMAccelerometerData?, error: NSError?) in
+        if let acceleration = data?.acceleration {
+            let rotation = atan2(acceleration.x, acceleration.y) - M_PI
+            self?.imageView.transform = CGAffineTransformMakeRotation(CGFloat(rotation))
+        }
     }
 }
 ```
@@ -110,7 +114,7 @@ Each packet of `CMAccelerometerData` includes an `x`, `y`, and `z` value—each 
 
 We're calculating the rotation by computing the [`arctan2`](http://en.wikipedia.org/wiki/Atan2) of the `x` and `y` components from the accelerometer data and then using that rotation in a `CGAffineTransform`. Our image should stay right-side up no matter how the phone is turned—here it is in a hypothetical app for the *National Air & Space Museum* (my favorite museum as a kid):
 
-![Rotation with accelerometer](http://nshipster.s3.amazonaws.com/cmdm-accelerometer.gif)
+![Rotation with accelerometer]({{ site.asseturl }}/cmdm-accelerometer.gif)
 
 The results are not terribly satisfactory—the image movement is jittery, and moving the device in space affects the accelerometer as much as or even more than rotating. These issues *could* be mitigated by sampling multiple readings and averaging them together, but instead let's look at what happens when we involve the gyroscope.
 
@@ -124,10 +128,11 @@ Rather than use the raw gyroscope data that we would get with `startGyroUpdates.
 if manager.deviceMotionAvailable {
     manager.deviceMotionUpdateInterval = 0.01
     manager.startDeviceMotionUpdatesToQueue(NSOperationQueue.mainQueue()) {
-        [weak self] (data: CMDeviceMotion!, error: NSError!) in
-
-        let rotation = atan2(data.gravity.x, data.gravity.y) - M_PI
-        self?.imageView.transform = CGAffineTransformMakeRotation(CGFloat(rotation))
+        [weak self] (data: CMDeviceMotion?, error: NSError?) {
+        if let gravity = data?.gravity {
+            let rotation = atan2(data.gravity.x, data.gravity.y) - M_PI
+            self?.imageView.transform = CGAffineTransformMakeRotation(CGFloat(rotation))
+        }
     }
 }
 ```
@@ -146,7 +151,7 @@ if (manager.deviceMotionAvailable) {
 
 Much better!
 
-![Rotation with gravity](http://nshipster.s3.amazonaws.com/cmdm-gravity.gif)
+![Rotation with gravity]({{ site.asseturl }}/cmdm-gravity.gif)
 
 ## UIClunkController
 
@@ -158,9 +163,9 @@ Remember that the X-axis runs laterally through the device in our hand, with neg
 if manager.deviceMotionAvailable {
     manager.deviceMotionUpdateInterval = 0.02
     manager.startDeviceMotionUpdatesToQueue(NSOperationQueue.mainQueue()) {
-        [weak self] (data: CMDeviceMotion!, error: NSError!) in
+        [weak self] (data: CMDeviceMotion?, error: NSError?) in
 
-        if data.userAcceleration.x < -2.5 {
+        if data?.userAcceleration.x < -2.5 {
             self?.navigationController?.popViewControllerAnimated(true)
         }
     }
@@ -182,7 +187,7 @@ if (manager.deviceMotionAvailable) {
 
 And it works like a charm—tapping the device in a detail view immediately takes us back to the list of exhibits:
 
-![Clunk to go back](http://nshipster.s3.amazonaws.com/cmdm-clunk.gif)
+![Clunk to go back]({{ site.asseturl }}/cmdm-clunk.gif)
 
 
 
@@ -222,7 +227,7 @@ func magnitudeFromAttitude(attitude: CMAttitude) -> Double {
 }
 
 // initial configuration
-var initialAttitude = manager.deviceMotion.attitude
+var initialAttitude = manager.deviceMotion!.attitude
 var showingPrompt = false
 
 // trigger values - a gap so there isn't a flicker zone
@@ -251,7 +256,9 @@ Then, in our now familiar call to `startDeviceMotionUpdates`, we calculate the m
 ```swift
 if manager.deviceMotionAvailable {
     manager.startDeviceMotionUpdatesToQueue(NSOperationQueue.mainQueue()) {
-        [weak self] (data: CMDeviceMotion!, error: NSError!) in
+        [weak self] (data: CMDeviceMotion?, error: NSError?) in
+
+        guard let data = data else { return }
 
         // translate the attitude
         data.attitude.multiplyByInverseOfAttitude(initialAttitude)
@@ -265,7 +272,7 @@ if manager.deviceMotionAvailable {
                 showingPrompt = true
 
                 promptViewController.modalTransitionStyle = UIModalTransitionStyle.CrossDissolve
-                self!.presentViewController(promptViewController, animated: true, completion: nil)
+                self?.presentViewController(promptViewController, animated: true, completion: nil)
             }
         }
 
@@ -310,7 +317,7 @@ if (manager.deviceMotionAvailable) {
 
 Having implemented all that, let's take a look at the interaction. As the device rotates, the display automatically switches views and the quizee never sees the answer:
 
-![Prompt by turning the device](http://nshipster.s3.amazonaws.com/cmdm-prompt.gif)
+![Prompt by turning the device]({{ site.asseturl }}/cmdm-prompt.gif)
 
 ### Further Reading
 
@@ -324,7 +331,7 @@ To keep the code examples readable, we've been sending all our `CoreMotionManage
 ```swift
 let queue = NSOperationQueue()
 manager.startDeviceMotionUpdatesToQueue(queue) {
-    [weak self] (data: CMDeviceMotion!, error: NSError!) in
+    [weak self] (data: CMDeviceMotion?, error: NSError?) in
 
     // motion processing here
 

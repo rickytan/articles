@@ -4,6 +4,9 @@ author: Mattt Thompson
 category: Cocoa
 tags: nshipster
 excerpt: "UITableView starts to become unwieldy once it gets to a few hundred rows. If users are reduced to frantically scratching at the screen like a cat playing Fruit Ninja in order to get at what they want... you may want to rethink your UI approach."
+status:
+    swift: 2.0
+    reviewed: September 8, 2015
 ---
 
 UITableView starts to become unwieldy once it gets to a few hundred rows. If users are reduced to frantically scratching at the screen like a [cat playing Fruit Ninja](http://www.youtube.com/watch?v=CdEBgZ5Y46U) in order to get at what they want... you may want to rethink your UI approach.
@@ -16,7 +19,7 @@ You could also add a `UISearchBar` to the top of your table view, allowing the u
 
 There is also a third approach, which is generally under-utilized in iOS applications: **section index titles**. These are the vertically flowing letters found along the right side of table views in your Address Book contacts list or Music library:
 
-![Section Index Titles Example](http://nshipster.s3.amazonaws.com/uilocalizedindexedcollation-example.png)
+![Section Index Titles Example]({{ site.asseturl }}/uilocalizedindexedcollation-example.png)
 
 As the user scrolls their finger down the list, the table view jumps to the corresponding section. Even the most tiresome table view is rendered significantly more usable as a result.
 
@@ -34,7 +37,7 @@ Coming to our rescue is `UILocalizedIndexedCollation`.
 
 `UILocalizedIndexedCollation` is a class that helps to organize data in table views with section index titles in a locale-aware manner. Rather than creating the object directly, a shared instance corresponding to the current locale supported by your application is accessed, with `UILocalizedIndexedCollation +currentCollation`
 
-The first task for `UILocalizedIndexedCollation` is to determine what section index titles to display for the current locale, which are can be read from the `sectionIndexTitles` property.
+The first task for `UILocalizedIndexedCollation` is to determine what section index titles to display for the current locale, which can be read from the `sectionIndexTitles` property.
 
 To give you a better idea of how section index titles vary between locales:
 
@@ -60,16 +63,14 @@ All told, here's what a typical table view data source implementation looks like
 
 ~~~{swift}
 class ObjectTableViewController: UITableViewController {
-    let collation = UILocalizedIndexedCollation.currentCollation() as UILocalizedIndexedCollation
-    var sections: [[Object]] = []
-    var objects: [Object] {
+    let collation = UILocalizedIndexedCollation.currentCollation()
+    var sections: [[AnyObject]] = []
+    var objects: [AnyObject] = [] {
         didSet {
             let selector: Selector = "localizedTitle"
+            sections = Array(count: collation.sectionTitles.count, repeatedValue: [])
 
-
-            sections = [[Object]](count: collation.sectionTitles.count, repeatedValue: [])
-
-            let sortedObjects = collation.sortedArrayFromArray(objects, collationStringSelector: selector) as [Object]
+            let sortedObjects = collation.sortedArrayFromArray(objects, collationStringSelector: selector)
             for object in sortedObjects {
                 let sectionNumber = collation.sectionForObject(object, collationStringSelector: selector)
                 sections[sectionNumber].append(object)
@@ -81,15 +82,15 @@ class ObjectTableViewController: UITableViewController {
 
     // MARK: UITableViewDelegate
 
-    override func tableView(tableView: UITableView!, titleForHeaderInSection section: Int) -> String! {
-        return collation.sectionTitles![section] as String
+    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String {
+        return collation.sectionTitles[section]
     }
 
-    override func sectionIndexTitlesForTableView(tableView: UITableView!) -> [AnyObject]! {
+    override func sectionIndexTitlesForTableView(tableView: UITableView) -> [String] {
         return collation.sectionIndexTitles
     }
 
-    override func tableView(tableView: UITableView!, sectionForSectionIndexTitle title: String!, atIndex index: Int) -> Int {
+    override func tableView(tableView: UITableView, sectionForSectionIndexTitle title: String, atIndex index: Int) -> Int {
         return collation.sectionForSectionIndexTitleAtIndex(index)
     }
 }

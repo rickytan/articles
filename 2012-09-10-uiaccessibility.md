@@ -4,6 +4,8 @@ author: Mattt Thompson
 category: Cocoa
 tags: nshipster
 excerpt: "Accessibility, like internationalization, is one of those topics that's difficult to get developers excited about. But as you know, NSHipster is all about getting developers excited about this kind of stuff."
+status:
+    swift: n/a
 ---
 
 > We all want to help one another, human beings are like that.
@@ -41,7 +43,7 @@ Tap VoiceOver, and then tap the VoiceOver switch to turn it on. An alert will po
 
 Don't Panic--unlike setting your device to another language, there's no real risk of not being able to figure out how to turn VoiceOver off.
 
-![VoiceOver Settings](http://nshipster.s3.amazonaws.com/uiaccessibility-voiceover.png)
+![VoiceOver Settings]({{ site.asseturl }}/uiaccessibility-voiceover.png)
 
 Using the device in VoiceOver mode is a bit different than you're used to:
 

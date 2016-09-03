@@ -4,6 +4,8 @@ author: Mattt Thompson
 category: Swift
 tags: swift
 excerpt: "Objective-C required us to wax philosophic about the nature of equality and identity. To the relief of any developer less inclined towards handwavy treatises, this is not as much the case for Swift."
+status:
+    swift: 1.2
 ---
 
 Objective-C required us to [wax philosophic](http://nshipster.com/equality/) about the nature of equality and identity. To the relief of any developer less inclined towards handwavy treatises, this is not as much the case for Swift.
@@ -14,7 +16,7 @@ In Swift, `Equatable` is a fundamental type, from which `Comparable` and `Hashab
 
 ## Equatable
 
-Values of the `Equatable` type can be evaluated for equality and inequality. Declaring a type as equatable bestows several useful abilities, notably the ability values of that type to be found in a containing `Array`.
+Values of the `Equatable` type can be evaluated for equality and inequality. Declaring a type as equatable bestows several useful abilities, notably the ability for values of that type to be found in a containing `Array`.
 
 For a type to be `Equatable`, there must exist an implementation of the `==` operator function, which accepts a matching type:
 
@@ -166,8 +168,8 @@ extension CSSSelector.Specificity: Comparable {}
 
 func <(lhs: CSSSelector.Specificity, rhs: CSSSelector.Specificity) -> Bool {
     return lhs.id < rhs.id ||
-        lhs.`class` < rhs.`class` ||
-        lhs.element < rhs.element
+        (lhs.id == rhs.id && lhs.`class` < rhs.`class`) ||
+        (lhs.id == rhs.id && lhs.`class` == rhs.`class` && lhs.element < rhs.element)
 }
 
 // MARK: Equatable

@@ -4,9 +4,11 @@ author: Nate Cook
 category: Swift
 tags: swift
 excerpt: "Playgrounds aren't a feature of the Swift language *per se*—instead, they are a terrific showcase for all that Swift has to offer, from its efficiency and power to its opacity and depth. Take a look past the surface of Playgrounds, at tools that make them a powerful part of the development process: sources and resources, captured values and extended execution, and integrated rich formatting that can transform a Playground into an interactive teaching tool."
+status:
+    swift: 1.2
 ---
 
-> Stop right there! Given the topic, wouldn't you rather read this article as a Playground? **<a href="http://nshipster.s3.amazonaws.com/XCPlayground.playground.zip" onclick="ga('send', 'event', 'link', 'click', 'XCPlayground.playground');">Download Now &rarr;</a>**
+> Stop right there! Given the topic, wouldn't you rather read this article as a Playground? **<a href="{{ site.asseturl }}/XCPlayground.playground.zip" onclick="ga('send', 'event', 'link', 'click', 'XCPlayground.playground');">Download Now &rarr;</a>**
 
 *Play.*
 
@@ -24,7 +26,7 @@ This week, we'll take a look past the surface of Playgrounds, giving you tools t
 
 The revamped Playground package structure includes a "Sources" folder for code that is more stable than experimental. All files in the "Sources" directory are compiled (just once, not every time you press a key) into a single module and automatically imported into the Playground. In addition to simplifying the code in your Playground, this compilation *drastically* speeds up execution. This means that if I have defined a type, function, or global constant in those files with `public` accessibility, I can use it in a Playground without further ado:
 
-![Compiled Sources](http://nshipster.s3.amazonaws.com/xcplayground-sources.png)
+![Compiled Sources]({{ site.asseturl }}/xcplayground-sources.png)
 
 To get started in your own Playground, open the Project Navigator (⌘1) and expand the Playground file to see the "Sources" directory.
 
@@ -87,7 +89,7 @@ for forecast in forecasts {
 
 Alternatively, choosing **Editor &rarr; Show Result For Current Line** will capture the current line's values and display the chart directly in the flow of the Playground:
 
-![Result for Current Line](http://nshipster.s3.amazonaws.com/xcplayground-capture.png)
+![Result for Current Line]({{ site.asseturl }}/xcplayground-capture.png)
 
 
 
@@ -134,14 +136,14 @@ Unlike [Swift's *other* documentation syntax](/swift-documentation/), Swift Play
 
 ### Images, Too
 
-![Remote Image](http://nshipster.s3.amazonaws.com/alert.gif)
+![Remote Image]({{ site.asseturl }}/alert.gif)
 ![Local Image](bomb.gif) 
 
 *Images in the Resources directory can be referenced locally*
 */
 ```
 
-![Rendered Documentation](http://nshipster.s3.amazonaws.com/xcplayground-documentation.png)
+![Rendered Documentation]({{ site.asseturl }}/xcplayground-documentation.png)
 
 It's possible to toggle rich documentation rendering either by selecting the **Editor &rarr; Show Rendered Markup** menu item or by checking the **Render Documentation** checkbox in the File Inspector (⌘⌥1).
 

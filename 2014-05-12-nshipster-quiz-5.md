@@ -3,6 +3,8 @@ title: "NSHipster Quiz #5"
 author: Mattt Thompson
 category: Trivia
 excerpt: "This fifth incarnation of the NSHipster Quiz took on a distinct North-of-the-Border flavor, as part of the NSNorth conference in Ottawa, Ontario. Think you're up to the challenge, eh?"
+status:
+    swift: n/a
 ---
 
 This past weekend, I had the honor of speaking at [NSNorth](http://nsnorth.ca/), in Ottawa, Ontario. The conference focused on the aspects of community, culture, and family in programming, and I cannot think of a conference in recent memory that better exemplified these themes, both in its speakers and attendees.
@@ -37,7 +39,7 @@ Current events, miscellaneous tidbits, and random trivia. Following a time-honor
 9. What hot new social networking app allows you to anonymously chat with patrons of its eponymous, popular American chain restaurant?
 10. If one were to sit down at a NeXTstation and open "/NextLibrary/Frameworks/AppKit.framework/Resources/", they would find the file "NSShowMe.tiff". Who is pictured in this photo?
 
-![NSShowMe.tiff](http://nshipster.s3.amazonaws.com/NSShowMe.tiff)
+![NSShowMe.tiff]({{ site.asseturl }}/NSShowMe.tiff)
 
 Round 2: Core Potpourri
 -----------------------

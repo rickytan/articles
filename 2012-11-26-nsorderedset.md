@@ -4,6 +4,9 @@ author: Mattt Thompson
 category: Cocoa
 tags: nshipster
 excerpt: "Why isn't NSOrderedSet a subclass of NSSet? The answer may surprise you."
+status:
+    swift: 2.0
+    reviewed: September 15, 2015
 ---
 
 Here's a question: why isn't `NSOrderedSet` a subclass of `NSSet`?
@@ -25,8 +28,8 @@ As expertly demonstrated by [Tom Dalling](http://tomdalling.com) in [this Stack 
 To start, let's look at how `-mutableCopy` is supposed to work in a class cluster:
 
 ~~~{swift}
-let immutable: NSSet = NSSet()
-var mutable: NSMutableSet = immutable.mutableCopy() as NSMutableSet
+let immutable = NSSet()
+let mutable = immutable.mutableCopy() as! NSMutableSet
 
 mutable.isKindOfClass(NSSet.self) // true
 mutable.isKindOfClass(NSMutableSet.self) // true
@@ -45,8 +48,8 @@ Now let's suppose that `NSOrderedSet` was indeed a subclass of `NSSet`:
 ~~~{swift}
 // class NSOrderedSet: NSSet {...}
 
-let immutable: NSOrderedSet = NSOrderedSet()
-var mutable: NSMutableOrderedSet = immutable.mutableCopy() as NSMutableOrderedSet
+let immutable = NSOrderedSet()
+let mutable = immutable.mutableCopy() as! NSMutableOrderedSet
 
 mutable.isKindOfClass(NSSet.self) // true
 mutable.isKindOfClass(NSMutableSet.self) // false (!)
@@ -62,7 +65,7 @@ NSMutableOrderedSet* mutable = [immutable mutableCopy];
 [mutable isKindOfClass:[NSMutableSet class]]; // NO (!)
 ~~~
 
-<img src="http://nshipster.s3.amazonaws.com/nsorderedset-case-1.svg" />
+<img src="{{ site.asseturl }}/nsorderedset-case-1.svg" />
 
 That's no good... since `NSMutableOrderedSet` couldn't be used as a method parameter of type `NSMutableSet`. So what happens if we make `NSMutableOrderedSet` a subclass of `NSMutableSet` as well?
 
@@ -70,8 +73,8 @@ That's no good... since `NSMutableOrderedSet` couldn't be used as a method param
 // class NSOrderedSet: NSSet {...}
 // class NSMutableOrderedSet: NSMutableSet {...}
 
-let immutable: NSOrderedSet = NSOrderedSet()
-var mutable: NSMutableOrderedSet = immutable.mutableCopy() as NSMutableOrderedSet
+let immutable = NSOrderedSet()
+let mutable = immutable.mutableCopy() as! NSMutableOrderedSet
 
 mutable.isKindOfClass(NSSet.self) // true
 mutable.isKindOfClass(NSMutableSet.self) // true
@@ -90,7 +93,7 @@ NSMutableOrderedSet* mutable = [immutable mutableCopy];
 [mutable isKindOfClass:[NSOrderedSet class]]; // NO (!)
 ~~~
 
-<img src="http://nshipster.s3.amazonaws.com/nsorderedset-case-2.svg" />
+<img src="{{ site.asseturl }}/nsorderedset-case-2.svg" />
 
 This is perhaps even worse, as now `NSMutableOrderedSet` couldn't be used as a method parameter expecting an `NSOrderedSet`.
 
@@ -120,6 +123,6 @@ Although it is perfectly suited to that one particular use case in Core Data, `N
 
 ---
 
-So, as a general rule: **`NSOrderedSet` is useful for intermediary and internal representations, but you probably shouldn't introduce it as a method parameters unless it's particularly well-suited to the semantics of the data model.**
+So, as a general rule: **`NSOrderedSet` is useful for intermediary and internal representations, but you probably shouldn't introduce it as a method parameter unless it's particularly well-suited to the semantics of the data model.**
 
 If nothing else, `NSOrderedSet` illuminates some of the fascinating implications of Foundation's use of the class cluster design pattern. In doing so, it allows us better understand the trade-off between simplicity and extensibility as we make these choices in our own application designs.

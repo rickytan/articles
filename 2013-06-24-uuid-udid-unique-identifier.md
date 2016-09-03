@@ -3,6 +3,8 @@ title: "NSUUID /<br/>CFUUIDRef /<br/>UIDevice -uniqueIdentifier /<br/>-identifie
 author: Mattt Thompson
 category: Cocoa
 excerpt: "Until recently, it was trivial to uniquely identify devices between application launches, and even across applications: a simple call to UIDevice -uniqueIdentifier, and you were all set."
+status:
+    swift: 1.1
 ---
 
 Let's say you're making privacy software that also prevents piracy. I mean, it's an obvious idea—[someone's going to do it](http://www.fakeblock.com). You're just trying to be _that_ person.
@@ -43,14 +45,14 @@ As the sole component of the [Ad Support framework](http://developer.apple.com/l
 
 Users can opt out of ad targeting in a Settings screen added in iOS 6.1, found at **Settings > General > About > Advertising**:
 
-![Limit Ad Tracking](http://nshipster.s3.amazonaws.com/ad-support-limit-ad-tracking.png)
+![Limit Ad Tracking]({{ site.asseturl }}/ad-support-limit-ad-tracking.png)
 
 ## NSUUID & CFUUIDRef
 
 `NSUUID` was added to Foundation in iOS 6 as a way to easily create UUIDs. How easy?
 
 ~~~{swift}
-let UUID = NSUUID.UUID().UUIDString
+let UUID = NSUUID().UUIDString
 ~~~
 
 ~~~{objective-c}

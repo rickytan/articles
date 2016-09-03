@@ -4,6 +4,9 @@ author: Mattt Thompson
 category: Swift
 tags: swift
 excerpt: "Operators in Swift are among the most interesting and indeed controversial features of this new language."
+status:
+    swift: 2.0
+    reviewed: September 8, 2015
 ---
 
 What would a program be without statements? A mish-mash of classes, namespaces, conditionals, loops, and namespaces signifying nothing.
@@ -18,7 +21,7 @@ If we were to take apart a statement—say `1 + 2`—decomposing it into its con
 
 Although expressions are flat, the compiler will construct a tree representation, or AST:
 
-![1 + 2 AST](http://nshipster.s3.amazonaws.com/swift-operators-one-plus-two.svg)
+![1 + 2 AST]({{ site.asseturl }}/swift-operators-one-plus-two.svg)
 
 
 Compound statements, like `1 + 2 + 3`
@@ -28,7 +31,7 @@ Compound statements, like `1 + 2 + 3`
 |     left operand    |       operator      |     right operand   |
 
 
-![1 + 2 + 3 AST](http://nshipster.s3.amazonaws.com/swift-operators-one-plus-two-plus-three.svg)
+![1 + 2 + 3 AST]({{ site.asseturl }}/swift-operators-one-plus-two-plus-three.svg)
 
 Or, to take an even more complex statement, `1 + 2 * 3 % 4`, the compiler would use operator precedence to resolve the expression into a single statement:
 
@@ -37,7 +40,7 @@ Or, to take an even more complex statement, `1 + 2 * 3 % 4`, the compiler would 
 |     left operand    |       operator      |      right operand        |
 
 
-![1 + 2 * 3 % 4 AST](http://nshipster.s3.amazonaws.com/swift-operators-one-plus-two-times-three-mod-four.svg)
+![1 + 2 * 3 % 4 AST]({{ site.asseturl }}/swift-operators-one-plus-two-times-three-mod-four.svg)
 
 Operator precedence rules, similar to the ones [you learned in primary school](http://en.wikipedia.org/wiki/Order_of_operations), provide a canonical ordering for any compound statement:
 
@@ -50,7 +53,7 @@ Operator precedence rules, similar to the ones [you learned in primary school](h
 
 However, consider the statement `5 - 2 + 3`. Addition and subtraction have the same operator precedence, but evaluating the subtraction first `(5 - 2) + 3` yields 6, whereas evaluating subtraction after addition, `5 - (2 + 3)`, yields `0`. In code, arithmetic operators are left-associative, meaning that the left hand side will evaluate first (`(5 - 2) + 3`).
 
-Operators can be unary and ternary as well. The `!` prefix operator negates a logical value of the operand, whereas the `++` postfix operator increments the operand. The `?:` ternary operator collapses an `if-else` expression, by evaluating the statement to the left of the `?` in order to either execute the statement left of the `:` (statement is `true`) or right of `:` (statement is `false`).
+Operators can be unary and ternary as well. The `!` prefix operator negates a logical value of the operand. The `?:` ternary operator collapses an `if-else` expression, by evaluating the statement to the left of the `?` in order to either execute the statement left of the `:` (statement is `true`) or right of `:` (statement is `false`).
 
 ## Swift Operators
 
@@ -58,8 +61,6 @@ Swift includes a set of operators that should be familiar to C or Objective-C de
 
 ### Prefix
 
-- `++`: Increment
-- `--`: Decrement
 - `+`: Unary plus
 - `-`: Unary minus
 - `!`: Logical NOT
@@ -176,16 +177,8 @@ Swift includes a set of operators that should be familiar to C or Objective-C de
         <tr><td><tt>&amp;=</tt></td><td>Bitwise AND and assign</td></tr>
         <tr><td><tt>^=</tt></td><td>Bitwise XOR and assign</td></tr>
         <tr><td><tt>|=</tt></td><td>Bitwise OR and assign</td></tr>
-        <tr><td><tt>&amp;&amp;=</tt></td><td>Logical AND and assign</td></tr>
-        <tr><td><tt>||=</tt></td><td>Logical OR and assign</td></tr>
     </tbody>
 </table>
-
-### Postfix
-
-
-- `++`: Increment
-- `--`: Decrement
 
 ### Member Functions
 
@@ -201,7 +194,7 @@ In addition to the aforementioned standard operators, there are some _de facto_ 
 
 Swift has the ability to overload operators such that existing operators, like `+`, can be made to work with additional types.
 
-To overload an operator, simply define a new function for the operator symbol, taking the appropriate number of arguments.
+To overload an operator, simply define a new function for the operator symbol, taking the appropriate number and type of arguments.
 
 For example, to overload `*` to repeat a string a specified number of times:
 
@@ -348,19 +341,19 @@ Take, for example, a custom operator, `=~`, which returns whether the left hand 
 
 ```swift
 protocol RegularExpressionMatchable {
-    func match(pattern: String, options: NSRegularExpressionOptions) -> Bool
+    func match(pattern: String, options: NSRegularExpressionOptions) throws -> Bool
 }
 
 extension String: RegularExpressionMatchable {
-    func match(pattern: String, options: NSRegularExpressionOptions = nil) -> Bool {
-        let regex = NSRegularExpression(pattern: pattern, options: options, error: nil)
-        return regex.numberOfMatchesInString(self, options: nil, range: NSMakeRange(0, self.utf16Count)) != 0
+    func match(pattern: String, options: NSRegularExpressionOptions = []) throws -> Bool {
+        let regex = try NSRegularExpression(pattern: pattern, options: options)
+        return regex.numberOfMatchesInString(self, options: [], range: NSRange(location: 0, length: 0.distanceTo(utf16.count))) != 0
     }
 }
 
 infix operator =~ { associativity left precedence 130 }
 func =~<T: RegularExpressionMatchable> (left: T, right: String) -> Bool {
-    return left.match(right, options: nil)
+    return try! left.match(right, options: [])
 }
 ```
 
@@ -370,13 +363,18 @@ func =~<T: RegularExpressionMatchable> (left: T, right: String) -> Bool {
 
 By doing this, a user has the option to use the `match` function instead of the operator. It also has the added benefit of greater flexibility in what options are passed into the method.
 
-> Actually, there's an [even more clever way](https://gist.github.com/mattt/2099ee21bbfbebaa94a3) that this could be done. We'll look into that more next week.
+```swift
+let cocoaClassPattern = "^[A-Z]{2,}[A-Za-z0-9]+$"
+
+try? "NSHipster".match(cocoaClassPattern)       // true
+"NSHipster" =~ cocoaClassPattern                // true
+```
 
 This is all to say: **a custom operator should only ever be provided as a convenience for an existing function.**
 
 ### Use of Mathematical Symbols
 
-Custom operators can begin with one of the ASCII characters /, =, -, +, !, *, %, <, >, &, |, ^, or ~, or any of the Unicode characters in the "Math Symbols" character set.
+Custom operators can contain any of the following ASCII characters /, =, -, +, !, *, %, <, >, &, |, ^, or ~, or any of the Unicode characters in the "Math Symbols" character set.
 
 This makes it possible to take the square root of a number with a single `√` prefix operator (`⌥v`):
 
@@ -426,3 +424,4 @@ When overriding or defining new operators in your own code, make sure to follow 
 2. Custom operators should only be provided as a convenience. Complex functionality should always be implemented in a function, preferably one specified as a generic using a custom protocol.
 3. Pay attention to the precedence and associativity of custom operators. Find the closest existing class of operators and use the appropriate precedence value.
 4. If it makes sense, be sure to implement assignment shorthand for a custom operator (e.g. `+=` for `+`).
+

@@ -6,6 +6,9 @@ excerpt: "This week, we'll take a look at `XCTest`, the testing framework built 
 revisions:
     "2015-04-07": Added note about location of call to `fulfill()`; new Objective-C examples
 hiddenlang: ""
+status:
+    swift: 1.2
+    reviewed: June 25, 2015
 ---
 
 Although iOS 8 and Swift has garnered the lion's share of attention of the WWDC 2014 announcements, the additions and improvements to testing in Xcode 6 may end up making some of the most profound impact in the long-term.
@@ -112,7 +115,7 @@ func testOnePlusOneEqualsTwo() {
 
 ### All of the XCTest Assertions You _Really_ Need To Know
 
-`XCTest` comes with [a number of built-in assertions](https://developer.apple.com/library/prerelease/ios/documentation/DeveloperTools/Conceptual/testing_with_xcode/testing_3_writing_test_classes/testing_3_writing_test_classes.html#//apple_ref/doc/uid/TP40014132-CH4-SW34), but one could narrow them down to just a few essentials:
+`XCTest` comes with a number of built-in assertions, but one could narrow them down to just a few essentials:
 
 #### Fundamental Test
 
@@ -232,7 +235,7 @@ func testDateFormatterPerformance() {
 }
 ```
 
-The test output shows the average execution time for the measured block as well as individual run times and standard deviation:
+The measured block is executed ten times and the test output shows the average execution time as well as individual run times and standard deviation:
 
 ```
 Test Case '-[_Tests testDateFormatterPerformance]' started.
@@ -240,7 +243,7 @@ Test Case '-[_Tests testDateFormatterPerformance]' started.
 Test Case '-[_Tests testDateFormatterPerformance]' passed (0.274 seconds).
 ```
 
-Performance tests help establish a baseline of performance for hot code paths. Sprinkle them into your test cases to ensure that significant algorithms and procedures remain performant as time goes on.
+Performance tests help establish a per-device baseline of performance for hot code paths and will fail if execution time becomes significantly slower. Sprinkle them into your test cases to ensure that significant algorithms and procedures remain performant as time goes on.
 
 ## XCTestExpectation
 
@@ -255,10 +258,10 @@ let expectation = expectationWithDescription("...")
 XCTestExpectation *expectation = [self expectationWithDescription:@"..."];
 ```
 
-Then, at the bottom of the method, add the `waitForExpectationsWithTimeout` method, specifying a timeout, and handler to execute if the conditions of a test are not satisfied within that timeframe:
+Then, at the bottom of the method, add the `waitForExpectationsWithTimeout` method, specifying a timeout, and optionally a handler to execute when either the conditions of your test are met or the timeout is reached (a timeout is automatically treated as a failed test):
 
 ```swift
-waitForExpectationsWithTimeout(10) { (error) in
+waitForExpectationsWithTimeout(10) { error in
     // ...
 }
 ```
@@ -287,14 +290,17 @@ func testAsynchronousURLConnection() {
     let expectation = expectationWithDescription("GET \(URL)")
 
     let session = NSURLSession.sharedSession()
-    let task = session.dataTaskWithURL(URL) { (data, response, error) in
+    let task = session.dataTaskWithURL(URL) { data, response, error in
         XCTAssertNotNil(data, "data should not be nil")
         XCTAssertNil(error, "error should be nil")
-
-        if let HTTPResponse = response as NSHTTPURLResponse {
-            XCTAssertEqual(HTTPResponse.URL.absoluteString, URL, "HTTP response URL should be equal to original URL")
+        
+        if let HTTPResponse = response as? NSHTTPURLResponse,
+            responseURL = HTTPResponse.URL,
+            MIMEType = HTTPResponse.MIMEType
+        {
+            XCTAssertEqual(responseURL.absoluteString, URL.absoluteString, "HTTP response URL should be equal to original URL")
             XCTAssertEqual(HTTPResponse.statusCode, 200, "HTTP response status code should be 200")
-            XCTAssertEqual(HTTPResponse.MIMEType as String, "text/html", "HTTP response content type should be text/html")
+            XCTAssertEqual(MIMEType, "text/html", "HTTP response content type should be text/html")
         } else {
             XCTFail("Response was not NSHTTPURLResponse")
         }
@@ -304,7 +310,10 @@ func testAsynchronousURLConnection() {
 
     task.resume()
 
-    waitForExpectationsWithTimeout(task.originalRequest.timeoutInterval) { (error) in
+    waitForExpectationsWithTimeout(task.originalRequest!.timeoutInterval) { error in
+        if let error = error {
+            print("Error: \(error.localizedDescription)")
+        }
         task.cancel()
     }
 }
@@ -337,6 +346,9 @@ func testAsynchronousURLConnection() {
     [task resume];
     
     [self waitForExpectationsWithTimeout:task.originalRequest.timeoutInterval handler:^(NSError *error) {
+        if (error != nil) {
+            NSLog(@"Error: %@", error.localizedDescription);    
+        }
         [task cancel];
     }];
 }

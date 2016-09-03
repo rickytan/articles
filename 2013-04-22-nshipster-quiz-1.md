@@ -3,6 +3,8 @@ title: "NSHipster Quiz #1"
 author: Mattt Thompson
 category: Trivia
 excerpt: "Test your knowledge of general programming knowledge, Cocoa APIs, and Apple trivia in this first-ever NSHipster Quiz. How NSHip are you?"
+status:
+    swift: n/a
 ---
 
 On April 9th, the first-ever [NSHipster Pub Quiz](http://www.uikonf.com/2013/04/11/nshipster-pub-quiz.html) was held in Berlin. Think of your traditional pub quiz crossed with "Stump the Experts", with questions about things that you know and care about: computers, programming, Apple trivia—that sort of thing. The event was hosted by [UIKonf](http://www.uikonf.com), and made possible by its organizers [Chris Eidhof](http://twitter.com/chriseidhof), [Matt Patterson](http://twitter.com/fidothe), and [Peter Bihr](http://twitter.com/peterbihr). Thanks again to Chris, Matt, and Peter, and everyone who came out to make it such an amazing event.
@@ -58,43 +60,43 @@ Round 3: Picture Round
 
 - 1. What is this?
 
-![Question 1](http://nshipster-quiz-1.s3.amazonaws.com/question-1.jpg)
+![Question 1]({{ site.asseturl }}/quiz-1/question-1.jpg)
 
 - 2. What is this?
 
-![Question 2](http://nshipster-quiz-1.s3.amazonaws.com/question-2.jpg)
+![Question 2]({{ site.asseturl }}/quiz-1/question-2.jpg)
 
 - 3. What is this?
 
-![Question 3](http://nshipster-quiz-1.s3.amazonaws.com/question-3.jpg)
+![Question 3]({{ site.asseturl }}/quiz-1/question-3.jpg)
 
 - 4. What is this?
 
-![Question 4](http://nshipster-quiz-1.s3.amazonaws.com/question-4.jpg)
+![Question 4]({{ site.asseturl }}/quiz-1/question-4.jpg)
 
 - 5. WTF is this?
 
-![Question 5](http://nshipster-quiz-1.s3.amazonaws.com/question-5.jpg)
+![Question 5]({{ site.asseturl }}/quiz-1/question-5.jpg)
 
 - 6. Who is this?
 
-![Question 6](http://nshipster-quiz-1.s3.amazonaws.com/question-6.jpg)
+![Question 6]({{ site.asseturl }}/quiz-1/question-6.jpg)
 
 - 7. Who is this?
 
-![Question 7](http://nshipster-quiz-1.s3.amazonaws.com/question-7.jpg)
+![Question 7]({{ site.asseturl }}/quiz-1/question-7.jpg)
 
 - 8. Who is this?
 
-![Question 8](http://nshipster-quiz-1.s3.amazonaws.com/question-8.jpg)
+![Question 8]({{ site.asseturl }}/quiz-1/question-8.jpg)
 
 - 9. Who is this?
 
-![Question 9](http://nshipster-quiz-1.s3.amazonaws.com/question-9.jpg)
+![Question 9]({{ site.asseturl }}/quiz-1/question-9.jpg)
 
 - 10. In this photo, Bill Gates & Steve Jobs are being interviewed at the D5 conference in 2007 by a man and a woman just off-screen to the left. Who are they? (One point for each person)
 
-![Question 10](http://nshipster-quiz-1.s3.amazonaws.com/question-10.jpg)
+![Question 10]({{ site.asseturl }}/quiz-1/question-10.jpg)
 
 
 Round 4: Name That Framework!

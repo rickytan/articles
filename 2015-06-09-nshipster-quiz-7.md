@@ -3,6 +3,8 @@ title: "NSHipster Quiz #7"
 author: Nate Cook
 category: Trivia
 excerpt: "Our third annual WWDC NSHipster Pub Quiz! Scores of developers, dozens of teams, and a down-to-the-wire finish. How will you fare?"
+status:
+    swift: n/a
 ---
 
 On June 9th, we organized the third annual WWDC edition of the NSHipster Pub Quiz, with topics ranging from pop cultural trivia to technical pedantry. A huge thanks to [Realm](https://realm.io), who opened their offices and hosted with aplomb the scores of developers who turned out for the quiz.
@@ -54,34 +56,34 @@ Round 3: Picture Round
 ----------------------
 
 1. Who is shown here sporting this unannounced gold link bracelet Apple Watch shortly before launch?
-![Picture 1](http://nshipster-quiz-7.s3.amazonaws.com/nshipster-quiz7-1.jpg)
+![Picture 1]({{ site.asseturl }}/quiz-7/nshipster-quiz7-1.jpg)
 
 2. What TV show featured these watches? For a bonus point, what was the related catchphrase?
-![Picture 2](http://nshipster-quiz-7.s3.amazonaws.com/nshipster-quiz7-2.jpg)
+![Picture 2]({{ site.asseturl }}/quiz-7/nshipster-quiz7-2.jpg)
 
 3. Hailing from the same era, what development tool is this?
-![Picture 3](http://nshipster-quiz-7.s3.amazonaws.com/nshipster-quiz7-3.png)
+![Picture 3]({{ site.asseturl }}/quiz-7/nshipster-quiz7-3.png)
 
 4. What Apple Design Award-winning app is this?
-![Picture 4](http://nshipster-quiz-7.s3.amazonaws.com/nshipster-quiz7-4.png)
+![Picture 4]({{ site.asseturl }}/quiz-7/nshipster-quiz7-4.png)
 
 5. What Apple Design Award-winning app is this?
-![Picture 5](http://nshipster-quiz-7.s3.amazonaws.com/nshipster-quiz7-5.png)
+![Picture 5]({{ site.asseturl }}/quiz-7/nshipster-quiz7-5.png)
 
 6. What app is this?
-![Picture 6](http://nshipster-quiz-7.s3.amazonaws.com/nshipster-quiz7-6.png)
+![Picture 6]({{ site.asseturl }}/quiz-7/nshipster-quiz7-6.png)
 
 7. What app is this?
-![Picture 7](http://nshipster-quiz-7.s3.amazonaws.com/nshipster-quiz7-7.png)
+![Picture 7]({{ site.asseturl }}/quiz-7/nshipster-quiz7-7.png)
 
 8. Who is this?
-![Picture 8](http://nshipster-quiz-7.s3.amazonaws.com/nshipster-quiz7-8.png)
+![Picture 8]({{ site.asseturl }}/quiz-7/nshipster-quiz7-8.png)
 
 9. Who is this?
-![Picture 9](http://nshipster-quiz-7.s3.amazonaws.com/nshipster-quiz7-9.png)
+![Picture 9]({{ site.asseturl }}/quiz-7/nshipster-quiz7-9.png)
 
 10. What are the Unicode names for these Emoji?
-![Picture 10](http://nshipster-quiz-7.s3.amazonaws.com/nshipster-quiz7-10.png)
+![Picture 10]({{ site.asseturl }}/quiz-7/nshipster-quiz7-10.png)
 
 
 Round 4: Anagrammable
